@@ -1,12 +1,32 @@
-import comingSoon from './assets/coming-soon.svg'
+import { createTheme, MantineColorsTuple, MantineProvider } from '@mantine/core';
+
 import './App.css'
 
 function App() {
 
+  const myGreen: MantineColorsTuple = [
+    '#f5fae7',
+    '#eaf1da',
+    '#d5e0b8',
+    '#becf94',
+    '#abc075',
+    '#9fb661',
+    '#98b255',
+    '#849c45',
+    '#748b3a',
+    '#63782c'
+  ];
+
+  const theme = createTheme({
+    colors: {
+      myGreen
+    }
+  });
+
   return (
-    <>
-      <img src={comingSoon} className="logo" alt="Coming soon" />
-    </>
+    <MantineProvider theme={theme}>
+
+    </MantineProvider>
   )
 }
 
