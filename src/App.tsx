@@ -1,4 +1,10 @@
-import { createTheme, MantineColorsTuple, MantineProvider } from '@mantine/core';
+import {
+  createTheme,
+  MantineColorsTuple,
+  MantineProvider,
+} from '@mantine/core';
+import '@mantine/core/styles.css';
+import Quiz from './components/quiz.tsx';
 
 import './App.css'
 
@@ -25,9 +31,9 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
-
+      <Quiz/>
     </MantineProvider>
-  )
+)
 }
 
 export default App
