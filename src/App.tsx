@@ -6,6 +6,9 @@ import {
   Center
 } from '@mantine/core';
 import '@mantine/core/styles.css';
+import { NavigationProgress } from '@mantine/nprogress';
+import '@mantine/nprogress/styles.css';
+
 import Quiz from './components/quiz/quiz.tsx';
 import LogoText from './assets/logo-text.svg'
 
@@ -34,6 +37,7 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
+      <NavigationProgress/>
       <AppShell header={{ height: 60 }} >
         <AppShell.Header>
           <Center>

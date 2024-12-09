@@ -1,6 +1,7 @@
 import { useState } from "react";
-import {Autocomplete, Button, Container, Group, Select} from '@mantine/core';
+import { Autocomplete, Button, Container, Group, Select } from '@mantine/core';
 import { useForm } from "@mantine/form";
+import { nprogress } from '@mantine/nprogress';
 
 import { hardinessZones, plotTypes } from "./input-types.ts";
 
@@ -8,6 +9,11 @@ import { hardinessZones, plotTypes } from "./input-types.ts";
 function Quiz() {
 
   const [ formPage, setFormPage ] = useState<number>(1);
+
+  const nextFormPage = () => {
+    setFormPage(formPage + 1);
+    nprogress.set((formPage)/numberOfPages * 100)
+  }
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -32,7 +38,8 @@ function Quiz() {
   const currentInputIsValid = form.isValid(currentInput);
   const currentInputIsDirty = form.isDirty(currentInput);
   const enableContinue = currentInputIsValid && currentInputIsDirty
-  const isLastPage = formPage === Object.keys(formInputByPage).length;
+  const numberOfPages = Object.keys(formInputByPage).length;
+  const isLastPage = formPage === numberOfPages;
 
   return (
     <Container size="xl" w={500}>
@@ -62,7 +69,7 @@ function Quiz() {
           {
             !isLastPage &&
             <Button
-              onClick={() => setFormPage(formPage + 1)}
+              onClick={nextFormPage}
               disabled={!enableContinue}
             >
               Next
