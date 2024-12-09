@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Autocomplete, Button, Container, Group, Select } from '@mantine/core';
+import {Autocomplete, Button, Chip, Container, Group, Select} from '@mantine/core';
 import { useForm } from "@mantine/form";
 import { nprogress } from '@mantine/nprogress';
 
-import { hardinessZones, plotTypes } from "./input-types.ts";
-
+import { hardinessZones, plotTypes, goals } from "./input-types.ts";
 
 function Quiz() {
 
@@ -21,17 +20,20 @@ function Quiz() {
     initialValues: {
       plantHardinessZone: '',
       plotType: '',
+      goal: Array(goals.length).fill(''),
     },
 
     validate: {
       plantHardinessZone: (value) => (hardinessZones.includes(value) ? null : 'Enter a valid plant hardiness zone'),
       plotType: (value) => (plotTypes.includes(value) ? null : 'Select a valid plot type'),
+      goal: (value) => (value.length !== 0 ? null : 'Select at least one goal'),
     },
   });
 
   const formInputByPage: Record<number, string> = {
     1: 'plantHardinessZone',
-    2: 'plotType'
+    2: 'plotType',
+    3: 'goal'
   }
 
   const currentInput = formInputByPage[formPage];
@@ -40,6 +42,16 @@ function Quiz() {
   const enableContinue = currentInputIsValid && currentInputIsDirty
   const numberOfPages = Object.keys(formInputByPage).length;
   const isLastPage = formPage === numberOfPages;
+
+  const renderChips = goals.map(goal =>
+    <Chip
+      key={goals.indexOf(goal)}
+      value={goal}
+      onChange={(checked) => form.replaceListItem('goal', goals.indexOf(goal), checked ? goal : '')}
+    >
+      {goal}
+    </Chip>
+  );
 
   return (
     <Container size="xl" w={500}>
@@ -64,6 +76,14 @@ function Quiz() {
             key={form.key('plotType')}
             {...form.getInputProps('plotType')}
           />
+        }
+        {
+          (formPage === 3) &&
+          <Chip.Group multiple >
+            <Group justify="center">
+              {renderChips}
+            </Group>
+          </Chip.Group>
         }
         <Group justify="flex-end" mt="md">
           {

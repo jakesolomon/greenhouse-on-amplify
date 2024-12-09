@@ -30,3 +30,11 @@ export const hardinessZones: string[] = [
   '13a',
   '13b'
 ]
+
+export const goals: string[] = [
+  'Maximum yield',
+  'Diversity of yield',
+  'Consistent harvests',
+  'Low maintenence',
+  'Low cost'
+]
