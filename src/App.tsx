@@ -6,7 +6,7 @@ import {
   Center
 } from '@mantine/core';
 import '@mantine/core/styles.css';
-import Quiz from './components/quiz.tsx';
+import Quiz from './components/quiz/quiz.tsx';
 import LogoText from './assets/logo-text.svg'
 
 import './App.css'
