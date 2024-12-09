@@ -4,7 +4,6 @@
   padding: 2rem;
 }
 
-.logo {
-  height: 50vh;
-  filter: drop-shadow(0 0 2em #FFFFFF);
+.header-logo {
+  height: 100%;
 }

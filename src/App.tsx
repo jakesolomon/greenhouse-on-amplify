@@ -2,9 +2,12 @@ import {
   createTheme,
   MantineColorsTuple,
   MantineProvider,
+  AppShell,
+  Center
 } from '@mantine/core';
 import '@mantine/core/styles.css';
 import Quiz from './components/quiz.tsx';
+import LogoText from './assets/logo-text.svg'
 
 import './App.css'
 
@@ -31,9 +34,16 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
-      <Quiz/>
+      <AppShell header={{ height: 60 }} >
+        <AppShell.Header>
+          <Center>
+            <img src={LogoText} className="header-logo" alt="logo"/>
+          </Center>
+        </AppShell.Header>
+        <Quiz/>
+      </AppShell>
     </MantineProvider>
-)
+  )
 }
 
 export default App
