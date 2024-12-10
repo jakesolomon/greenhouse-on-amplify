@@ -139,11 +139,6 @@ function Quiz() {
           />
         }
         <Group justify="flex-end" mt="md">
-          <Button
-            onClick={() => console.log(form.values)}
-          >
-            Form Values
-          </Button>
           {
             !isLastPage &&
             <Button
