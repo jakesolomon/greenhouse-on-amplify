@@ -47,7 +47,6 @@ function CropsPage(props: CropsPageProps) {
       .concat(mockCropData[approxPlantHardinessZone - 1])
       .concat(mockCropData[approxPlantHardinessZone + 1])
   )]
-  console.log(possibleCrops);
 
   const options = possibleCrops
     .filter((item) => item.toLowerCase().includes(search.trim().toLowerCase()))
