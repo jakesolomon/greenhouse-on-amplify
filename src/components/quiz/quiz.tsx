@@ -1,9 +1,10 @@
 import { useState } from "react";
-import {Autocomplete, Button, Chip, Container, Group, Select} from '@mantine/core';
+import { Autocomplete, Button, Chip, Container, Group, Select, Slider, InputLabel, InputError } from '@mantine/core';
 import { useForm } from "@mantine/form";
 import { nprogress } from '@mantine/nprogress';
 
 import { hardinessZones, plotTypes, goals } from "./input-types.ts";
+import CropsPage from "./crops-page.tsx";
 
 function Quiz() {
 
@@ -12,28 +13,43 @@ function Quiz() {
   const nextFormPage = () => {
     setFormPage(formPage + 1);
     nprogress.set((formPage)/numberOfPages * 100)
+    console.log(form.values)
   }
 
-  const form = useForm({
+  interface FormValues {
+    plantHardinessZone: string;
+    plotType: string;
+    goal: string[];
+    sunlight: number | undefined;
+    crop: string[];
+  }
+
+  const form = useForm<FormValues>({
     mode: 'uncontrolled',
     validateInputOnChange: true,
     initialValues: {
       plantHardinessZone: '',
       plotType: '',
-      goal: Array(goals.length).fill(''),
+      goal: [],
+      sunlight: undefined,
+      crop: [],
     },
 
     validate: {
-      plantHardinessZone: (value) => (hardinessZones.includes(value) ? null : 'Enter a valid plant hardiness zone'),
-      plotType: (value) => (plotTypes.includes(value) ? null : 'Select a valid plot type'),
-      goal: (value) => (value.length !== 0 ? null : 'Select at least one goal'),
+      plantHardinessZone: (value) => (hardinessZones.includes(value) ? null : 'Enter a valid plant hardiness zone.'),
+      plotType: (value) => (plotTypes.includes(value) ? null : 'Select a valid plot type.'),
+      goal: (value) => (value.length === 0 ? "Select at least one goal." : value.length > 3 ? "Select no more than three goals to prioritize." : null),
+      sunlight: () => null,
+      crop: (value) => (value.length === 0 ? "Select at least one crop." : null )
     },
   });
 
   const formInputByPage: Record<number, string> = {
     1: 'plantHardinessZone',
     2: 'plotType',
-    3: 'goal'
+    3: 'goal',
+    4: 'sunlight',
+    5: 'crop',
   }
 
   const currentInput = formInputByPage[formPage];
@@ -44,10 +60,10 @@ function Quiz() {
   const isLastPage = formPage === numberOfPages;
 
   const renderChips = goals.map(goal =>
+    // See https://mantine.dev/form/use-form/#values for info on handling list values
     <Chip
       key={goals.indexOf(goal)}
       value={goal}
-      onChange={(checked) => form.replaceListItem('goal', goals.indexOf(goal), checked ? goal : '')}
     >
       {goal}
     </Chip>
@@ -79,13 +95,54 @@ function Quiz() {
         }
         {
           (formPage === 3) &&
-          <Chip.Group multiple >
-            <Group justify="center">
-              {renderChips}
-            </Group>
-          </Chip.Group>
+          <>
+            <InputLabel>What are your highest priorities for your garden?</InputLabel>
+            <Chip.Group
+              multiple
+              key={form.key('goal')}
+              {...form.getInputProps('goal')}
+            >
+              <Group justify="center">
+                {renderChips}
+              </Group>
+            </Chip.Group>
+            { form.errors['goal'] && <InputError>{form.errors['goal']}</InputError> }
+          </>
+        }
+        {
+          (formPage === 4) &&
+          <>
+            <InputLabel>How many hours of direct sunlight does your garden get each day?</InputLabel>
+            <Slider
+              min={0}
+              max={16}
+              marks={[
+                { value: 0, label: '0' },
+                { value: 4, label: '4' },
+                { value: 8, label: '8' },
+                { value: 12, label: '12' },
+                { value: 16, label: '16' },
+              ]}
+              key={form.key('sunlight')}
+              {...form.getInputProps('sunlight')}
+              mb="xl"
+            />
+          </>
+        }
+        {
+          (formPage === 5) &&
+          <CropsPage
+            inputKey={form.key('crop')}
+            inputProps={{...form.getInputProps('crop')}}
+            setFieldValue={(value) => form.setFieldValue('crop', value)}
+          />
         }
         <Group justify="flex-end" mt="md">
+          <Button
+            onClick={() => console.log(form.values)}
+          >
+            Form Values
+          </Button>
           {
             !isLastPage &&
             <Button
