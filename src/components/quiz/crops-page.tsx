@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { CheckIcon, Combobox, Group, Pill, PillsInput, useCombobox } from '@mantine/core';
+import { CheckIcon, Combobox, Group, Pill, PillsInput, ScrollArea, useCombobox, Text } from '@mantine/core';
 
-import { groceries } from "./input-types.ts"
+import { mockCropData } from "./crops.tsx"
 
   interface CropsPageProps {
   inputKey: string;
   inputProps: object;
   setFieldValue: (fieldValue: string[]) => void;
+  plantHardinessZone: string;
 }
 
 function CropsPage(props: CropsPageProps) {
 
-  const { inputKey, inputProps, setFieldValue } = props;
+  const { inputKey, inputProps, setFieldValue, plantHardinessZone } = props;
 
   const [ value, setValue ] = useState<string[]>([])
 
@@ -40,7 +41,15 @@ function CropsPage(props: CropsPageProps) {
     </Pill>
   ));
 
-  const options = groceries
+  const approxPlantHardinessZone = parseInt(plantHardinessZone.slice(0, 1))
+  const possibleCrops: string[] = [...new Set(
+    mockCropData[approxPlantHardinessZone]
+      .concat(mockCropData[approxPlantHardinessZone - 1])
+      .concat(mockCropData[approxPlantHardinessZone + 1])
+  )]
+  console.log(possibleCrops);
+
+  const options = possibleCrops
     .filter((item) => item.toLowerCase().includes(search.trim().toLowerCase()))
     .map((item) => (
       <Combobox.Option value={item} key={item} active={value.includes(item)}>
@@ -87,7 +96,12 @@ function CropsPage(props: CropsPageProps) {
 
       <Combobox.Dropdown>
         <Combobox.Options>
-          {options.length > 0 ? options : <Combobox.Empty>Nothing found...</Combobox.Empty>}
+          <Combobox.Header>
+            <Text fz="xs">{possibleCrops.length} items found for zone {plantHardinessZone}. Scroll to view.</Text>
+          </Combobox.Header>
+          <ScrollArea.Autosize mah={200} type="scroll">
+            {options.length > 0 ? options : <Combobox.Empty>Nothing found...</Combobox.Empty>}
+          </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox>

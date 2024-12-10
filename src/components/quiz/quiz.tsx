@@ -135,6 +135,7 @@ function Quiz() {
             inputKey={form.key('crop')}
             inputProps={{...form.getInputProps('crop')}}
             setFieldValue={(value) => form.setFieldValue('crop', value)}
+            plantHardinessZone={form.getValues()['plantHardinessZone']}
           />
         }
         <Group justify="flex-end" mt="md">

@@ -38,5 +38,3 @@ export const goals: string[] = [
   'Low maintenence',
   'Low cost'
 ]
-
-export const groceries: string[] = ['🍎 Apples', '🍌 Bananas', '🥦 Broccoli', '🥕 Carrots', '🍫 Chocolate'];
