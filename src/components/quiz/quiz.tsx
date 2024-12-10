@@ -13,7 +13,6 @@ function Quiz() {
   const nextFormPage = () => {
     setFormPage(formPage + 1);
     nprogress.set((formPage)/numberOfPages * 100)
-    console.log(form.values)
   }
 
   interface FormValues {
