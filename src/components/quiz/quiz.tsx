@@ -3,6 +3,8 @@ import { Autocomplete, Button, Chip, Container, Group, Select, Slider, InputLabe
 import { useForm } from "@mantine/form";
 import { nprogress } from '@mantine/nprogress';
 
+import { generateGptPrompFrom, UserInputs } from '../../GPT/gpt-prompt-factory.ts'
+
 import { hardinessZones, plotTypes, goals } from "./input-types.ts";
 import CropsPage from "./crops-page.tsx";
 
@@ -15,22 +17,14 @@ function Quiz() {
     nprogress.set((formPage)/numberOfPages * 100)
   }
 
-  interface FormValues {
-    plantHardinessZone: string;
-    plotType: string;
-    goal: string[];
-    sunlight: number | undefined;
-    crop: string[];
-  }
-
-  const form = useForm<FormValues>({
+  const form = useForm<UserInputs>({
     mode: 'uncontrolled',
     validateInputOnChange: true,
     initialValues: {
       plantHardinessZone: '',
       plotType: '',
       goal: [],
-      sunlight: undefined,
+      sunlight: -1,
       crop: [],
     },
 
@@ -70,7 +64,7 @@ function Quiz() {
 
   return (
     <Container size="xl" w={500}>
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit((values) => console.log(generateGptPrompFrom(values)))}>
 
         {
           (formPage === 1) &&
