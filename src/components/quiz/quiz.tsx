@@ -3,7 +3,7 @@ import { Autocomplete, Button, Chip, Container, Group, Select, Slider, InputLabe
 import { useForm } from "@mantine/form";
 import { nprogress } from '@mantine/nprogress';
 
-import { generateGptPrompFrom, UserInputs } from '../../GPT/gpt-prompt-factory.ts'
+import { generateGptPrompFrom, UserInputs } from '../../GPT/gpt-helpers.ts'
 
 import { hardinessZones, plotTypes, goals } from "./input-types.ts";
 import CropsPage from "./crops-page.tsx";

@@ -72,19 +72,3 @@ export const generateGptPrompFrom = (userInputs: UserInputs) =>
     .concat(newLine)
     .concat(guidelines)
     .concat(responseFormat)
-
-// const responseFormat: object =
-//   "{
-//     "recommended_crops": [
-//       {
-//         "name": "Tomatoes",
-//         "variety": "Roma",
-//         "reason": "High yield and disease-resistant variety suitable for zone 7b and full sun."
-//       },
-//       ...
-//     ],
-//     "additional_advice": [
-//       "Invest in a high-quality potting mix for raised beds to ensure optimal growth.",
-//       "Consider trellises for tomatoes to maximize space."
-//     ]
-//   }"
