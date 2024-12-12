@@ -1,5 +1,8 @@
-import { defineFunction } from '@aws-amplify/backend';
+import { defineFunction, secret } from '@aws-amplify/backend';
 
 export const promptLLM = defineFunction({
-  entry: './handler.ts'
+  environment: {
+    API_KEY: secret('OPENAI_API_KEY')
+  },
+  timeoutSeconds: 60 // 1 minute timeout
 });
