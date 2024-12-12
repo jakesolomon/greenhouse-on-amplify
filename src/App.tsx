@@ -8,10 +8,12 @@ import {
 import '@mantine/core/styles.css';
 import { NavigationProgress } from '@mantine/nprogress';
 import '@mantine/nprogress/styles.css';
+import { generateClient } from "aws-amplify/api"
+
+import { Schema } from "../amplify/data/resource.ts";
 
 import Quiz from './components/quiz/quiz.tsx';
 import LogoText from './assets/logo-text.svg'
-
 import './App.css'
 
 function App() {
@@ -35,6 +37,14 @@ function App() {
     }
   });
 
+  const amplifyClient = generateClient<Schema>()
+  const callAmplifyClient = (prompt: string) =>
+    amplifyClient.queries.promptLLM({ prompt: prompt })
+  const sendUserInputsToLLM = async (prompt: string) => {
+    const result = await callAmplifyClient(prompt);
+    console.log(result);
+  }
+
   return (
     <MantineProvider theme={theme}>
       <NavigationProgress/>
@@ -44,7 +54,7 @@ function App() {
             <img src={LogoText} className="header-logo" alt="logo"/>
           </Center>
         </AppShell.Header>
-        <Quiz/>
+        <Quiz sendUserInputsToLLM={sendUserInputsToLLM} />
       </AppShell>
     </MantineProvider>
   )

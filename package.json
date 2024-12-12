@@ -10,16 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.7.1",
     "@mantine/core": "^7.14.3",
     "@mantine/form": "^7.14.3",
     "@mantine/hooks": "^7.14.3",
     "@mantine/nprogress": "^7.14.3",
     "aws-amplify": "^6.10.2",
+    "aws-lambda": "^1.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "^1.8.0",
+    "@aws-amplify/backend": "^1.9.0",
     "@aws-amplify/backend-cli": "^1.4.2",
     "@eslint/js": "^9.15.0",
     "@types/react": "^18.3.12",
