@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CheckIcon, Combobox, Group, Pill, PillsInput, ScrollArea, useCombobox, Text } from '@mantine/core';
 
-import { mockCropData } from "./crops.tsx"
+import { mockCropData } from "./crops.ts"
 
   interface CropsPageProps {
   inputKey: string;
