@@ -7,7 +7,7 @@ const context: string =
 
 const ask: string =
   "Based on the user inputs below, create a planting schedule tailored to their garden. " +
-  "Your output must be in valid JSON format and follow the provided example structure.\n\n"
+  "Your output must be in valid JSON format and follow the given structure.\n\n"
 
 const newLine: string = "\n"
 
@@ -19,25 +19,6 @@ const guidelines: string =
   "4. Ensure tasks are manageable within the user's weekly time availability.\n" +
   "5. Include notes on acquiring soil or amendments if necessary.\n" +
   "6. For custom crops entered by the user, provide recommendations or adjustments as needed.\n\n"
-
-const responseFormat: string =
-  "Example Structure:\n" +
-  "{\n" +
-  "  recommended_crops: [\n" +
-  "    {\n" +
-  "      name: \"Tomatoes\",\n" +
-  "      variety: \"Roma\",\n" +
-  "      reason: \"High yield and disease-resistant variety suitable for zone 7b and full sun.\"\n" +
-  "      plantingDate: \"mm/dd\"\n" +
-  "      harvestDate: \"mm/dd\"\n" +
-  "    },\n" +
-  "    ...\n" +
-  "  },\n" +
-  "  additional_advice: [\n" +
-  "    \"Invest in a high-quality potting mix for raised beds to ensure optimal growth.\",\n" +
-  "    ...\n" +
-  "  ]\n" +
-  "}\n";
 
 export interface UserInputs {
   plantHardinessZone: string;
@@ -71,4 +52,3 @@ export const generateGptPrompFrom = (userInputs: UserInputs) =>
     .concat(stringifyInputs(userInputs))
     .concat(newLine)
     .concat(guidelines)
-    .concat(responseFormat)

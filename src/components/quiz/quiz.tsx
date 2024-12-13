@@ -8,7 +8,13 @@ import { generateGptPrompFrom, UserInputs } from '../../GPT/gpt-helpers.ts'
 import { hardinessZones, plotTypes, goals } from "./input-types.ts";
 import CropsPage from "./crops-page.tsx";
 
-function Quiz() {
+interface QuizProps {
+  sendUserInputsToLLM: (arg0: string) => Promise<void>;
+}
+
+function Quiz(props: QuizProps) {
+
+  const { sendUserInputsToLLM } = props;
 
   const [ formPage, setFormPage ] = useState<number>(1);
 
@@ -64,7 +70,7 @@ function Quiz() {
 
   return (
     <Container size="xl" w={500}>
-      <form onSubmit={form.onSubmit((values) => console.log(generateGptPrompFrom(values)))}>
+      <form onSubmit={form.onSubmit((values) => sendUserInputsToLLM(generateGptPrompFrom(values)))}>
 
         {
           (formPage === 1) &&
