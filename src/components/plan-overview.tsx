@@ -1,5 +1,6 @@
 import { Timeline, Text, Card, Group, Badge, Stack, Container } from '@mantine/core';
 import { PlantingDateSchema, GardenPlan } from '../types.ts'
+import GanttChart from "./gantt-chart.tsx";
 
 interface DataDisplayProps {
   data: GardenPlan;
@@ -16,6 +17,8 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Text size="xl" mb="lg">
         Gardening Plan Timeline
       </Text>
+
+      <GanttChart crops={crops} />
 
       <Timeline active={crops.length} bulletSize={24} lineWidth={2}>
         {crops.map((crop, index) => (
