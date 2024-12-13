@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   createTheme,
   MantineColorsTuple,
@@ -12,7 +13,9 @@ import { generateClient } from "aws-amplify/api"
 
 import { Schema } from "../amplify/data/resource.ts";
 
+import { GardenPlan } from './types.ts'
 import Quiz from './components/quiz/quiz.tsx';
+import PlanOverview from './components/plan-overview.tsx';
 import LogoText from './assets/logo-text.svg'
 import './App.css'
 
@@ -37,12 +40,18 @@ function App() {
     }
   });
 
+  // TODO: wrap these into a useApiRequestHelper()
+  const [ data, setData ] = useState<GardenPlan>();
+  const [ loading, setIsLoading ] = useState<boolean>(false);
+
   const amplifyClient = generateClient<Schema>()
   const callAmplifyClient = (prompt: string) =>
     amplifyClient.queries.promptLLM({ prompt: prompt })
   const sendUserInputsToLLM = async (prompt: string) => {
+    setIsLoading(true)
     const result = await callAmplifyClient(prompt);
-    console.log(result);
+    setData(JSON.parse(result.data!));
+    setIsLoading(false)
   }
 
   return (
@@ -54,7 +63,18 @@ function App() {
             <img src={LogoText} className="header-logo" alt="logo"/>
           </Center>
         </AppShell.Header>
-        <Quiz sendUserInputsToLLM={sendUserInputsToLLM} />
+        {
+          data === undefined && !loading &&
+          <Quiz sendUserInputsToLLM={sendUserInputsToLLM} />
+        }
+        {
+          data === undefined && loading &&
+          "beep boop processing"
+        }
+        {
+          data !== undefined && !loading &&
+          <PlanOverview data={data} />
+        }
       </AppShell>
     </MantineProvider>
   )
