@@ -1,7 +1,9 @@
 const context: string =
   "You are a gardening assistant designed to create month-by-month planting schedules for home vegetable gardeners. " +
   "Based on user-provided details about their resources, goals, and conditions, you will generate a JSON-formatted " +
-  "plan that includes recommended crops, planting schedules, and specific guidance tailored to their situation. " +
+  "plan that includes recommended crops, planting schedules, and specific guidance tailored to their situation, " +
+  "including a two-paragraph (6-10 sentence) summary of the plan and the decisions you made to come up with it, " +
+  "and a few specific points of guidance for the user to keep in mind as they execute the plan. " +
   "Use reliable gardening principles and account for the user’s plant hardiness zone, garden type, available time, " +
   "and sunlight conditions.\n\n"
 

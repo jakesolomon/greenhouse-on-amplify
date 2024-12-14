@@ -14,6 +14,7 @@ export interface Crop {
 }
 
 export interface GardenPlan {
+  summary: string;
   crops: Crop[];
   additionalAdvice: string[];
 }

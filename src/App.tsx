@@ -58,23 +58,25 @@ function App() {
     <MantineProvider theme={theme}>
       <NavigationProgress/>
       <AppShell header={{ height: 60 }} >
-        <AppShell.Header>
+        <AppShell.Header >
           <Center>
             <img src={LogoText} className="header-logo" alt="logo"/>
           </Center>
         </AppShell.Header>
-        {
-          data === undefined && !loading &&
-          <Quiz sendUserInputsToLLM={sendUserInputsToLLM} />
-        }
-        {
-          data === undefined && loading &&
-          "beep boop processing"
-        }
-        {
-          data !== undefined && !loading &&
-          <PlanOverview data={data} />
-        }
+        <AppShell.Main>
+          {
+            data === undefined && !loading &&
+            <Quiz sendUserInputsToLLM={sendUserInputsToLLM} />
+          }
+          {
+            data === undefined && loading &&
+            "beep boop processing"
+          }
+          {
+            data !== undefined && !loading &&
+            <PlanOverview data={data} />
+          }
+        </AppShell.Main>
       </AppShell>
     </MantineProvider>
   )

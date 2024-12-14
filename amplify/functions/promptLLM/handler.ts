@@ -21,6 +21,7 @@ const Crop = z.object({
 });
 
 const OverviewOutput = z.object({
+  summary: z.string(),
   crops: z.array(Crop),
   additionalAdvice: z.array(z.string()),
 });
