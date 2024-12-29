@@ -1,24 +1,41 @@
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import "gantt-task-react/dist/index.css";
 
-import { Crop } from '../types.ts'
+import { Planting, PlantingScheduleOutput} from '../types.ts'
 
 interface GanttChartProps {
-  crops: Crop[];
+  plantingSchedule: PlantingScheduleOutput;
 }
 
 const GanttChart = (props: GanttChartProps)=> {
 
-  const { crops } = props;
+  const { plantingSchedule } = props;
 
-  const chartItems: Task[] = crops.map((crop): Task => ({
-    name: crop.name,
-    type: "task",
-    start: new Date(2025, crop.plantingDate.month, crop.plantingDate.day),
-    end: new Date(2025, crop.harvestDate.month, crop.harvestDate.day),
-    progress: 0,
-    id: crop.name
-  }))
+  const plotToColor = [
+    "green",
+    "blue",
+    "orange",
+    "red",
+    "purple",
+    "grey"
+  ]
+
+  const chartItems: Task[] = [];
+  plantingSchedule.plots.forEach((plot: Planting[], plotIndex: number) => {
+    plot.forEach((planting: Planting) =>{
+      const transplantDate = new Date(`${planting.transplantingDate}`);
+      const harvestDate = new Date(`${planting.harvestEndDate}`);
+      chartItems.push({
+        name: planting.name,
+        type: "task",
+        start: transplantDate,
+        end: harvestDate,
+        progress: 0,
+        styles: {backgroundColor: plotToColor[plotIndex] ? plotToColor[plotIndex] : "black"},
+        id: `{plotIndex}, {plantingIndex}`
+      });
+    })
+  });
 
   const GanttChartListTable = () => <></>
   const GanttChartListHeader = () => <></>

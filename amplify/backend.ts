@@ -1,7 +1,8 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
-import { promptLLM } from './functions/promptLLM/resource';
+import { getCropData } from './functions/getCropData/resource';
+import { getPlantingScheduleData } from './functions/getPlantingScheduleData/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -9,5 +10,6 @@ import { promptLLM } from './functions/promptLLM/resource';
 defineBackend({
   auth,
   data,
-  promptLLM
+  getCropData,
+  getPlantingScheduleData
 });

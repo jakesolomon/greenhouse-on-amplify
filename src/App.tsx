@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {
   createTheme,
   MantineColorsTuple,
@@ -13,11 +13,13 @@ import { generateClient } from "aws-amplify/api"
 
 import { Schema } from "../amplify/data/resource.ts";
 
-import { GardenPlan } from './types.ts'
+import { CropDataOutput, PlantingScheduleOutput } from './types.ts'
 import Quiz from './components/quiz/quiz.tsx';
 import PlanOverview from './components/plan-overview.tsx';
 import LogoText from './assets/logo-text.svg'
 import './App.css'
+import { generateLlmPlantingSchedulePromptFrom } from './LLM/get-planting-schedule-prompt.ts'
+import { mockClimateData } from "./mockClimateData.ts"
 
 function App() {
 
@@ -41,18 +43,44 @@ function App() {
   });
 
   // TODO: wrap these into a useApiRequestHelper()
-  const [ data, setData ] = useState<GardenPlan>();
-  const [ loading, setIsLoading ] = useState<boolean>(false);
+  const [ cropData, setCropData ] = useState<CropDataOutput>();
+  const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
+
+  const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
+  const [ loadingPlantingSchedule, setIsLoadingPlantingSchedule ] = useState<boolean>(false);
 
   const amplifyClient = generateClient<Schema>()
-  const callAmplifyClient = (prompt: string) =>
-    amplifyClient.queries.promptLLM({ prompt: prompt })
-  const sendUserInputsToLLM = async (prompt: string) => {
-    setIsLoading(true)
-    const result = await callAmplifyClient(prompt);
-    setData(JSON.parse(result.data!));
-    setIsLoading(false)
+
+  useEffect(() => {
+    const requestPlantingData = async (cropData: CropDataOutput) => {
+      setIsLoadingPlantingSchedule(true)
+      try {
+        const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
+          mockClimateData,
+          JSON.stringify(cropData!.crops)
+        )
+        const response =
+          await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
+        setPlantingSchedule(JSON.parse(response.data!));
+      } catch (error) {
+        console.error('Error fetching planting data:', error);
+      }
+      setIsLoadingPlantingSchedule(false)
+    };
+
+    if (cropData) {
+      requestPlantingData(cropData);
+    }
+  }, [cropData]);
+
+  // TODO wrap these in a try/catch
+  const requestCropData = async (prompt: string) => {
+    setIsLoadingCropData(true)
+    const result = await amplifyClient.queries.getCropData({ prompt: prompt });
+    setCropData(JSON.parse(result.data!));
+    setIsLoadingCropData(false)
   }
+
 
   return (
     <MantineProvider theme={theme}>
@@ -65,16 +93,20 @@ function App() {
         </AppShell.Header>
         <AppShell.Main>
           {
-            data === undefined && !loading &&
-            <Quiz sendUserInputsToLLM={sendUserInputsToLLM} />
+            cropData === undefined && !loadingCropData &&
+            <Quiz requestCropData={requestCropData} />
           }
           {
-            data === undefined && loading &&
+            cropData === undefined && loadingCropData &&
             "beep boop processing"
           }
           {
-            data !== undefined && !loading &&
-            <PlanOverview data={data} />
+            cropData !== undefined && !loadingCropData &&
+            <PlanOverview
+              cropData={cropData}
+              loadingPlantingSchedule={loadingPlantingSchedule}
+              plantingSchedule={plantingSchedule}
+            />
           }
         </AppShell.Main>
       </AppShell>

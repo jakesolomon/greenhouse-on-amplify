@@ -1,16 +1,23 @@
 import { Text, Card, Group, Badge, Stack, Container, Grid} from '@mantine/core';
-import { PlantingDateSchema, GardenPlan } from '../types.ts'
+
+import {
+  CropDataOutput,
+  PlantingScheduleOutput
+} from '../types.ts'
+
 import GanttChart from "./gantt-chart.tsx";
 
 interface DataDisplayProps {
-  data: GardenPlan;
+  cropData: CropDataOutput;
+  plantingSchedule?: PlantingScheduleOutput;
+  loadingPlantingSchedule: boolean;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { data } = props;
-  const { summary, crops, additionalAdvice } = data;
+  const { cropData, plantingSchedule, loadingPlantingSchedule } = props;
+  const { summary, crops, additionalAdvice } = cropData;
 
-  const formatDate = (date: PlantingDateSchema) => `${date.month}/${date.day}`;
+  console.log(plantingSchedule)
 
   return (
     <Container>
@@ -19,11 +26,17 @@ const PlanOverview = (props: DataDisplayProps) => {
       </Text>
       <Text size="md" mb="lg">
         {summary}
+        <br/><br/>
+        {plantingSchedule?.summary}
       </Text>
-      <GanttChart crops={crops} />
+      {
+        loadingPlantingSchedule || !plantingSchedule
+        ? "thinking about things, plelase wait"
+        : <GanttChart plantingSchedule={plantingSchedule} />
+      }
       <Grid>
         {crops.map((crop, index) => (
-          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+          <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={index}>
             <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
               <Stack>
                 <Text fw={500}>{crop.name} ({crop.variety})</Text>
@@ -31,8 +44,11 @@ const PlanOverview = (props: DataDisplayProps) => {
                   Reason: {crop.reason}
                 </Text>
                 <Group >
-                  <Badge color="dark" >Plant: {formatDate(crop.plantingDate)}</Badge>
-                  <Badge color="teal">Harvest: {formatDate(crop.harvestDate)}</Badge>
+                  <Badge>Seedling: {crop.seedlingDuration}</Badge>
+                  <Badge>Growth: {crop.growthDuration}</Badge>
+                  <Badge>Harvest: {crop.harvestDuration}</Badge>
+                  <Badge>Coldest Growth Temp: {crop.lowerTempBound}</Badge>
+                  <Badge>Hottest Growth Temprvest: {crop.upperTempBound}</Badge>
                 </Group>
               </Stack>
             </Card>

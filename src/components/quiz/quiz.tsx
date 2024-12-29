@@ -3,18 +3,19 @@ import { Autocomplete, Button, Chip, Container, Group, Select, Slider, InputLabe
 import { useForm } from "@mantine/form";
 import { nprogress } from '@mantine/nprogress';
 
-import { generateGptPrompFrom, UserInputs } from '../../GPT/gpt-helpers.ts'
+import { generateLlmCropDataPromptFrom } from '../../LLM/get-crop-data-prompt.ts'
+import { UserInputs } from "../../types.ts";
 
 import { hardinessZones, plotTypes, goals } from "./input-types.ts";
 import CropsPage from "./crops-page.tsx";
 
 interface QuizProps {
-  sendUserInputsToLLM: (arg0: string) => Promise<void>;
+  requestCropData: (arg0: string) => Promise<void>;
 }
 
 function Quiz(props: QuizProps) {
 
-  const { sendUserInputsToLLM } = props;
+  const { requestCropData } = props;
 
   const [ formPage, setFormPage ] = useState<number>(1);
 
@@ -29,6 +30,7 @@ function Quiz(props: QuizProps) {
     initialValues: {
       plantHardinessZone: '',
       plotType: '',
+      gardenAreas: [{length: 10, width: 3}, {length: 10, width: 3}],
       goal: [],
       sunlight: -1,
       crop: [],
@@ -70,7 +72,7 @@ function Quiz(props: QuizProps) {
 
   return (
     <Container size="xl" w={500}>
-      <form onSubmit={form.onSubmit((values) => sendUserInputsToLLM(generateGptPrompFrom(values)))}>
+      <form onSubmit={form.onSubmit((values) => requestCropData(generateLlmCropDataPromptFrom(values)))}>
 
         {
           (formPage === 1) &&

@@ -1,16 +1,27 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend"
-import { promptLLM } from "../functions/promptLLM/resource"
+import { getCropData } from "../functions/getCropData/resource"
+import { getPlantingScheduleData } from "../functions/getPlantingScheduleData/resource"
 
 const schema = a.schema({
-  promptLLM: a
+  getCropData: a
     .query()
     .arguments({
       prompt: a.string(),
     })
     .returns(a.string())
-    .handler(a.handler.function(promptLLM))
+    .handler(a.handler.function(getCropData))
     .authorization(allow => [
-      // TODO need to use authorization to protect backend. https://docs.amplify.aws/react/build-a-backend/data/customize-authz/
+      allow.publicApiKey(),
+    ]),
+
+  getPlantingScheduleData: a
+    .query()
+    .arguments({
+      prompt: a.string(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getPlantingScheduleData))
+    .authorization(allow => [
       allow.publicApiKey(),
     ]),
 })
