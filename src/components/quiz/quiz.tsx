@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Autocomplete, Button, Chip, Container, Group, Select, Slider, InputLabel, InputError } from '@mantine/core';
-import { useForm } from "@mantine/form";
+import { Autocomplete, Button, Chip, Container, Group, Select, Slider, InputLabel, InputError, TextInput } from '@mantine/core';
+import { useForm, useField } from "@mantine/form";
 import { nprogress } from '@mantine/nprogress';
 
 import { generateLlmCropDataPromptFrom } from '../../LLM/get-crop-data-prompt.ts'
@@ -10,12 +10,13 @@ import { hardinessZones, plotTypes, goals } from "./input-types.ts";
 import CropsPage from "./crops-page.tsx";
 
 interface QuizProps {
-  requestCropData: (arg0: string) => Promise<void>;
+  requestCropData: (arg0: string) => Promise<void>
+  submitZipCode: (arg0: string) => Promise<void>
 }
 
 function Quiz(props: QuizProps) {
 
-  const { requestCropData } = props;
+  const { requestCropData, submitZipCode } = props;
 
   const [ formPage, setFormPage ] = useState<number>(1);
 
@@ -46,11 +47,11 @@ function Quiz(props: QuizProps) {
   });
 
   const formInputByPage: Record<number, string> = {
-    1: 'plantHardinessZone',
-    2: 'plotType',
-    3: 'goal',
-    4: 'sunlight',
-    5: 'crop',
+    2: 'plantHardinessZone',
+    3: 'plotType',
+    4: 'goal',
+    5: 'sunlight',
+    6: 'crop',
   }
 
   const currentInput = formInputByPage[formPage];
@@ -58,7 +59,8 @@ function Quiz(props: QuizProps) {
   const currentInputIsDirty = form.isDirty(currentInput);
   const enableContinue = currentInputIsValid && currentInputIsDirty
   const numberOfPages = Object.keys(formInputByPage).length;
-  const isLastPage = formPage === numberOfPages;
+  const isLastPage = formPage === 6;
+  const isFirstPage = formPage === 1;
 
   const renderChips = goals.map(goal =>
     // See https://mantine.dev/form/use-form/#values for info on handling list values
@@ -70,12 +72,31 @@ function Quiz(props: QuizProps) {
     </Chip>
   );
 
+  const zipCodeRegex = /^\d{5}(-\d{4})?$/;
+  const zipCodeField = useField({
+    initialValue: '',
+    validate: (value) => ( zipCodeRegex.test(value) ? null : 'Please enter a valid ZIP code.' )
+  });
+  const enableProceedWithZipCode = zipCodeField.isDirty() && zipCodeRegex.test(zipCodeField.getValue())
+  const proceedWithZipCode = () => {
+    submitZipCode(zipCodeField.getValue());
+    nextFormPage()
+  }
+
   return (
     <Container size="xl" w={500}>
       <form onSubmit={form.onSubmit((values) => requestCropData(generateLlmCropDataPromptFrom(values)))}>
-
         {
           (formPage === 1) &&
+          <TextInput
+            description="This will be used to predict climate data for your location."
+            label="What is your ZIP code?"
+            placeholder="00000"
+            {...zipCodeField.getInputProps()}
+          />
+        }
+        {
+          (formPage === 2) &&
           <Autocomplete
             label="What is your plant hardiness zone?"
             placeholder="6b"
@@ -85,7 +106,7 @@ function Quiz(props: QuizProps) {
           />
         }
         {
-          (formPage === 2) &&
+          (formPage === 3) &&
           <Select
             label="What type of garden will you have?"
             placeholder="Pick value"
@@ -95,7 +116,7 @@ function Quiz(props: QuizProps) {
           />
         }
         {
-          (formPage === 3) &&
+          (formPage === 4) &&
           <>
             <InputLabel>What are your highest priorities for your garden?</InputLabel>
             <Chip.Group
@@ -111,7 +132,7 @@ function Quiz(props: QuizProps) {
           </>
         }
         {
-          (formPage === 4) &&
+          (formPage === 5) &&
           <>
             <InputLabel>How many hours of direct sunlight does your garden get each day?</InputLabel>
             <Slider
@@ -131,7 +152,7 @@ function Quiz(props: QuizProps) {
           </>
         }
         {
-          (formPage === 5) &&
+          (formPage === 6) &&
           <CropsPage
             inputKey={form.key('crop')}
             inputProps={{...form.getInputProps('crop')}}
@@ -141,7 +162,16 @@ function Quiz(props: QuizProps) {
         }
         <Group justify="flex-end" mt="md">
           {
-            !isLastPage &&
+            isFirstPage &&
+            <Button
+              onClick={proceedWithZipCode}
+              disabled={!enableProceedWithZipCode}
+            >
+              Next
+            </Button>
+          }
+          {
+            !isLastPage && !isFirstPage &&
             <Button
               onClick={nextFormPage}
               disabled={!enableContinue}
@@ -150,7 +180,7 @@ function Quiz(props: QuizProps) {
             </Button>
           }
           {
-            isLastPage &&
+            isLastPage && !isFirstPage &&
             <Button
               type="submit"
               disabled={!enableContinue}

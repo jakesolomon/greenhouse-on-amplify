@@ -1,5 +1,37 @@
 // These types adhere to the response formats in /amplify/functions/{handlerName}/handler.ts
 
+interface TemperatureData {
+  avgHigh: number,
+  avgLow: number
+}
+
+interface TemperatureDataByMonth {
+  month: string,
+  temps: TemperatureData,
+}
+
+// TODO: consider using this data shape to enforce correct months, instead of letting LLM do it. Would have to sort and create display names for months.
+// interface TemperatureDataByMonth {
+//   january: TemperatureData,
+//   february: TemperatureData,
+//   march: TemperatureData,
+//   april: TemperatureData,
+//   may: TemperatureData,
+//   june: TemperatureData,
+//   july: TemperatureData,
+//   august: TemperatureData,
+//   september: TemperatureData,
+//   october: TemperatureData,
+//   november: TemperatureData,
+//   december: TemperatureData,
+// }
+
+export interface ClimateDataOutput {
+  temperatureData: TemperatureDataByMonth[],
+  lastFrostDate: string,
+  firstFrostDate: string,
+}
+
 export interface UserInputs {
   plantHardinessZone: string;
   plotType: string;

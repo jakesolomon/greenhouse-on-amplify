@@ -1,23 +1,27 @@
 import { Text, Card, Group, Badge, Stack, Container, Grid} from '@mantine/core';
 
 import {
+  ClimateDataOutput,
   CropDataOutput,
   PlantingScheduleOutput
 } from '../types.ts'
 
 import GanttChart from "./gantt-chart.tsx";
+import ClimateChart from "./climate-chart.tsx";
 
 interface DataDisplayProps {
   cropData: CropDataOutput;
   plantingSchedule?: PlantingScheduleOutput;
   loadingPlantingSchedule: boolean;
+  climateData?: ClimateDataOutput;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { cropData, plantingSchedule, loadingPlantingSchedule } = props;
+  const { cropData, plantingSchedule, loadingPlantingSchedule, climateData } = props;
   const { summary, crops, additionalAdvice } = cropData;
 
-  console.log(plantingSchedule)
+  console.log(climateData)
+  console.log(!!climateData)
 
   return (
     <Container>
@@ -33,6 +37,10 @@ const PlanOverview = (props: DataDisplayProps) => {
         loadingPlantingSchedule || !plantingSchedule
         ? "thinking about things, plelase wait"
         : <GanttChart plantingSchedule={plantingSchedule} />
+      }
+      {
+        climateData &&
+        <ClimateChart data={climateData} />
       }
       <Grid>
         {crops.map((crop, index) => (

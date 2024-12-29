@@ -13,13 +13,12 @@ import { generateClient } from "aws-amplify/api"
 
 import { Schema } from "../amplify/data/resource.ts";
 
-import { CropDataOutput, PlantingScheduleOutput } from './types.ts'
+import { ClimateDataOutput, CropDataOutput, PlantingScheduleOutput } from './types.ts'
 import Quiz from './components/quiz/quiz.tsx';
 import PlanOverview from './components/plan-overview.tsx';
 import LogoText from './assets/logo-text.svg'
 import './App.css'
 import { generateLlmPlantingSchedulePromptFrom } from './LLM/get-planting-schedule-prompt.ts'
-import { mockClimateData } from "./mockClimateData.ts"
 
 function App() {
 
@@ -43,6 +42,10 @@ function App() {
   });
 
   // TODO: wrap these into a useApiRequestHelper()
+
+  const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
+  const [ loadingClimateData, setIsLoadingClimateData ] = useState<boolean>(false);
+
   const [ cropData, setCropData ] = useState<CropDataOutput>();
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
 
@@ -54,9 +57,12 @@ function App() {
   useEffect(() => {
     const requestPlantingData = async (cropData: CropDataOutput) => {
       setIsLoadingPlantingSchedule(true)
+      while (loadingClimateData && !climateData) {
+        setTimeout('', 2000);
+      }
       try {
         const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
-          mockClimateData,
+          JSON.stringify(climateData!),
           JSON.stringify(cropData!.crops)
         )
         const response =
@@ -81,6 +87,12 @@ function App() {
     setIsLoadingCropData(false)
   }
 
+  const submitZipCode = async (zipCode: string) => {
+    setIsLoadingClimateData(true)
+    const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
+    setClimateData(JSON.parse(result.data!));
+    setIsLoadingClimateData(false)
+  }
 
   return (
     <MantineProvider theme={theme}>
@@ -94,7 +106,7 @@ function App() {
         <AppShell.Main>
           {
             cropData === undefined && !loadingCropData &&
-            <Quiz requestCropData={requestCropData} />
+            <Quiz requestCropData={requestCropData} submitZipCode={submitZipCode} />
           }
           {
             cropData === undefined && loadingCropData &&
@@ -106,6 +118,7 @@ function App() {
               cropData={cropData}
               loadingPlantingSchedule={loadingPlantingSchedule}
               plantingSchedule={plantingSchedule}
+              climateData={climateData}
             />
           }
         </AppShell.Main>

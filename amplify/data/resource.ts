@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend"
 import { getCropData } from "../functions/getCropData/resource"
+import { getClimateData } from "../functions/getClimateData/resource"
 import { getPlantingScheduleData } from "../functions/getPlantingScheduleData/resource"
 
 const schema = a.schema({
@@ -10,6 +11,17 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(getCropData))
+    .authorization(allow => [
+      allow.publicApiKey(),
+    ]),
+
+  getClimateData: a
+    .query()
+    .arguments({
+      zipCode: a.string(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getClimateData))
     .authorization(allow => [
       allow.publicApiKey(),
     ]),
