@@ -27,6 +27,8 @@ export const handler: Schema["getPlantingScheduleData"]["functionHandler"]  = as
   const { prompt } = event.arguments
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini-2024-07-18",
+    temperature: 0,
+    top_p: 0,
     messages: [
       { role: "user", content: prompt! }
     ],

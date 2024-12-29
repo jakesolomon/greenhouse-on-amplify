@@ -22,7 +22,7 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const chartItems: Task[] = [];
   plantingSchedule.plots.forEach((plot: Planting[], plotIndex: number) => {
-    plot.forEach((planting: Planting) =>{
+    plot.forEach((planting: Planting, plantingIndex: number) =>{
       const transplantDate = new Date(`${planting.transplantingDate}`);
       const harvestDate = new Date(`${planting.harvestEndDate}`);
       chartItems.push({
@@ -32,7 +32,7 @@ const GanttChart = (props: GanttChartProps)=> {
         end: harvestDate,
         progress: 0,
         styles: {backgroundColor: plotToColor[plotIndex] ? plotToColor[plotIndex] : "black"},
-        id: `{plotIndex}, {plantingIndex}`
+        id: `${plotIndex}, ${plantingIndex}`
       });
     })
   });
