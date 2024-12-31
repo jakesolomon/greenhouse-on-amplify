@@ -1,4 +1,4 @@
-import { Text, Card, Group, Badge, Stack, Container, Grid, Accordion } from '@mantine/core';
+import { Text, Container, Accordion } from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -8,6 +8,7 @@ import {
 
 import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
+import CropList from "./crop-list.tsx";
 
 interface DataDisplayProps {
   cropData: CropDataOutput;
@@ -48,28 +49,7 @@ const PlanOverview = (props: DataDisplayProps) => {
           <Accordion.Item value="crops">
             <Accordion.Control icon="🥦">Crops</Accordion.Control>
             <Accordion.Panel>
-              {/*TODO// Put this in a different component*/}
-              <Grid>
-                {crops.map((crop, index) => (
-                  <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={index}>
-                    <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
-                      <Stack>
-                        <Text fw={500}>{crop.name} ({crop.variety})</Text>
-                        <Text size="sm" c="dimmed">
-                          Reason: {crop.reason}
-                        </Text>
-                        <Group >
-                          <Badge>Seedling: {crop.seedlingDuration}</Badge>
-                          <Badge>Growth: {crop.growthDuration}</Badge>
-                          <Badge>Harvest: {crop.harvestDuration}</Badge>
-                          <Badge>Coldest Growth Temp: {crop.lowerTempBound}</Badge>
-                          <Badge>Hottest Growth Temprvest: {crop.upperTempBound}</Badge>
-                        </Group>
-                      </Stack>
-                    </Card>
-                  </Grid.Col>
-                ))}
-              </Grid>
+              <CropList crops={crops}/>
             </Accordion.Panel>
           </Accordion.Item>
           <Accordion.Item value="additionalAdvice">
