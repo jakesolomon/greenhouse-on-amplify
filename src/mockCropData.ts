@@ -1,39 +1,19 @@
 const mockCropData =
-  `{
-    "summary": "Woof. Grapes at yams mushrooms organic berries gobble. Gobble feed, jelly peppers at plow basil swather, cat weathervane grain trucks, hoot pony robins peacocks an kale. Ewes mushrooms zucchini in forage Harvester at sheep with tractor. Lamb in eggplant baler rain barrels manure hay rake. Coo with rabbits ect. Quack hammers eggplant is utters nails garden. Blue berries pigeons buzz and bean prairie dogs nails at est.",
-    "crops":
+  `{  
+    "summary": "In this planting schedule, I've selected a diverse array of crops suitable for Zone 6b given the user's goal for maximum yield and diversity. The plan includes early season crops like lettuce and beans, mid-season favorites such as tomatoes and cucumbers, as well as warm-loving crops like squash and melons that thrive in summer heat. Special attention was given to growth durations, harvest durations, and temperature tolerances to optimize the planting schedule throughout the growing season.",
+    "crops": 
       [
-        {
-          "name":"Turnips","variety":"Purple Top White Globe",
-          "reason":"These are cool-season crops that grow well in Zone 3b and can be harvested within a short time frame, which aligns with low-cost goals.",
-          "plantingDate":{"month":4,"day":15},
-          "harvestDate":{"month":6,"day":15}
-        },
-        {
-          "name":"Radishes","variety":"Cherry Belle",
-          "reason":"Radishes are quick to germinate and grow; perfect for maximizing yield in limited time and resources.",
-          "plantingDate":{"month":4,"day":15},
-          "harvestDate":{"month":5,"day":1}
-        },
-        {
-          "name":"Squash","variety":"Summer Squash",
-          "reason":"Summer squash varieties do well with more than 6 hours of sunlight and thrive in raised beds, providing a good yield.",
-          "plantingDate":{"month":5,"day":20},
-          "harvestDate":{"month":7,"day":1}
-        },
-        {
-          "name":"Parsley","variety":"Giant of Italy",
-          "reason":"Parsley is a biennial herb that thrives in raised beds and can be used fresh or dried, helping to enhance low-cost meals.",
-          "plantingDate":{"month":4,"day":10},
-          "harvestDate":{"month":8,"day":1}
-        }
+        { "name": "Corn", "variety": "Sweet Corn (e.g. Silver Queen)", "reason": "High yield and a delicious summer staple.", "seedlingDuration": 7, "growthDuration": 60, "harvestDuration": 0, "lowerTempBound": 50, "upperTempBound": 95 },    
+        { "name": "Beans", "variety": "Green Beans (e.g. Provider)", "reason": "Fast-growing and can be planted successively for extended harvest.", "seedlingDuration": 10, "growthDuration": 30, "harvestDuration": 14, "lowerTempBound": 50, "upperTempBound": 85 },    
+        { "name": "Melons", "variety": "Cantaloupe (e.g. Hales Best)", "reason": "Sweet fruits that thrive well in warm temperatures.", "seedlingDuration": 10, "growthDuration": 80, "harvestDuration": 15, "lowerTempBound": 60, "upperTempBound": 95 },    
+        { "name": "Squash", "variety": "Zucchini (e.g. Black Beauty)", "reason": "High yield and easy to grow in raised beds.", "seedlingDuration": 7, "growthDuration": 50, "harvestDuration": 25, "lowerTempBound": 60, "upperTempBound": 95 },    
+        { "name": "Lettuce", "variety": "Butterhead (e.g. Buttercrunch)", "reason": "Quick growth and multiple cuttings possible.", "seedlingDuration": 14, "growthDuration": 30, "harvestDuration": 20, "lowerTempBound": 45, "upperTempBound": 75 },    
+        { "name": "Lavender", "variety": "English Lavender", "reason": "Attracts pollinators and has culinary uses.", "seedlingDuration": 21, "growthDuration": 90, "harvestDuration": 0, "lowerTempBound": 20, "upperTempBound": 90 },    
+        { "name": "Tomatoes", "variety": "Indeterminate (e.g. Brandywine)", "reason": "High yielding and versatile for various recipes.", "seedlingDuration": 7, "growthDuration": 75, "harvestDuration": 60, "lowerTempBound": 55, "upperTempBound": 95 },    
+        { "name": "Chamomile", "variety": "German Chamomile", "reason": "Easy to grow and can be harvested for tea.", "seedlingDuration": 14, "growthDuration": 60, "harvestDuration": 15, "lowerTempBound": 40, "upperTempBound": 80 },    
+        { "name": "Cucumbers", "variety": "Slicing Cucumber (e.g. Marketmore)", "reason": "High yield and can continue producing through the summer.", "seedlingDuration": 10, "growthDuration": 50, "harvestDuration": 30, "lowerTempBound": 55, "upperTempBound": 95 }
       ],
-    "additionalAdvice":[
-      "Prepare your raised beds by adding organic compost to improve soil quality and nutrients before planting.",
-      "Consider companion planting to maximize space and yield; for example, planting radishes together with squash can help deter pests.",
-      "Regularly monitor soil moisture, especially for turnips and radishes, which prefer consistent moisture.",
-      "Plan to harvest radishes and turnips as soon as they reach the desired size to make room for succession planting in your raised beds."
-    ]
-  }`
+    "additionalAdvice": 
+        [ "Consider succession planting for fast-growing crops like lettuce and beans to maximize yield.",    "Ensure adequate staking for beans, tomatoes, and cucumbers to maximize space in raised beds.",    "Monitor soil moisture closely, especially for melons and squashes, as they require consistent watering.",    "Plan to start sowing seeds indoors for tomatoes and lavender about 6-8 weeks before the last frost date.",    "Rotate crops annually to maintain soil health and prevent pest buildup."  ]}`
 
 export default mockCropData;
