@@ -1,6 +1,6 @@
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import { useEffect, useState } from "react";
-import { Container, useMantineTheme, Badge, Flex, Text} from "@mantine/core";
+import {Container, useMantineTheme, Badge, Flex, Text, Card} from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
 import { Planting, PlantingScheduleOutput} from '../types.ts'
@@ -82,10 +82,10 @@ const GanttChart = (props: GanttChartProps)=> {
         end: harvestEndDate,
         progress: 95 * durationBeforeHarvest / fullDuration,
         styles: {
-          backgroundColor: plotToColor[plotIndex][6],
-          backgroundSelectedColor: plotToColor[plotIndex][6],
-          progressColor: plotToColor[plotIndex][9],
-          progressSelectedColor: plotToColor[plotIndex][9],
+          backgroundColor: plotToColor[plotIndex][9],
+          backgroundSelectedColor: plotToColor[plotIndex][9],
+          progressColor: plotToColor[plotIndex][6],
+          progressSelectedColor: plotToColor[plotIndex][6],
         },
         id: `${plotIndex}, ${plantingIndex}`
       });
@@ -115,10 +115,33 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const GanttChartListTable = () => <></>
   const GanttChartListHeader = () => <></>
+  const ToolTip = (props) => {
+    const planting: Task = props.task;
+    if (!props.task) return
+
+    const formatDate = (date: Date):string =>
+      date.toDateString().split(" ")[1] + " " + date.toDateString().split(" ")[2]
+
+    return (
+      <Card withBorder>
+        <Text size="sm">
+          <b>{planting.name}</b>
+        </Text>
+        <Text size="sm">
+          Plant: {formatDate(planting.start)}
+        </Text>
+        <Text size="sm">
+          Remove: {formatDate(planting.end)}
+        </Text>
+      </Card>
+    )
+  }
+
 
   return (
     <Container className="gantt-chart" px={0} w={trueWidth}>
       <Gantt
+        TooltipContent={ToolTip}
         preStepsCount={getEarliestPlantingMonth()}
         tasks={chartItems}
         headerHeight={isSmallScreen ? 25 : undefined}
@@ -130,7 +153,7 @@ const GanttChart = (props: GanttChartProps)=> {
         TaskListHeader={GanttChartListHeader}
       />
       <Text size="sm" mb="xs" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
-        Plots are assigned by color. Highlighted regions indicate harvests.
+        Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
       </Text>
       <Flex
         gap="sm"
