@@ -4,7 +4,8 @@ import {
   MantineColorsTuple,
   MantineProvider,
   AppShell,
-  Center
+  Center,
+  Image
 } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { NavigationProgress } from '@mantine/nprogress';
@@ -97,7 +98,7 @@ function App() {
   return (
     <MantineProvider theme={theme}>
       <NavigationProgress/>
-      <AppShell header={{ height: 60 }} >
+      <AppShell header={{ height: 60 }}>
         <AppShell.Header >
           <Center>
             <Image src={LogoText} className="header-logo" alt="logo"/>
