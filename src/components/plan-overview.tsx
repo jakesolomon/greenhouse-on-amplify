@@ -20,21 +20,19 @@ const PlanOverview = (props: DataDisplayProps) => {
   const { cropData, plantingSchedule, loadingPlantingSchedule, climateData } = props;
   const { summary, crops, additionalAdvice } = cropData;
 
-  console.log(climateData)
-  console.log(!!climateData)
+  console.log(climateData);
 
   return (
-    <Container>
+    <Container px={0}>
       <Text size="xl" mb="lg">
         Gardening Plan Overview
       </Text>
       <Text size="md" mb="lg">
-        {summary}
-        <br/><br/>
+        {summary ? <>summary<br/><br/></> : null}
         {plantingSchedule?.summary}
-      </Text>
-      {
-        loadingPlantingSchedule || !plantingSchedule
+        </Text>
+        {
+          loadingPlantingSchedule || !plantingSchedule
         ? "thinking about things, plelase wait"
         : <GanttChart plantingSchedule={plantingSchedule} />
       }

@@ -100,7 +100,7 @@ function App() {
       <AppShell header={{ height: 60 }} >
         <AppShell.Header >
           <Center>
-            <img src={LogoText} className="header-logo" alt="logo"/>
+            <Image src={LogoText} className="header-logo" alt="logo"/>
           </Center>
         </AppShell.Header>
         <AppShell.Main>
