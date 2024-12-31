@@ -66,8 +66,9 @@ const GanttChart = (props: GanttChartProps)=> {
     return Math.round(timeBetween / (1000 * 60 * 60 * 24));
   }
 
+  const endOfYear = new Date("2025-12-31");
+
   const chartItems: Task[] = [];
-  let earliestPlantingDate = new Date("2025-11-31");
   plantingSchedule.plots.forEach((plot: Planting[], plotIndex: number) => {
     plot.forEach((planting: Planting, plantingIndex: number) =>{
       const transplantDate = new Date(`${planting.transplantingDate}`);
@@ -75,11 +76,14 @@ const GanttChart = (props: GanttChartProps)=> {
       const harvestEndDate = new Date(`${planting.harvestEndDate}`);
       const durationBeforeHarvest = getDaysBetween(transplantDate, harvestStartDate)
       const fullDuration = getDaysBetween(transplantDate, harvestEndDate)
+
+      const overWinters: boolean = harvestEndDate > endOfYear;
+
       chartItems.push({
         name: planting.name,
         type: "task",
         start: transplantDate,
-        end: harvestEndDate,
+        end: overWinters ? endOfYear : harvestEndDate,
         progress: 95 * durationBeforeHarvest / fullDuration,
         styles: {
           backgroundColor: plotToColor[plotIndex][9],
@@ -89,9 +93,6 @@ const GanttChart = (props: GanttChartProps)=> {
         },
         id: `${plotIndex}, ${plantingIndex}`
       });
-      if (transplantDate < earliestPlantingDate) {
-        earliestPlantingDate = transplantDate
-      }
     })
   });
 
@@ -122,6 +123,8 @@ const GanttChart = (props: GanttChartProps)=> {
     const formatDate = (date: Date):string =>
       date.toDateString().split(" ")[1] + " " + date.toDateString().split(" ")[2]
 
+    const overWinters: boolean = planting.end === endOfYear;
+
     return (
       <Card withBorder>
         <Text size="sm">
@@ -131,7 +134,9 @@ const GanttChart = (props: GanttChartProps)=> {
           Plant: {formatDate(planting.start)}
         </Text>
         <Text size="sm">
-          Remove: {formatDate(planting.end)}
+          {
+            overWinters ? "(overwinters)" : `Remove: ${formatDate(planting.end)}`
+          }
         </Text>
       </Card>
     )

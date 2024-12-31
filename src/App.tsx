@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useState } from "react";
 import {
   createTheme,
   MantineColorsTuple,
@@ -55,38 +55,32 @@ function App() {
 
   const amplifyClient = generateClient<Schema>()
 
-  useEffect(() => {
-    const requestPlantingData = async (cropData: CropDataOutput) => {
-      setIsLoadingPlantingSchedule(true)
-      while (loadingClimateData && !climateData) {
-        setTimeout('', 2000);
-      }
-      try {
-        const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
-          JSON.stringify(climateData!),
-          JSON.stringify(cropData!.crops)
-        )
-        const response =
-          await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
-        setPlantingSchedule(JSON.parse(response.data!));
-      } catch (error) {
-        console.error('Error fetching planting data:', error);
-      }
-      setIsLoadingPlantingSchedule(false)
-    };
-
-    if (cropData) {
-      requestPlantingData(cropData);
-    }
-  }, [cropData]);
+  // useEffect(() => {
+  //   const requestPlantingData = async (cropData: CropDataOutput) => {
+  //     setIsLoadingPlantingSchedule(true)
+  //     while (loadingClimateData && !climateData) {
+  //       setTimeout('', 2000);
+  //     }
+  //     try {
+  //       const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
+  //         JSON.stringify(climateData!),
+  //         JSON.stringify(cropData!.crops)
+  //       )
+  //       const response =
+  //         await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
+  //       setPlantingSchedule(JSON.parse(response.data!));
+  //     } catch (error) {
+  //       console.error('Error fetching planting data:', error);
+  //     }
+  //     setIsLoadingPlantingSchedule(false)
+  //   };
+  //
+  //   if (cropData) {
+  //     requestPlantingData(cropData);
+  //   }
+  // }, [cropData]);
 
   // TODO wrap these in a try/catch
-  const requestCropData = async (prompt: string) => {
-    setIsLoadingCropData(true)
-    const result = await amplifyClient.queries.getCropData({ prompt: prompt });
-    setCropData(JSON.parse(result.data!));
-    setIsLoadingCropData(false)
-  }
 
   const submitZipCode = async (zipCode: string) => {
     setIsLoadingClimateData(true)
@@ -94,6 +88,33 @@ function App() {
     setClimateData(JSON.parse(result.data!));
     setIsLoadingClimateData(false)
   }
+
+  const requestCropData = async (prompt: string) => {
+    setIsLoadingCropData(true)
+    const result = await amplifyClient.queries.getCropData({ prompt: prompt });
+    setCropData(JSON.parse(result.data!));
+    setIsLoadingCropData(false)
+    await requestPlantingData(JSON.parse(result.data!));
+  }
+
+  const requestPlantingData = async (cropData: CropDataOutput) => {
+    setIsLoadingPlantingSchedule(true)
+    while (loadingClimateData && !climateData) {
+      setTimeout('', 2000);
+    }
+    try {
+      const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
+        JSON.stringify(climateData!),
+        JSON.stringify(cropData!.crops)
+      )
+      const response =
+        await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
+      setPlantingSchedule(JSON.parse(response.data!));
+    } catch (error) {
+      console.error('Error fetching planting data:', error);
+    }
+    setIsLoadingPlantingSchedule(false)
+  };
 
   return (
     <MantineProvider theme={theme}>
