@@ -32,6 +32,6 @@ export const mockClimateData = `{
    { "month": "November", "temps": {"avgHigh": 51, "avgLow": 34}},
    { "month": "December", "temps": {"avgHigh": 39, "avgLow": 23}}
   ],
-  "lastSpringFrost": "May 10",
-  "firstFallFrost": "October 5"
+  "lastFrostDate": "May 10",
+  "firstFrostDate": "October 5"
 }`

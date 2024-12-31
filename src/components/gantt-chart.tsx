@@ -1,6 +1,6 @@
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
-import {useEffect, useState} from "react";
-import { Container, useMantineTheme } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { Container, useMantineTheme, Badge, Flex, Text} from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
 import { Planting, PlantingScheduleOutput} from '../types.ts'
@@ -46,28 +46,47 @@ const GanttChart = (props: GanttChartProps)=> {
     }
   });
 
-  const plotToColor = [
-    "green",
-    "blue",
-    "orange",
-    "red",
-    "purple",
-    "grey"
+  const plotToColor =   [
+    theme.colors.green,
+    theme.colors.yellow,
+    theme.colors.blue,
+    theme.colors.grape,
+    theme.colors.pink,
+    theme.colors.orange,
+    theme.colors.violet,
+    theme.colors.cyan,
+    theme.colors.red,
+    theme.colors.teal,
+    theme.colors.lime,
+    theme.colors.indigo
   ]
+
+  const getDaysBetween = (start: Date, end: Date): number => {
+    const timeBetween = start.getTime() - end.getTime();
+    return Math.round(timeBetween / (1000 * 60 * 60 * 24));
+  }
 
   const chartItems: Task[] = [];
   let earliestPlantingDate = new Date("2025-11-31");
   plantingSchedule.plots.forEach((plot: Planting[], plotIndex: number) => {
     plot.forEach((planting: Planting, plantingIndex: number) =>{
       const transplantDate = new Date(`${planting.transplantingDate}`);
-      const harvestDate = new Date(`${planting.harvestEndDate}`);
+      const harvestStartDate = new Date(`${planting.harvestStartDate}`);
+      const harvestEndDate = new Date(`${planting.harvestEndDate}`);
+      const durationBeforeHarvest = getDaysBetween(transplantDate, harvestStartDate)
+      const fullDuration = getDaysBetween(transplantDate, harvestEndDate)
       chartItems.push({
         name: planting.name,
         type: "task",
         start: transplantDate,
-        end: harvestDate,
-        progress: 0,
-        styles: {backgroundColor: plotToColor[plotIndex] ? plotToColor[plotIndex] : "black"},
+        end: harvestEndDate,
+        progress: 95 * durationBeforeHarvest / fullDuration,
+        styles: {
+          backgroundColor: plotToColor[plotIndex][6],
+          backgroundSelectedColor: plotToColor[plotIndex][6],
+          progressColor: plotToColor[plotIndex][9],
+          progressSelectedColor: plotToColor[plotIndex][9],
+        },
         id: `${plotIndex}, ${plantingIndex}`
       });
       if (transplantDate < earliestPlantingDate) {
@@ -75,6 +94,10 @@ const GanttChart = (props: GanttChartProps)=> {
       }
     })
   });
+
+  const legend = plantingSchedule.plots.map((_, index) =>
+    <Badge color={plotToColor[index][9]} size="lg" radius="sm">Plot {index + 1}</Badge>
+  )
 
   const getEarliestPlantingMonth = () => {
     let earliestPlantingDate = new Date("2025-12-31");
@@ -106,6 +129,16 @@ const GanttChart = (props: GanttChartProps)=> {
         TaskListTable={GanttChartListTable}
         TaskListHeader={GanttChartListHeader}
       />
+      <Text size="sm" mb="xs" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+        Plots are assigned by color. Highlighted regions indicate harvests.
+      </Text>
+      <Flex
+        gap="sm"
+        justify={isSmallScreen ? "flex-start" : "flex-end"}
+        wrap="wrap"
+      >
+        {legend}
+      </Flex>
     </Container>
   )
 }
