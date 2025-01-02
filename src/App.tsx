@@ -51,7 +51,6 @@ function App() {
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
 
   const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
-  const [ loadingPlantingSchedule, setIsLoadingPlantingSchedule ] = useState<boolean>(false);
 
   const amplifyClient = generateClient<Schema>()
 
@@ -73,7 +72,6 @@ function App() {
   }
 
   const requestPlantingData = async (cropData: CropDataOutput) => {
-    setIsLoadingPlantingSchedule(true)
     while (loadingClimateData && !climateData) {
       setTimeout('', 2000);
     }
@@ -88,7 +86,6 @@ function App() {
     } catch (error) {
       console.error('Error fetching planting data:', error);
     }
-    setIsLoadingPlantingSchedule(false)
   };
 
   return (
