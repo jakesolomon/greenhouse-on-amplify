@@ -127,21 +127,13 @@ function App() {
         </AppShell.Header>
         <AppShell.Main>
           {
-            cropData === undefined && !loadingCropData &&
-            <Quiz requestCropData={requestCropData} submitZipCode={submitZipCode} />
-          }
-          {
-            cropData === undefined && loadingCropData &&
-            "beep boop processing"
-          }
-          {
-            cropData !== undefined && !loadingCropData &&
-            <PlanOverview
-              cropData={cropData}
-              loadingPlantingSchedule={loadingPlantingSchedule}
-              plantingSchedule={plantingSchedule}
-              climateData={climateData}
-            />
+            cropData === undefined && !loadingCropData
+            ? <Quiz requestCropData={requestCropData} submitZipCode={submitZipCode} />
+            : <PlanOverview
+                cropData={cropData}
+                plantingSchedule={plantingSchedule}
+                climateData={climateData}
+              />
           }
         </AppShell.Main>
       </AppShell>

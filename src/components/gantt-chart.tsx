@@ -1,6 +1,6 @@
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import { useEffect, useState } from "react";
-import {Container, useMantineTheme, Badge, Flex, Text, Card} from "@mantine/core";
+import {Container, useMantineTheme, Badge, Flex, Text, Card, LoadingOverlay, Skeleton} from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
 import { Planting, PlantingScheduleOutput} from '../types.ts'
@@ -9,13 +9,16 @@ import useWindowSize from '../helpers/useWindowSize.ts';
 
 import "./gantt-chart.css";
 
+const skeletonPlantingData = {"plots":[[{"name":"","transplantingDate":"2025-03-15","harvestStartDate":"2025-04-14","harvestEndDate":"2025-04-28"},{"name":"","transplantingDate":"2025-04-29","harvestStartDate":"2025-06-13","harvestEndDate":"2025-07-04"},{"name":"","transplantingDate":"2025-07-05","harvestStartDate":"2025-08-24","harvestEndDate":"2025-09-23"},{"name":"","transplantingDate":"2025-09-24","harvestStartDate":"2025-10-15","harvestEndDate":"2025-10-22"}],[{"name":"","transplantingDate":"2025-03-15","harvestStartDate":"2025-04-05","harvestEndDate":"2025-04-12"},{"name":"","transplantingDate":"2025-05-11","harvestStartDate":"2025-07-25","harvestEndDate":"2025-09-23"},{"name":"","transplantingDate":"2025-09-24","harvestStartDate":"2025-11-08","harvestEndDate":"2025-11-29"}]],"summary":["Plot 1: Added Spinach for fall gap.","Plot 2: No suitable spring crop due to early frost risk.","Plot 3: Added Spinach for fall gap.","Plot 4: Added Radishes for spring gap.","Plot 5: Added Radishes for spring gap."]}
+
 interface GanttChartProps {
-  plantingSchedule: PlantingScheduleOutput;
+  plantingSchedule?: PlantingScheduleOutput
+  loading: boolean
 }
 
 const GanttChart = (props: GanttChartProps)=> {
 
-  const { plantingSchedule } = props;
+  const { plantingSchedule = skeletonPlantingData, loading } = props;
 
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
@@ -46,7 +49,7 @@ const GanttChart = (props: GanttChartProps)=> {
     }
   });
 
-  const plotToColor =   [
+  const plotToColor = [
     theme.colors.green,
     theme.colors.yellow,
     theme.colors.blue,
@@ -88,8 +91,8 @@ const GanttChart = (props: GanttChartProps)=> {
         styles: {
           backgroundColor: plotToColor[plotIndex][9],
           backgroundSelectedColor: plotToColor[plotIndex][9],
-          progressColor: plotToColor[plotIndex][6],
-          progressSelectedColor: plotToColor[plotIndex][6],
+          progressColor: plotToColor[plotIndex][7],
+          progressSelectedColor: plotToColor[plotIndex][7],
         },
         id: `${plotIndex}, ${plantingIndex}`
       });
@@ -97,7 +100,14 @@ const GanttChart = (props: GanttChartProps)=> {
   });
 
   const legend = plantingSchedule.plots.map((_, index) =>
-    <Badge color={plotToColor[index][9]} size="lg" radius="sm">Plot {index + 1}</Badge>
+    <Badge
+      key={index}
+      color={plotToColor[index][7]}
+      size="lg"
+      radius="sm"
+    >
+      Plot {index + 1}
+    </Badge>
   )
 
   const getEarliestPlantingMonth = () => {
@@ -144,29 +154,32 @@ const GanttChart = (props: GanttChartProps)=> {
 
 
   return (
-    <Container className="gantt-chart" px={0} w={trueWidth}>
-      <Gantt
-        TooltipContent={ToolTip}
-        preStepsCount={getEarliestPlantingMonth()}
-        tasks={chartItems}
-        headerHeight={isSmallScreen ? 25 : undefined}
-        barFill={100}
-        viewMode={ViewMode.Month}
-        rowHeight={28}
-        columnWidth={trueWidth/12}
-        TaskListTable={GanttChartListTable}
-        TaskListHeader={GanttChartListHeader}
-      />
-      <Text size="sm" mb="xs" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
-        Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
-      </Text>
-      <Flex
-        gap="sm"
-        justify={isSmallScreen ? "flex-start" : "flex-end"}
-        wrap="wrap"
-      >
-        {legend}
-      </Flex>
+    <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[5] }}/>
+      <Skeleton visible={loading}>
+        <Gantt
+          TooltipContent={ToolTip}
+          preStepsCount={getEarliestPlantingMonth()}
+          tasks={chartItems}
+          headerHeight={isSmallScreen ? 25 : undefined}
+          barFill={100}
+          viewMode={ViewMode.Month}
+          rowHeight={28}
+          columnWidth={trueWidth/12}
+          TaskListTable={GanttChartListTable}
+          TaskListHeader={GanttChartListHeader}
+        />
+        <Text size="sm" mb="xs" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+          Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
+        </Text>
+        <Flex
+          gap="sm"
+          justify={isSmallScreen ? "flex-start" : "flex-end"}
+          wrap="wrap"
+        >
+          {legend}
+        </Flex>
+      </Skeleton>
     </Container>
   )
 }

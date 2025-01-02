@@ -1,4 +1,4 @@
-import { Text, Container, Accordion } from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, List} from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -11,66 +11,73 @@ import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
 
 interface DataDisplayProps {
-  cropData: CropDataOutput;
+  cropData?: CropDataOutput;
   plantingSchedule?: PlantingScheduleOutput;
-  loadingPlantingSchedule: boolean;
   climateData?: ClimateDataOutput;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { cropData, plantingSchedule, loadingPlantingSchedule, climateData } = props;
-  const { summary, crops, additionalAdvice } = cropData;
+  const { cropData, plantingSchedule, climateData } = props;
+
+  const skeletonParagraph =
+    <>
+      <Skeleton height={10} radius="xl" />
+      <Skeleton height={10} mt={6} radius="xl" />
+      <Skeleton height={10} mt={6} width="70%" radius="xl" />
+    </>
 
   return (
     <Container px={0}>
       <Text size="xl" mb="lg">
         Plan Overview
       </Text>
-      <Text size="md" mb="lg">
-        {summary && <>{summary}<br/><br/></>}
-        {plantingSchedule?.summary}
-        </Text>
-        {
-          loadingPlantingSchedule || !plantingSchedule
-        ? "thinking about things, plelase wait"
-        : <GanttChart plantingSchedule={plantingSchedule} />
+      {
+        cropData
+          ? <Text size="md" mb="lg">{cropData.summary}</Text>
+          : <>{skeletonParagraph}<br/></>
       }
-      {/*<Card withBorder mt="md" padding="sm" radius="md">*/}
-        <Accordion mt="md">
-          {
-            climateData &&
-            <Accordion.Item value="climateData">
-              <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
-              <Accordion.Panel>
-                <ClimateChart data={climateData} />
-              </Accordion.Panel>
-            </Accordion.Item>
-          }
-          <Accordion.Item value="crops">
-            <Accordion.Control icon="🥦">Crops</Accordion.Control>
+      {
+        plantingSchedule
+          ? <Text size="md" mb="lg">{plantingSchedule.summary}</Text>
+          : <>{skeletonParagraph}<br/></>
+      }
+      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule}/>
+      <Accordion mt="md">
+        {
+          climateData &&
+          <Accordion.Item value="climateData">
+            <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
             <Accordion.Panel>
-              <CropList crops={crops}/>
+              <ClimateChart data={climateData}/>
             </Accordion.Panel>
           </Accordion.Item>
-          <Accordion.Item value="additionalAdvice">
-            <Accordion.Control icon="📝">Additional Advice</Accordion.Control>
-            <Accordion.Panel>
-              <ul>
-                {additionalAdvice.map((advice, index) => (
-                  <li key={index}>{advice}</li>
-                ))}
-              </ul>
-              {/*<Stack>*/}
-              {/*  {additionalAdvice.map((advice, index) => (*/}
-              {/*    <Card key={index} shadow="xs" padding="sm" radius="md" withBorder>*/}
-              {/*      <Text>{advice}</Text>*/}
-              {/*    </Card>*/}
-              {/*  ))}*/}
-              {/*</Stack>*/}
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
-      {/*</Card>*/}
+        }
+        <Accordion.Item value="crops">
+          <Accordion.Control icon="🥦">Crops</Accordion.Control>
+          <Accordion.Panel>
+            <CropList crops={cropData ? cropData.crops : undefined}/>
+          </Accordion.Panel>
+        </Accordion.Item>
+        <Accordion.Item value="additionalAdvice">
+          <Accordion.Control icon="📝">Additional Advice</Accordion.Control>
+          <Accordion.Panel>
+            <List>
+              {
+                cropData
+                ? cropData.additionalAdvice.map((advice, index) =>
+                    <List.Item key={index}>{advice}</List.Item>)
+                : <>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                  </>
+              }
+            </List>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
     </Container>
   );
 };

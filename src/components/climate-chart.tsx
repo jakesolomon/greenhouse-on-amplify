@@ -27,46 +27,50 @@ const ClimateChart = (props: ClimateChartProps) => {
     <Table.Th key={temperatureData.indexOf(e)}>{abbreviateMonth(e.month)}</Table.Th>
   ))
 
-  const hoizontalRows = temperatureData?.map(e => (
-    <Table.Td key={temperatureData.indexOf(e)}>
-      <Table.Tr>{e.temps.avgHigh}</Table.Tr>
-      <Table.Tr>{e.temps.avgLow}</Table.Tr>
-    </Table.Td>
+  const horizontalHighRows = temperatureData?.map(e => (
+      <Table.Td key={temperatureData.indexOf(e)}>{e.temps.avgHigh}</Table.Td>
+  ))
+
+  const horizontalLowRows = temperatureData?.map(e => (
+    <Table.Td key={temperatureData.indexOf(e)}>{e.temps.avgLow}</Table.Td>
   ))
 
   const horizontalTable = (
     <Table layout="fixed" withTableBorder>
       <Table.Thead>
         <Table.Tr>
-          <Table.Tr></Table.Tr>
+          <Table.Th></Table.Th>
           {horizontalHeaders}
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        <Table.Td>
-          <Table.Tr>{isSmallScreen ? "H" : "High"}</Table.Tr>
-          <Table.Tr>{isSmallScreen ? "L" : "Low"}</Table.Tr>
-        </Table.Td>
-        {hoizontalRows}
+        <Table.Tr>
+          <Table.Th>High</Table.Th>
+          {horizontalHighRows}
+        </Table.Tr>
+        <Table.Tr>
+          <Table.Th>Low</Table.Th>
+          {horizontalLowRows}
+        </Table.Tr>
       </Table.Tbody>
     </Table>
   )
 
   const verticalRows = temperatureData.map((element) => (
     <Table.Tr key={element.month}>
-      <Table.Td>{element.month}</Table.Td>
+      <Table.Th>{element.month}</Table.Th>
       <Table.Td>{element.temps.avgLow}</Table.Td>
-      <Table.Td>{element.temps.avgLow}</Table.Td>
+      <Table.Td>{element.temps.avgHigh}</Table.Td>
     </Table.Tr>
   ));
 
   const verticalTable = (
-    <Table>
+    <Table withTableBorder>
       <Table.Thead>
         <Table.Tr>
           <Table.Th></Table.Th>
-          <Table.Td>Low</Table.Td>
-          <Table.Td>High</Table.Td>
+          <Table.Th>Low</Table.Th>
+          <Table.Th>High</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>{verticalRows}</Table.Tbody>
@@ -78,13 +82,12 @@ const ClimateChart = (props: ClimateChartProps) => {
       <Text size="sm" mb="sm">
         Based on the ZIP code you provided, the following estimates have been made about average temperatures in your area. These predictions were then used to inform planting times.
       </Text>
-      <Text size="sm" mb="sm">Estimated date for last spring frost is <b>{data.lastFrostDate}</b>, and the first autumn frost is <b>{data.firstFrostDate}</b>.</Text>
+      <Text size="sm" mb="lg">Estimated date for last spring frost is <b>{data.lastFrostDate}</b>, and the first autumn frost is <b>{data.firstFrostDate}</b>.</Text>
       {
         isSmallScreen
           ? verticalTable
           : horizontalTable
       }
-      {/*<Text size="sm"></Text>*/}
     </Container>
   );
 };
