@@ -1,4 +1,4 @@
-import { Text, Card, Group, Badge, Stack, Container, Grid} from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, List} from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -8,71 +8,76 @@ import {
 
 import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
+import CropList from "./crop-list.tsx";
 
 interface DataDisplayProps {
-  cropData: CropDataOutput;
+  cropData?: CropDataOutput;
   plantingSchedule?: PlantingScheduleOutput;
-  loadingPlantingSchedule: boolean;
   climateData?: ClimateDataOutput;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { cropData, plantingSchedule, loadingPlantingSchedule, climateData } = props;
-  const { summary, crops, additionalAdvice } = cropData;
+  const { cropData, plantingSchedule, climateData } = props;
 
-  console.log(climateData)
-  console.log(!!climateData)
+  const skeletonParagraph =
+    <>
+      <Skeleton height={10} radius="xl" />
+      <Skeleton height={10} mt={6} radius="xl" />
+      <Skeleton height={10} mt={6} width="70%" radius="xl" />
+    </>
 
   return (
-    <Container>
+    <Container px={0}>
       <Text size="xl" mb="lg">
-        Gardening Plan Overview
-      </Text>
-      <Text size="md" mb="lg">
-        {summary}
-        <br/><br/>
-        {plantingSchedule?.summary}
+        Plan Overview
       </Text>
       {
-        loadingPlantingSchedule || !plantingSchedule
-        ? "thinking about things, plelase wait"
-        : <GanttChart plantingSchedule={plantingSchedule} />
+        cropData
+          ? <Text size="md" mb="lg">{cropData.summary}</Text>
+          : <>{skeletonParagraph}<br/></>
       }
       {
-        climateData &&
-        <ClimateChart data={climateData} />
+        plantingSchedule
+          ? <Text size="md" mb="lg">{plantingSchedule.summary}</Text>
+          : <>{skeletonParagraph}<br/></>
       }
-      <Grid>
-        {crops.map((crop, index) => (
-          <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={index}>
-            <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
-              <Stack>
-                <Text fw={500}>{crop.name} ({crop.variety})</Text>
-                <Text size="sm" c="dimmed">
-                  Reason: {crop.reason}
-                </Text>
-                <Group >
-                  <Badge>Seedling: {crop.seedlingDuration}</Badge>
-                  <Badge>Growth: {crop.growthDuration}</Badge>
-                  <Badge>Harvest: {crop.harvestDuration}</Badge>
-                  <Badge>Coldest Growth Temp: {crop.lowerTempBound}</Badge>
-                  <Badge>Hottest Growth Temprvest: {crop.upperTempBound}</Badge>
-                </Group>
-              </Stack>
-            </Card>
-          </Grid.Col>
-        ))}
-      </Grid>
-      <Text size="lg" mt="xl" mb="sm">
-        Additional Advice
-      </Text>
-      <Stack>
-        {additionalAdvice.map((advice, index) => (
-          <Card key={index} shadow="xs" padding="sm" radius="md" withBorder>
-            <Text>{advice}</Text>
-          </Card>
-        ))}
-      </Stack>
+      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule}/>
+      <Accordion mt="md">
+        {
+          climateData &&
+          <Accordion.Item value="climateData">
+            <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
+            <Accordion.Panel>
+              <ClimateChart data={climateData}/>
+            </Accordion.Panel>
+          </Accordion.Item>
+        }
+        <Accordion.Item value="crops">
+          <Accordion.Control icon="🥦">Crops</Accordion.Control>
+          <Accordion.Panel>
+            <CropList crops={cropData ? cropData.crops : undefined}/>
+          </Accordion.Panel>
+        </Accordion.Item>
+        <Accordion.Item value="additionalAdvice">
+          <Accordion.Control icon="📝">Additional Advice</Accordion.Control>
+          <Accordion.Panel>
+            <List>
+              {
+                cropData
+                ? cropData.additionalAdvice.map((advice, index) =>
+                    <List.Item key={index}>{advice}</List.Item>)
+                : <>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                  </>
+              }
+            </List>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
     </Container>
   );
 };

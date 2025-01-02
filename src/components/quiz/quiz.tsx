@@ -84,7 +84,7 @@ function Quiz(props: QuizProps) {
   }
 
   return (
-    <Container size="xl" w={500}>
+    <Container size="xl">
       <form onSubmit={form.onSubmit((values) => requestCropData(generateLlmCropDataPromptFrom(values)))}>
         {
           (formPage === 1) &&

@@ -1,10 +1,11 @@
-import {useEffect, useState} from "react";
+import { useState } from "react";
 import {
   createTheme,
   MantineColorsTuple,
   MantineProvider,
   AppShell,
-  Center
+  Center,
+  Image
 } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { NavigationProgress } from '@mantine/nprogress';
@@ -50,42 +51,10 @@ function App() {
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
 
   const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
-  const [ loadingPlantingSchedule, setIsLoadingPlantingSchedule ] = useState<boolean>(false);
 
   const amplifyClient = generateClient<Schema>()
 
-  useEffect(() => {
-    const requestPlantingData = async (cropData: CropDataOutput) => {
-      setIsLoadingPlantingSchedule(true)
-      while (loadingClimateData && !climateData) {
-        setTimeout('', 2000);
-      }
-      try {
-        const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
-          JSON.stringify(climateData!),
-          JSON.stringify(cropData!.crops)
-        )
-        const response =
-          await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
-        setPlantingSchedule(JSON.parse(response.data!));
-      } catch (error) {
-        console.error('Error fetching planting data:', error);
-      }
-      setIsLoadingPlantingSchedule(false)
-    };
-
-    if (cropData) {
-      requestPlantingData(cropData);
-    }
-  }, [cropData]);
-
   // TODO wrap these in a try/catch
-  const requestCropData = async (prompt: string) => {
-    setIsLoadingCropData(true)
-    const result = await amplifyClient.queries.getCropData({ prompt: prompt });
-    setCropData(JSON.parse(result.data!));
-    setIsLoadingCropData(false)
-  }
 
   const submitZipCode = async (zipCode: string) => {
     setIsLoadingClimateData(true)
@@ -94,32 +63,49 @@ function App() {
     setIsLoadingClimateData(false)
   }
 
+  const requestCropData = async (prompt: string) => {
+    setIsLoadingCropData(true)
+    const result = await amplifyClient.queries.getCropData({ prompt: prompt });
+    setCropData(JSON.parse(result.data!));
+    setIsLoadingCropData(false)
+    await requestPlantingData(JSON.parse(result.data!));
+  }
+
+  const requestPlantingData = async (cropData: CropDataOutput) => {
+    while (loadingClimateData && !climateData) {
+      setTimeout('', 2000);
+    }
+    try {
+      const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
+        JSON.stringify(climateData!),
+        JSON.stringify(cropData!.crops)
+      )
+      const response =
+        await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
+      setPlantingSchedule(JSON.parse(response.data!));
+    } catch (error) {
+      console.error('Error fetching planting data:', error);
+    }
+  };
+
   return (
     <MantineProvider theme={theme}>
       <NavigationProgress/>
-      <AppShell header={{ height: 60 }} >
+      <AppShell header={{ height: 60 }}>
         <AppShell.Header >
           <Center>
-            <img src={LogoText} className="header-logo" alt="logo"/>
+            <Image src={LogoText} className="header-logo" alt="logo"/>
           </Center>
         </AppShell.Header>
         <AppShell.Main>
           {
-            cropData === undefined && !loadingCropData &&
-            <Quiz requestCropData={requestCropData} submitZipCode={submitZipCode} />
-          }
-          {
-            cropData === undefined && loadingCropData &&
-            "beep boop processing"
-          }
-          {
-            cropData !== undefined && !loadingCropData &&
-            <PlanOverview
-              cropData={cropData}
-              loadingPlantingSchedule={loadingPlantingSchedule}
-              plantingSchedule={plantingSchedule}
-              climateData={climateData}
-            />
+            cropData === undefined && !loadingCropData
+            ? <Quiz requestCropData={requestCropData} submitZipCode={submitZipCode} />
+            : <PlanOverview
+                cropData={cropData}
+                plantingSchedule={plantingSchedule}
+                climateData={climateData}
+              />
           }
         </AppShell.Main>
       </AppShell>

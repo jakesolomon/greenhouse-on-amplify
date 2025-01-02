@@ -42,7 +42,7 @@ export interface UserInputs {
 }
 
 export interface PlantingScheduleOutput {
-  summary: string;
+  summary: string[];
   plots: Planting[][];
 }
 
