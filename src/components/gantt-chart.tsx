@@ -126,7 +126,7 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const GanttChartListTable = () => <></>
   const GanttChartListHeader = () => <></>
-  const ToolTip = (props) => {
+  const ToolTip = (props: { task: Task }) => {
     const planting: Task = props.task;
     if (!props.task) return
 
