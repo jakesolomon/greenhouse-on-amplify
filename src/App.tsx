@@ -1,114 +1,55 @@
-import { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
 import {
   createTheme,
-  MantineColorsTuple,
   MantineProvider,
   AppShell,
   Center,
-  Image
+  Image,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { NavigationProgress } from '@mantine/nprogress';
 import '@mantine/nprogress/styles.css';
-import { generateClient } from "aws-amplify/api"
 
-import { Schema } from "../amplify/data/resource.ts";
+import './fonts.css'
 
-import { ClimateDataOutput, CropDataOutput, PlantingScheduleOutput } from './types.ts'
-import Quiz from './components/quiz/quiz.tsx';
-import PlanOverview from './components/plan-overview.tsx';
 import LogoText from './assets/logo-text.svg'
 import './App.css'
-import { generateLlmPlantingSchedulePromptFrom } from './LLM/get-planting-schedule-prompt.ts'
+import Planner from "./planner.tsx";
+import LandingPage from "./landing-page.tsx";
 
 function App() {
 
-  const myGreen: MantineColorsTuple = [
-    '#f5fae7',
-    '#eaf1da',
-    '#d5e0b8',
-    '#becf94',
-    '#abc075',
-    '#9fb661',
-    '#98b255',
-    '#849c45',
-    '#748b3a',
-    '#63782c'
-  ];
-
   const theme = createTheme({
-    colors: {
-      myGreen
-    }
+    headings: {
+      fontFamily: "merriweather, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji",
+    },
   });
-
-  // TODO: wrap these into a useApiRequestHelper()
-
-  const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
-  const [ loadingClimateData, setIsLoadingClimateData ] = useState<boolean>(false);
-
-  const [ cropData, setCropData ] = useState<CropDataOutput>();
-  const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
-
-  const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
-
-  const amplifyClient = generateClient<Schema>()
-
-  // TODO wrap these in a try/catch
-
-  const submitZipCode = async (zipCode: string) => {
-    setIsLoadingClimateData(true)
-    const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
-    setClimateData(JSON.parse(result.data!));
-    setIsLoadingClimateData(false)
-  }
-
-  const requestCropData = async (prompt: string) => {
-    setIsLoadingCropData(true)
-    const result = await amplifyClient.queries.getCropData({ prompt: prompt });
-    setCropData(JSON.parse(result.data!));
-    setIsLoadingCropData(false)
-    await requestPlantingData(JSON.parse(result.data!));
-  }
-
-  const requestPlantingData = async (cropData: CropDataOutput) => {
-    while (loadingClimateData && !climateData) {
-      setTimeout('', 2000);
-    }
-    try {
-      const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
-        JSON.stringify(climateData!),
-        JSON.stringify(cropData!.crops)
-      )
-      const response =
-        await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
-      setPlantingSchedule(JSON.parse(response.data!));
-    } catch (error) {
-      console.error('Error fetching planting data:', error);
-    }
-  };
 
   return (
     <MantineProvider theme={theme}>
-      <NavigationProgress/>
-      <AppShell header={{ height: 60 }}>
-        <AppShell.Header >
-          <Center>
-            <Image src={LogoText} className="header-logo" alt="logo"/>
-          </Center>
-        </AppShell.Header>
-        <AppShell.Main>
-          {
-            cropData === undefined && !loadingCropData
-            ? <Quiz requestCropData={requestCropData} submitZipCode={submitZipCode} />
-            : <PlanOverview
-                cropData={cropData}
-                plantingSchedule={plantingSchedule}
-                climateData={climateData}
-              />
-          }
-        </AppShell.Main>
-      </AppShell>
+      <Router>
+        <NavigationProgress/>
+        <AppShell header={{ height: 60 }}>
+          <AppShell.Header >
+            <Center h="100%">
+              <Link to={'/'}>
+                <Image src={LogoText} className="header-logo" alt="logo" />
+              </Link>
+            </Center>
+          </AppShell.Header>
+          <AppShell.Main>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/planner" element={<Planner />} />
+              </Routes>
+          </AppShell.Main>
+        </AppShell>
+      </Router>
     </MantineProvider>
   )
 }
