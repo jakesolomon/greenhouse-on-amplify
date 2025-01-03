@@ -14,7 +14,7 @@ const CropList = (props: CropListProps) => {
   return (
     <Grid>
       {(crops ? crops : Array(5).fill(null)).map((crop, index) => (
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}  key={index}>
+        <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={index}>
           <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
             {
               crop

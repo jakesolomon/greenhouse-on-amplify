@@ -6,15 +6,16 @@ import {
 } from "react-router-dom";
 import {
   createTheme,
-  MantineColorsTuple,
   MantineProvider,
   AppShell,
   Center,
-  Image
+  Image,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { NavigationProgress } from '@mantine/nprogress';
 import '@mantine/nprogress/styles.css';
+
+import './fonts.css'
 
 import LogoText from './assets/logo-text.svg'
 import './App.css'
@@ -23,23 +24,10 @@ import LandingPage from "./landing-page.tsx";
 
 function App() {
 
-  const myGreen: MantineColorsTuple = [
-    '#f5fae7',
-    '#eaf1da',
-    '#d5e0b8',
-    '#becf94',
-    '#abc075',
-    '#9fb661',
-    '#98b255',
-    '#849c45',
-    '#748b3a',
-    '#63782c'
-  ];
-
   const theme = createTheme({
-    colors: {
-      myGreen
-    }
+    headings: {
+      fontFamily: "merriweather, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji",
+    },
   });
 
   return (
@@ -48,7 +36,7 @@ function App() {
         <NavigationProgress/>
         <AppShell header={{ height: 60 }}>
           <AppShell.Header >
-            <Center>
+            <Center h="100%">
               <Link to={'/'}>
                 <Image src={LogoText} className="header-logo" alt="logo" />
               </Link>

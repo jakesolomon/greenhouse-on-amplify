@@ -1,4 +1,4 @@
-import {Text, Container, Accordion, Skeleton, List} from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, List, Title} from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -28,9 +28,9 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   return (
     <Container px={0}>
-      <Text size="xl" mb="lg">
+      <Title mb="md">
         Plan Overview
-      </Text>
+      </Title>
       {
         cropData
           ? <Text size="md" mb="lg">{cropData.summary}</Text>
