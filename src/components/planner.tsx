@@ -52,6 +52,7 @@ const Planner = () => {
     const topVarieties: SeedVariety[] = varietyResults.map(varietyResult => ({
       trueSeedTitle: varietyResult.data.results[0].title,
       descriptionHtml: varietyResult.data.results[0].descriptionHtml,
+      storeHandle: varietyResult.data.results[0].handle,
       displayName: varietyResult.cropType.displayName,
       collectionHandle: varietyResult.cropType.collectionHandle,
       subTypeParameters: varietyResult.cropType.subTypeParameters,
@@ -93,6 +94,7 @@ const Planner = () => {
       name: result.cropVariety!.displayName,
       variety: result.cropVariety!.trueSeedTitle,
       shortDescription: result.data.shortDescription,
+      storeHandle: result.cropVariety!.storeHandle,
 
       seedlingDuration: result.data.seedlingDuration,
       growthDuration: result.data.growthDuration,

@@ -5,6 +5,7 @@ import { SelectableCropType } from './helpers/true-leaf-crop-types.ts'
 export interface SeedVariety extends SelectableCropType {
   trueSeedTitle: string;
   descriptionHtml: string;
+  storeHandle: string;
 }
 
 interface TemperatureData {
@@ -87,6 +88,7 @@ export interface Crop {
   name: string;
   variety: string;
   shortDescription: string;
+  storeHandle: string;
   seedlingDuration: number;
   growthDuration: number;
   harvestDuration: number;
