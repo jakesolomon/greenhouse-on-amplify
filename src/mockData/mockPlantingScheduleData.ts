@@ -1,4 +1,4 @@
-import { PlantingScheduleOutput} from "./types.ts";
+import { PlantingScheduleOutput} from "../types.ts";
 //
 // // Temp .4 and top p .4
 // export const mockPlantingScheduleData1: PlantingScheduleOutput =

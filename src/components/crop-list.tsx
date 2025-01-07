@@ -21,7 +21,7 @@ const CropList = (props: CropListProps) => {
               ? <Stack>
                   <Text fw={500}>{crop.name} ({crop.variety})</Text>
                   <Text size="sm" c="dimmed">
-                    Reason: {crop.reason}
+                    Reason: {crop.shortDescription}
                   </Text>
                   <Group >
                     <Badge color={theme.colors.green[9]}>Seedling: {crop.seedlingDuration}</Badge>

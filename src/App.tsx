@@ -19,8 +19,8 @@ import './fonts.css'
 
 import LogoText from './assets/logo-text.svg'
 import './App.css'
-import Planner from "./planner.tsx";
-import LandingPage from "./landing-page.tsx";
+import Planner from "./components/planner.tsx";
+import LandingPage from "./components/landing-page.tsx";
 
 function App() {
 

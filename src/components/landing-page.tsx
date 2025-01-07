@@ -15,7 +15,7 @@ import {
   IconChartBar,
   IconLeaf,
 } from '@tabler/icons-react';
-import useWindowSize from "./helpers/useWindowSize.ts";
+import useWindowSize from "../helpers/useWindowSize.ts";
 import { useState } from "react";
 
 const LandingPage = () => {
