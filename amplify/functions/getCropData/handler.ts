@@ -24,6 +24,8 @@ const CropDataOutput = z.object({
   additionalAdvice: z.array(z.string()),
 });
 
+// THIS ENDPOINT IS DEPRECATED. USE getTrueLeafSeedData and getCropDataFromTrueLeafDescriptions.
+
 export const handler: Schema["getCropData"]["functionHandler"]  = async (event) => {
 
   const openai = new OpenAI({
