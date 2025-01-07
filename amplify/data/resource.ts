@@ -31,7 +31,8 @@ const schema = a.schema({
   getPlantingScheduleData: a
     .query()
     .arguments({
-      prompt: a.string(),
+      climateData: a.string(),
+      crops: a.string()
     })
     .returns(a.string())
     .handler(a.handler.function(getPlantingScheduleData))

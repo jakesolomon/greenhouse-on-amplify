@@ -6,7 +6,6 @@ import {Schema} from "../../amplify/data/resource.ts";
 import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
 import { ClimateDataOutput, CropDataOutput, PlantingScheduleOutput, SeedVariety } from "../types.ts";
-import { generateLlmPlantingSchedulePromptFrom } from "../LLM/get-planting-schedule-prompt.ts";
 import { trueLeafCropTypes, SelectableCropType } from "../helpers/true-leaf-crop-types.ts";
 
 const Planner = () => {
@@ -124,12 +123,12 @@ const Planner = () => {
       setTimeout('', 2000);
     }
     try {
-      const plantingDataPrompt = generateLlmPlantingSchedulePromptFrom(
-        JSON.stringify(climateData!),
-        JSON.stringify(cropData!.crops)
-      )
+      const plantingScheduleRequestArguments = {
+        climateData: JSON.stringify(climateData!),
+        crops: JSON.stringify(cropData.crops)
+      }
       const response =
-        await amplifyClient.queries.getPlantingScheduleData({ prompt: plantingDataPrompt });
+        await amplifyClient.queries.getPlantingScheduleData(plantingScheduleRequestArguments);
       setPlantingSchedule(JSON.parse(response.data!));
     } catch (error) {
       console.error('Error fetching planting data:', error);
