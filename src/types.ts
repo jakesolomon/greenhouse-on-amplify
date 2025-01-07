@@ -66,7 +66,6 @@ export interface NewCrop {
   name: string; // I will supply this
   variety: string; // I will supply this
   shortDescription: string;
-  sowingMethod: 'direct' | 'indoors' | 'either'; // maybe this should just be direct or indoors. Indoors means it can be transplanted, and we prefer that.
 
   seedlingDuration: number; // 0 for direct sow. Number represents the reasonable amt of time before transplant. Might actually be able to ignore this value until month-to-month schedule is created.
   growthDuration: number; // basically, days to maturity. Starts with transplant date or direct sow date.

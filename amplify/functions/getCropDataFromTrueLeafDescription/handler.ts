@@ -12,7 +12,6 @@ const dataQuality = z.object({
 
 const Crop = z.object({
   shortDescription: z.string(),
-  sowingMethod: z.string(),
 
   seedlingDuration: z.number().int(),
   growthDuration: z.number().int(),
@@ -158,8 +157,7 @@ const dataEvaluationSystemPrompt =
   " - name (name of crop, e.g. Cabbage)\n" +
   " - variety (variety of crop, e.g. for `Squash Seeds - Summer - Zucchini Black Beauty`, put `Black Beauty`.)\n" +
   " - description (30-45 words summarizing the characteristics of the variety of crop. Focused on attractive details, as though writing a product summary to inform a first-time gardener, rather than instructions. You do not need to use complete sentences.)\n" +
-  " - sowingMethod ('direct' to indicate that a crop should be direct sown. 'indoors' to indicate if the crop can be started as seedlings and then transplanted.)\n" +
-  " - seedlingDuration (Days from seed sowing to seedling stage. 0 for direct sow.)\n" +
+  " - seedlingDuration (Days from seed sowing to when the seedling will be ready to transplant into the garden. 0 if the crop should be sown directly into the ground.)\n" +
   " - growthDuration (Sum of Days to Germination and Days to maturity)\n" +
   " - harvestDuration (See Harvest Duration Rules below)\n" +
   // " - optimalPlantingDates (Estimates of the ideal date(s) for sowing seeds, using the description and provided temperature and frost date predictions. Two dates if it is recommended to plant both a spring planting and a fall planting.)\n" +
@@ -167,8 +165,8 @@ const dataEvaluationSystemPrompt =
   // " - soilPhPreference (Optimal pH of soil)\n" +
   // " - sunlightPreference (LIGHT PREFERENCE)\n" +
   // " - frostHardy: (`true` if the crop can survive sub-freezing temperatures, `false` if not)" +
-  " - lowerTempBound: (Lower bound of TEMP PREFERENCE)\n" +
-  " - upperTempBound: (Upper bound of TEMP PREFERENCE)\n" +
+  " - lowerTempBound: (Lower bound of TEMP PREFERENCE in fahrenheit)\n" +
+  " - upperTempBound: (Upper bound of TEMP PREFERENCE in fahrenheit)\n" +
   "\n" +
   "### Harvest Duration Rules\n" +
   "- For crops that can be harvested continuously (e.g. using cut-and-come-again technique, or crops that continue to produce fruit such as cucumbers): this value is the number of days a crop can be harvested before productivity declines (e.g. bolting, weather conditions)\n" +
@@ -182,8 +180,7 @@ const dataExtractionSystemPrompt =
   "\n" +
   "### Output Properties\n" +
   " - description (30-45 words summarizing the characteristics of the variety of crop. Focused on attractive details, as though writing a product summary to inform a first-time gardener, rather than instructions. You do not need to use complete sentences.)\n" +
-  " - sowingMethod (Write 'direct' or 'indoors' indicate if the crop should be sown directly into the ground or started indoors as seedlings and then transplanted.)\n" +
-  " - seedlingDuration (Days from seed sowing to seedling stage. 0 for direct sow.)\n" +
+  " - seedlingDuration (Days from seed sowing to when the seedling will be ready to transplant into the garden. 0 if the crop should be sown directly into the ground.)\n" +
   " - growthDuration (Sum of Days to Germination and Days to maturity)\n" +
   " - harvestDuration (See Harvest Duration Rules below)\n" +
   // " - optimalPlantingDates (Using the description and provided temperature and frost date predictions, estimate the ideal date(s) for sowing seeds. If it is recommended to plant both a spring planting and a fall planting, put dates for each planting.)\n" +
@@ -191,8 +188,8 @@ const dataExtractionSystemPrompt =
   // " - soilPhPreference (Optimal pH of soil)\n" +
   // " - sunlightPreference (LIGHT PREFERENCE)\n" +
   // " - frostHardy: (`true` if the crop can survive sub-freezing temperatures, `false` if not)" +
-  " - lowerTempBound: (Lower bound of TEMP PREFERENCE)\n" +
-  " - upperTempBound: (Upper bound of TEMP PREFERENCE)\n" +
+  " - lowerTempBound: (Lower bound of TEMP PREFERENCE in fahrenheit)\n" +
+  " - upperTempBound: (Upper bound of TEMP PREFERENCE in fahrenheit)\n" +
   "\n" +
   "### Harvest Duration Rules\n" +
   "- For crops that can be harvested continuously (e.g. using cut-and-come-again technique, or crops that continue to produce fruit such as cucumbers): this value is the number of days a crop can be harvested before productivity declines (e.g. bolting, weather conditions)\n" +

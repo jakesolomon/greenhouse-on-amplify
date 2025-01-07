@@ -23,12 +23,15 @@ const CropList = (props: CropListProps) => {
                   <Text size="sm" c="dimmed">
                     Reason: {crop.shortDescription}
                   </Text>
+                  <Text size="sm" c="dimmed">
+                    Temperature Preference: {crop.lowerTempBound}–{crop.upperTempBound} &deg;F
+                  </Text>
                   <Group >
-                    <Badge color={theme.colors.green[9]}>Seedling: {crop.seedlingDuration}</Badge>
+                    <Badge color={theme.colors.green[9]}>
+                      {crop.seedlingDuration === 0 ? "Direct Sow" : `Seedling: ${crop.seedlingDuration}`}
+                    </Badge>
                     <Badge color={theme.colors.green[9]}>Growth: {crop.growthDuration}</Badge>
                     <Badge color={theme.colors.green[9]}>Harvest: {crop.harvestDuration}</Badge>
-                    <Badge color={theme.colors.green[9]}>Coldest Growth Temp: {crop.lowerTempBound}</Badge>
-                    <Badge color={theme.colors.green[9]}>Hottest Growth Temprvest: {crop.upperTempBound}</Badge>
                   </Group>
                 </Stack>
               : <>
