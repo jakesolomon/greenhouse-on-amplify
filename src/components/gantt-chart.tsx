@@ -158,7 +158,7 @@ const GanttChart = (props: GanttChartProps)=> {
 
   return (
     <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[5] }}/>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4] }}/>
       <Skeleton visible={loading}>
         <Gantt
           TooltipContent={ToolTip}
