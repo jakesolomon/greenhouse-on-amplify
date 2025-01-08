@@ -42,7 +42,7 @@ function App() {
               </Link>
             </Center>
           </AppShell.Header>
-          <AppShell.Main>
+          <AppShell.Main style={{minHeight: '85vh'}}>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/planner" element={<Planner />} />
