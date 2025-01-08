@@ -172,14 +172,13 @@ const GanttChart = (props: GanttChartProps)=> {
           TaskListTable={GanttChartListTable}
           TaskListHeader={GanttChartListHeader}
         />
-        {/*noSuccessionPlanting*/}
         <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
         {
           noSuccessionPlanting &&
           <Text size="sm" mb="xs" c="pink" style={isSmallScreen ? undefined : {textAlign: "right"}}>
-            Looks like we couldn't plant anything in succession. You may not have selected enough crops, or crops with variation in growing climate.
+            Looks like we couldn't plant anything in succession. You may not have selected enough crops, or crops with enough variation in growing climate.
           </Text>
         }
         <Flex
