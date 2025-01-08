@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { generateClient } from "aws-amplify/api";
+import {Center, Notification, Overlay, Stack} from "@mantine/core"
 
-import {Schema} from "../../amplify/data/resource.ts";
+import { Schema } from "../../amplify/data/resource.ts";
 
 import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
-import {ClimateDataOutput, Crop, PlantingScheduleOutput, SeedVariety} from "../types.ts";
+import { ClimateDataOutput, Crop, PlantingScheduleOutput, SeedVariety } from "../types.ts";
 import { trueLeafCropTypes, SelectableCropType } from "../helpers/true-leaf-crop-types.ts";
 
 const Planner = () => {
@@ -21,6 +22,9 @@ const Planner = () => {
   const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
 
   const [ scheduleSummary, setScheduleSummary ] = useState<string>();
+
+  const [ error, setError ] = useState<string>();
+
 
   const amplifyClient = generateClient<Schema>()
 
@@ -44,6 +48,7 @@ const Planner = () => {
     console.log("results: ", results)
     if (results.errors) {
       console.error("Error fetching crop varieties: ", results.errors)
+      setError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
       setIsLoadingCropData(false)
     }
 
@@ -80,6 +85,7 @@ const Planner = () => {
         return { cropVariety, data };
       } catch (error) {
         console.error(`Error fetching data for ${cropVariety.displayName}:`, error);
+        setError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
         return { error: error };
       }
     });
@@ -165,6 +171,22 @@ const Planner = () => {
               climateData={climateData}
               summary={scheduleSummary}
             />
+      }
+      { error &&
+        <Overlay blur={2}>
+          <Center>
+            <Stack justify="center" h="60vh" >
+              <Notification
+                title="Sorry, something went wrong."
+                w="22em"
+                color="red"
+                withCloseButton={false}
+              >
+                {error}
+              </Notification>
+            </Stack>
+          </Center>
+        </Overlay>
       }
     </>
   )
