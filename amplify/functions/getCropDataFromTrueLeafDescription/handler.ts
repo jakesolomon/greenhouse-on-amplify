@@ -21,7 +21,8 @@ const Crop = z.object({
   // soilTypePreference: z.string(),
   // soilPhPreference: z.string(),
   // sunlightPreference: z.string(),
-  // frostHardy: z.boolean(),
+  frostHardy: z.boolean(),
+  guidance: z.string(),
 
   lowerTempBound: z.number().int(),
   upperTempBound: z.number().int(),
@@ -148,6 +149,10 @@ export const handler: Schema["getCropDataFromTrueLeafDescription"]["functionHand
   }
 };
 
+// Note that not all the properties in the evaluation prompt match those in the extraction prompt.
+// This is because not all the information must strictly come from the variety description, and
+// we don't need to reject a variety description from missing certain data.
+
 const dataEvaluationSystemPrompt =
   "You are a helpful assistant to an AI engineer, tasked with determining the quality of information from a body of text to be extracted by an LLM.  The LLM will extract the Output Properties listed below from the body of text.\n" +
   "\n" +
@@ -165,6 +170,7 @@ const dataEvaluationSystemPrompt =
   // " - soilPhPreference (Optimal pH of soil)\n" +
   // " - sunlightPreference (LIGHT PREFERENCE)\n" +
   // " - frostHardy: (`true` if the crop can survive sub-freezing temperatures, `false` if not)" +
+  // " - guidance: (A few sentences on common issues someone may experience growing this plant, as well as how to remedy or proactively avoid them." +
   " - lowerTempBound: (Lower bound of TEMP PREFERENCE in fahrenheit)\n" +
   " - upperTempBound: (Upper bound of TEMP PREFERENCE in fahrenheit)\n" +
   "\n" +
@@ -187,7 +193,8 @@ const dataExtractionSystemPrompt =
   // " - soilTypePreference (SOIL TYPE)\n" +
   // " - soilPhPreference (Optimal pH of soil)\n" +
   // " - sunlightPreference (LIGHT PREFERENCE)\n" +
-  // " - frostHardy: (`true` if the crop can survive sub-freezing temperatures, `false` if not)" +
+  " - frostHardy: (`true` if the crop can survive sub-freezing temperatures, `false` if not)" +
+  " - guidance: (A few sentences on common issues someone may experience growing this plant, as well as how to remedy or proactively avoid them." +
   " - lowerTempBound: (Lower bound of TEMP PREFERENCE in fahrenheit)\n" +
   " - upperTempBound: (Upper bound of TEMP PREFERENCE in fahrenheit)\n" +
   "\n" +

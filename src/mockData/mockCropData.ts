@@ -1,19 +1,34 @@
-const mockCropData =
-  `{  
-    "summary": "In this planting schedule, I've selected a diverse array of crops suitable for Zone 6b given the user's goal for maximum yield and diversity. The plan includes early season crops like lettuce and beans, mid-season favorites such as tomatoes and cucumbers, as well as warm-loving crops like squash and melons that thrive in summer heat. Special attention was given to growth durations, harvest durations, and temperature tolerances to optimize the planting schedule throughout the growing season.",
-    "crops": 
+import {Crop} from "../types.ts";
+
+const mockCropData: Crop[] =
       [
-        { "name": "Corn", "variety": "Sweet Corn (e.g. Silver Queen)", "reason": "High yield and a delicious summer staple.", "seedlingDuration": 7, "growthDuration": 60, "harvestDuration": 0, "lowerTempBound": 50, "upperTempBound": 95 },    
-        { "name": "Beans", "variety": "Green Beans (e.g. Provider)", "reason": "Fast-growing and can be planted successively for extended harvest.", "seedlingDuration": 10, "growthDuration": 30, "harvestDuration": 14, "lowerTempBound": 50, "upperTempBound": 85 },    
-        { "name": "Melons", "variety": "Cantaloupe (e.g. Hales Best)", "reason": "Sweet fruits that thrive well in warm temperatures.", "seedlingDuration": 10, "growthDuration": 80, "harvestDuration": 15, "lowerTempBound": 60, "upperTempBound": 95 },    
-        { "name": "Squash", "variety": "Zucchini (e.g. Black Beauty)", "reason": "High yield and easy to grow in raised beds.", "seedlingDuration": 7, "growthDuration": 50, "harvestDuration": 25, "lowerTempBound": 60, "upperTempBound": 95 },    
-        { "name": "Lettuce", "variety": "Butterhead (e.g. Buttercrunch)", "reason": "Quick growth and multiple cuttings possible.", "seedlingDuration": 14, "growthDuration": 30, "harvestDuration": 20, "lowerTempBound": 45, "upperTempBound": 75 },    
-        { "name": "Lavender", "variety": "English Lavender", "reason": "Attracts pollinators and has culinary uses.", "seedlingDuration": 21, "growthDuration": 90, "harvestDuration": 0, "lowerTempBound": 20, "upperTempBound": 90 },    
-        { "name": "Tomatoes", "variety": "Indeterminate (e.g. Brandywine)", "reason": "High yielding and versatile for various recipes.", "seedlingDuration": 7, "growthDuration": 75, "harvestDuration": 60, "lowerTempBound": 55, "upperTempBound": 95 },    
-        { "name": "Chamomile", "variety": "German Chamomile", "reason": "Easy to grow and can be harvested for tea.", "seedlingDuration": 14, "growthDuration": 60, "harvestDuration": 15, "lowerTempBound": 40, "upperTempBound": 80 },    
-        { "name": "Cucumbers", "variety": "Slicing Cucumber (e.g. Marketmore)", "reason": "High yield and can continue producing through the summer.", "seedlingDuration": 10, "growthDuration": 50, "harvestDuration": 30, "lowerTempBound": 55, "upperTempBound": 95 }
-      ],
-    "additionalAdvice": 
-        [ "Consider succession planting for fast-growing crops like lettuce and beans to maximize yield.",    "Ensure adequate staking for beans, tomatoes, and cucumbers to maximize space in raised beds.",    "Monitor soil moisture closely, especially for melons and squashes, as they require consistent watering.",    "Plan to start sowing seeds indoors for tomatoes and lavender about 6-8 weeks before the last frost date.",    "Rotate crops annually to maintain soil health and prevent pest buildup."  ]}`
+        { "name": "Corn", "variety": "Sweet Corn (e.g. Silver Queen)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "High yield and a delicious summer staple.", "seedlingDuration": 7, "growthDuration": 60, "harvestDuration": 0, "lowerTempBound": 50, "upperTempBound": 95 },
+        { "name": "Beans", "variety": "Green Beans (e.g. Provider)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "Fast-growing and can be planted successively for extended harvest.", "seedlingDuration": 10, "growthDuration": 30, "harvestDuration": 14, "lowerTempBound": 50, "upperTempBound": 85 },
+        { "name": "Melons", "variety": "Cantaloupe (e.g. Hales Best)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "Sweet fruits that thrive well in warm temperatures.", "seedlingDuration": 10, "growthDuration": 80, "harvestDuration": 15, "lowerTempBound": 60, "upperTempBound": 95 },
+        { "name": "Squash", "variety": "Zucchini (e.g. Black Beauty)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "High yield and easy to grow in raised beds.", "seedlingDuration": 7, "growthDuration": 50, "harvestDuration": 25, "lowerTempBound": 60, "upperTempBound": 95 },
+        { "name": "Lettuce", "variety": "Butterhead (e.g. Buttercrunch)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "Quick growth and multiple cuttings possible.", "seedlingDuration": 14, "growthDuration": 30, "harvestDuration": 20, "lowerTempBound": 45, "upperTempBound": 75 },
+        { "name": "Lavender", "variety": "English Lavender", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "Attracts pollinators and has culinary uses.", "seedlingDuration": 21, "growthDuration": 90, "harvestDuration": 0, "lowerTempBound": 20, "upperTempBound": 90 },
+        { "name": "Tomatoes", "variety": "Indeterminate (e.g. Brandywine)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "High yielding and versatile for various recipes.", "seedlingDuration": 7, "growthDuration": 75, "harvestDuration": 60, "lowerTempBound": 55, "upperTempBound": 95 },
+        { "name": "Chamomile", "variety": "German Chamomile", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "Easy to grow and can be harvested for tea.", "seedlingDuration": 14, "growthDuration": 60, "harvestDuration": 15, "lowerTempBound": 40, "upperTempBound": 80 },
+        { "name": "Cucumbers", "variety": "Slicing Cucumber (e.g. Marketmore)", "storeHandle": "fake-store-handle", "frostHardy": true, "guidance": "beep boop", "shortDescription": "High yield and can continue producing through the summer.", "seedlingDuration": 10, "growthDuration": 50, "harvestDuration": 30, "lowerTempBound": 55, "upperTempBound": 95 }
+      ]
+
+// const mockCropData =
+//   `{
+//     "summary": "In this planting schedule, I've selected a diverse array of crops suitable for Zone 6b given the user's goal for maximum yield and diversity. The plan includes early season crops like lettuce and beans, mid-season favorites such as tomatoes and cucumbers, as well as warm-loving crops like squash and melons that thrive in summer heat. Special attention was given to growth durations, harvest durations, and temperature tolerances to optimize the planting schedule throughout the growing season.",
+//     "crops":
+//       [
+//         { "name": "Corn", "variety": "Sweet Corn (e.g. Silver Queen)", "reason": "High yield and a delicious summer staple.", "seedlingDuration": 7, "growthDuration": 60, "harvestDuration": 0, "lowerTempBound": 50, "upperTempBound": 95 },
+//         { "name": "Beans", "variety": "Green Beans (e.g. Provider)", "reason": "Fast-growing and can be planted successively for extended harvest.", "seedlingDuration": 10, "growthDuration": 30, "harvestDuration": 14, "lowerTempBound": 50, "upperTempBound": 85 },
+//         { "name": "Melons", "variety": "Cantaloupe (e.g. Hales Best)", "reason": "Sweet fruits that thrive well in warm temperatures.", "seedlingDuration": 10, "growthDuration": 80, "harvestDuration": 15, "lowerTempBound": 60, "upperTempBound": 95 },
+//         { "name": "Squash", "variety": "Zucchini (e.g. Black Beauty)", "reason": "High yield and easy to grow in raised beds.", "seedlingDuration": 7, "growthDuration": 50, "harvestDuration": 25, "lowerTempBound": 60, "upperTempBound": 95 },
+//         { "name": "Lettuce", "variety": "Butterhead (e.g. Buttercrunch)", "reason": "Quick growth and multiple cuttings possible.", "seedlingDuration": 14, "growthDuration": 30, "harvestDuration": 20, "lowerTempBound": 45, "upperTempBound": 75 },
+//         { "name": "Lavender", "variety": "English Lavender", "reason": "Attracts pollinators and has culinary uses.", "seedlingDuration": 21, "growthDuration": 90, "harvestDuration": 0, "lowerTempBound": 20, "upperTempBound": 90 },
+//         { "name": "Tomatoes", "variety": "Indeterminate (e.g. Brandywine)", "reason": "High yielding and versatile for various recipes.", "seedlingDuration": 7, "growthDuration": 75, "harvestDuration": 60, "lowerTempBound": 55, "upperTempBound": 95 },
+//         { "name": "Chamomile", "variety": "German Chamomile", "reason": "Easy to grow and can be harvested for tea.", "seedlingDuration": 14, "growthDuration": 60, "harvestDuration": 15, "lowerTempBound": 40, "upperTempBound": 80 },
+//         { "name": "Cucumbers", "variety": "Slicing Cucumber (e.g. Marketmore)", "reason": "High yield and can continue producing through the summer.", "seedlingDuration": 10, "growthDuration": 50, "harvestDuration": 30, "lowerTempBound": 55, "upperTempBound": 95 }
+//       ],
+//     "additionalAdvice":
+//         [ "Consider succession planting for fast-growing crops like lettuce and beans to maximize yield.",    "Ensure adequate staking for beans, tomatoes, and cucumbers to maximize space in raised beds.",    "Monitor soil moisture closely, especially for melons and squashes, as they require consistent watering.",    "Plan to start sowing seeds indoors for tomatoes and lavender about 6-8 weeks before the last frost date.",    "Rotate crops annually to maintain soil health and prevent pest buildup."  ]}`
 
 export default mockCropData;

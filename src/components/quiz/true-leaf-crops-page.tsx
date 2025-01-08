@@ -59,10 +59,11 @@ function TrueLeafCropsPage(props: CropsPageProps) {
     ));
 
   return (
-    <Container p={0}>
+    <Container p={0} >
       <Combobox store={combobox} onOptionSubmit={handleValueSelect} withinPortal={false} >
         <Combobox.DropdownTarget>
           <PillsInput
+            w="17em"
             label="What crops are you interested in growing?"
             onClick={() => combobox.openDropdown()}
             key={inputKey}

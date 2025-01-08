@@ -46,8 +46,9 @@ export interface UserInputs {
 }
 
 export interface PlantingScheduleOutput {
-  summary: string[];
+  // summary: string[];
   plots: Planting[][];
+  advice: string[];
 }
 
 export interface Planting {
@@ -57,26 +58,22 @@ export interface Planting {
   harvestEndDate: string
 }
 
-export interface CropDataOutput {
-  summary: string;
-  crops: Crop[];
-  additionalAdvice: string[];
-}
-
-export interface NewCrop {
+export interface Crop {
   name: string; // I will supply this
   variety: string; // I will supply this
   shortDescription: string;
+  storeHandle: string;
 
   seedlingDuration: number; // 0 for direct sow. Number represents the reasonable amt of time before transplant. Might actually be able to ignore this value until month-to-month schedule is created.
   growthDuration: number; // basically, days to maturity. Starts with transplant date or direct sow date.
   harvestDuration: number; // days that something can be harvested. Longer for cut-and-come-again.
 
-  optimalPlantingDates: string[]; // based on "sow ## days before frost" type language combined with climate data. // One response I got was short date ranges. This is good to allow some flexibility, it might help optimize space.
-  soilTypePreference: string;
-  soilPhPreference: string;
-  sunlightPreference: string;
+  // optimalPlantingDates: string[]; // based on "sow ## days before frost" type language combined with climate data. // One response I got was short date ranges. This is good to allow some flexibility, it might help optimize space.
+  // soilTypePreference: string;
+  // soilPhPreference: string;
+  // sunlightPreference: string;
   frostHardy: boolean;
+  guidance: string;
 
   lowerTempBound: number;
   upperTempBound: number;
@@ -84,17 +81,18 @@ export interface NewCrop {
 //   Might actually not need this ^ boolean at all if I send summarized planner info as a backup along with each description.
 }
 
-export interface Crop {
-  name: string;
-  variety: string;
-  shortDescription: string;
-  storeHandle: string;
-  seedlingDuration: number;
-  growthDuration: number;
-  harvestDuration: number;
-  lowerTempBound: number;
-  upperTempBound: number;
-}
+// Old crop object
+// export interface Crop {
+//   name: string;
+//   variety: string;
+//   shortDescription: string;
+//   storeHandle: string;
+//   seedlingDuration: number;
+//   growthDuration: number;
+//   harvestDuration: number;
+//   lowerTempBound: number;
+//   upperTempBound: number;
+// }
 
 export interface GardenArea {
   id: number;

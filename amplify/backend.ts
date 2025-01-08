@@ -5,6 +5,7 @@ import { getCropData } from './functions/getCropData/resource';
 import { getTrueLeafSeedData } from './functions/getTrueLeafSeedData/resource';
 import { getCropDataFromTrueLeafDescription } from './functions/getCropDataFromTrueLeafDescription/resource';
 import { getClimateData } from './functions/getClimateData/resource';
+import { getScheduleSummary } from './functions/getScheduleSummary/resource';
 import { getPlantingScheduleData } from './functions/getPlantingScheduleData/resource';
 
 /**
@@ -17,5 +18,6 @@ defineBackend({
   getTrueLeafSeedData,
   getCropDataFromTrueLeafDescription,
   getClimateData,
+  getScheduleSummary,
   getPlantingScheduleData
 });

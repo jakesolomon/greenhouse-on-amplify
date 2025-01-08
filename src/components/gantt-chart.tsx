@@ -20,6 +20,9 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const { plantingSchedule = skeletonPlantingData, loading } = props;
 
+  const noSuccessionPlanting = plantingSchedule?.plots.every((p) => p.length === 1);
+
+  // TODO: use mantine useQueryHook https://mantine.dev/styles/responsive/#use-media-query-hook
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
 
@@ -169,9 +172,16 @@ const GanttChart = (props: GanttChartProps)=> {
           TaskListTable={GanttChartListTable}
           TaskListHeader={GanttChartListHeader}
         />
-        <Text size="sm" mb="xs" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+        {/*noSuccessionPlanting*/}
+        <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
+        {
+          noSuccessionPlanting &&
+          <Text size="sm" mb="xs" c="pink" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+            Looks like we couldn't plant anything in succession. You may not have selected enough crops, or crops with variation in growing climate.
+          </Text>
+        }
         <Flex
           gap="sm"
           justify={isSmallScreen ? "flex-start" : "flex-end"}

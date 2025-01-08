@@ -5,7 +5,7 @@ import {Schema} from "../../amplify/data/resource.ts";
 
 import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
-import { ClimateDataOutput, CropDataOutput, PlantingScheduleOutput, SeedVariety } from "../types.ts";
+import {ClimateDataOutput, Crop, PlantingScheduleOutput, SeedVariety} from "../types.ts";
 import { trueLeafCropTypes, SelectableCropType } from "../helpers/true-leaf-crop-types.ts";
 
 const Planner = () => {
@@ -15,10 +15,12 @@ const Planner = () => {
   const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
   const [ loadingClimateData, setIsLoadingClimateData ] = useState<boolean>(false);
 
-  const [ cropData, setCropData ] = useState<CropDataOutput>();
+  const [ cropData, setCropData ] = useState<Crop[]>();
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
 
   const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
+
+  const [ scheduleSummary, setScheduleSummary ] = useState<string>();
 
   const amplifyClient = generateClient<Schema>()
 
@@ -39,6 +41,7 @@ const Planner = () => {
 
     // Get list of varieties for each crop type (TrueLeaf)
     const results = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops)})
+    console.log("results: ", results)
     if (results.errors) {
       console.error("Error fetching crop varieties: ", results.errors)
       setIsLoadingCropData(false)
@@ -99,39 +102,55 @@ const Planner = () => {
       growthDuration: result.data.growthDuration,
       harvestDuration: result.data.harvestDuration,
 
+      frostHardy: result.data.frostHardy,
+      guidance: result.data.guidance,
+
       lowerTempBound: result.data.lowerTempBound,
       upperTempBound: result.data.upperTempBound
     }))
 
-    const cropData = {
-      summary: "Summy of the plan",
-      crops: cropsWithData,
-      additionalAdvice: [
-        "peepee",
-        "poopoo"
-      ]
-    }
-
-    setCropData(cropData)
+    setCropData(cropsWithData)
     setIsLoadingCropData(false)
 
-    await requestPlantingData(cropData);
+    console.log("cropsWithData: ", cropsWithData)
+
+    await requestPlantingData(cropsWithData);
+    await requestScheduleSummary(cropsWithData);
   }
 
-  const requestPlantingData = async (cropData: CropDataOutput) => {
+  const requestPlantingData = async (cropData: Crop[]) => {
     while (loadingClimateData && !climateData) {
       setTimeout('', 2000);
     }
     try {
       const plantingScheduleRequestArguments = {
         climateData: JSON.stringify(climateData!),
-        crops: JSON.stringify(cropData.crops)
+        crops: JSON.stringify(cropData)
       }
       const response =
         await amplifyClient.queries.getPlantingScheduleData(plantingScheduleRequestArguments);
+      console.log(JSON.parse(response.data!))
       setPlantingSchedule(JSON.parse(response.data!));
     } catch (error) {
       console.error('Error fetching planting data:', error);
+    }
+  };
+
+  const requestScheduleSummary = async (cropData: Crop[]) => {
+    while (loadingClimateData && !climateData) {
+      setTimeout('', 2000);
+    }
+    try {
+      const scheduleSummaryRequestArguments = {
+        climateData: JSON.stringify(climateData!),
+        crops: JSON.stringify(cropData)
+      }
+      const response =
+        await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
+      console.log(response)
+      setScheduleSummary(response.data!);
+    } catch (error) {
+      console.error('Error fetching schedule summary:', error);
     }
   };
 
@@ -141,9 +160,10 @@ const Planner = () => {
         cropData === undefined && !loadingCropData
           ? <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} />
           : <PlanOverview
-              cropData={cropData}
+              crops={cropData}
               plantingSchedule={plantingSchedule}
               climateData={climateData}
+              summary={scheduleSummary}
             />
       }
     </>

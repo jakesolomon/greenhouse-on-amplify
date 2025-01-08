@@ -1,4 +1,4 @@
-import {Text, Card, Group, Stack, Grid, Badge, Skeleton, useMantineTheme, Anchor, Button} from '@mantine/core';
+import {Text, Card, Group, Grid, Badge, Skeleton, useMantineTheme, Anchor, Button, Stack} from '@mantine/core';
 
 import { Crop } from '../types.ts'
 
@@ -34,7 +34,7 @@ const CropList = (props: CropListProps) => {
                     <Badge color={theme.colors.green[9]}>Harvest: {crop.harvestDuration}</Badge>
                   </Group>
                   <Anchor href={"https://trueleafmarket.com/products/" + crop.storeHandle} target="_blank">
-                    <Button>
+                    <Button variant="light" color={theme.colors.green[7]} >
                       Buy Seeds
                     </Button>
                   </Anchor>
