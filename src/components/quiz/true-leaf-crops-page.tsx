@@ -101,7 +101,7 @@ function TrueLeafCropsPage(props: CropsPageProps) {
           </Combobox.Options>
         </Combobox.Dropdown>
       </Combobox>
-      <Box style={{transition: ".25s", height: isDropdownOpen ? "212px" : "0px"}}/>
+      <Box style={{transition: ".2s", transitionDelay: ".2s", height: isDropdownOpen ? "212px" : "0px"}}/>
     </Container>
   );
 }
