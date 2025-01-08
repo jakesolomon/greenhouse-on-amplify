@@ -9,6 +9,7 @@ import {
 import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
+import {useState} from "react";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -19,6 +20,15 @@ interface DataDisplayProps {
 
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary } = props;
+
+  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(!!crops);
+
+  if (fakeLoading) {
+    setTimeout(() => {
+      setIsFakeLoading(false)
+    }, 600);
+  }
+
 
   const skeletonParagraph =
     <>
@@ -47,7 +57,7 @@ const PlanOverview = (props: DataDisplayProps) => {
       {/*    : <>{skeletonParagraph}<br/></>*/}
       {/*}*/}
       {
-        summary
+        summary && !fakeLoading
           ? <Text size="md" mb="lg">{summary}</Text>
           : <>{skeletonParagraph}<br/></>
       }
@@ -73,7 +83,7 @@ const PlanOverview = (props: DataDisplayProps) => {
           <Accordion.Panel>
             <List>
               {
-                plantingSchedule
+                plantingSchedule && !fakeLoading
                 ? plantingSchedule.advice.map((advice, index) =>
                     <List.Item key={index}>{advice}</List.Item>)
                 : <>

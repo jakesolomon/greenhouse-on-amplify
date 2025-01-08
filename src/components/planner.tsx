@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { generateClient } from "aws-amplify/api";
-import {Center, Notification, Overlay, Stack} from "@mantine/core"
+import { Center, Notification, Overlay, Stack } from "@mantine/core"
 
 import { Schema } from "../../amplify/data/resource.ts";
 
@@ -8,6 +8,7 @@ import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
 import { ClimateDataOutput, Crop, PlantingScheduleOutput, SeedVariety } from "../types.ts";
 import { trueLeafCropTypes, SelectableCropType } from "../helpers/true-leaf-crop-types.ts";
+import FakeQuizQuestion from "./quiz/fake-quiz-question.tsx";
 
 const Planner = () => {
 
@@ -24,6 +25,8 @@ const Planner = () => {
   const [ scheduleSummary, setScheduleSummary ] = useState<string>();
 
   const [ error, setError ] = useState<string>();
+
+  const [ proceedToPlan, setProceedToPlan ] = useState<boolean>(false);
 
 
   const amplifyClient = generateClient<Schema>()
@@ -163,14 +166,21 @@ const Planner = () => {
   return(
     <>
       {
-        cropData === undefined && !loadingCropData
-          ? <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} />
-          : <PlanOverview
-              crops={cropData}
-              plantingSchedule={plantingSchedule}
-              climateData={climateData}
-              summary={scheduleSummary}
-            />
+        cropData === undefined && !loadingCropData &&
+        <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} />
+      }
+      {
+        !proceedToPlan && !(cropData === undefined && !loadingCropData) &&
+        <FakeQuizQuestion proceed={() => setProceedToPlan(true)} />
+      }
+      {
+        proceedToPlan && !(cropData === undefined && !loadingCropData) &&
+        <PlanOverview
+          crops={cropData}
+          plantingSchedule={plantingSchedule}
+          climateData={climateData}
+          summary={scheduleSummary}
+        />
       }
       { error &&
         <Overlay blur={2}>

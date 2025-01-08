@@ -65,8 +65,8 @@ function Quiz(props: QuizProps) {
   }
 
   return (
-    <Container size="xl">
-      <Flex>
+    <Container size="xl" pt="xl">
+      <Flex align="center">
         <form onSubmit={form.onSubmit((values) => getAllCropData(values.crops))}>
           {
             (formPage === 1) &&
@@ -101,7 +101,7 @@ function Quiz(props: QuizProps) {
                 type="submit"
                 disabled={!enableContinue}
               >
-                Submit
+                Next
               </Button>
             }
           </Group>
