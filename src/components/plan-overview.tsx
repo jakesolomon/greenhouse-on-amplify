@@ -9,7 +9,7 @@ import {
 import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -21,13 +21,13 @@ interface DataDisplayProps {
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary } = props;
 
-  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(!!crops);
+  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
 
-  if (fakeLoading) {
+  useEffect(() => {
     setTimeout(() => {
       setIsFakeLoading(false)
-    }, 600);
-  }
+    }, 1700);
+  }, []);
 
 
   const skeletonParagraph =
@@ -43,7 +43,7 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Title mb="md">
         Plan Overview
       </Title>
-      <Text size="md" mb="lg">
+      <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
         {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
         Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
       </Text>
@@ -52,7 +52,7 @@ const PlanOverview = (props: DataDisplayProps) => {
           ? <Text size="md" mb="lg">{summary}</Text>
           : <>{skeletonParagraph}<br/></>
       }
-      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule}/>
+      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule || fakeLoading}/>
       <Accordion mt="md">
         {
           climateData &&

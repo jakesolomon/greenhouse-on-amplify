@@ -12,8 +12,7 @@ import {
   Image,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { NavigationProgress } from '@mantine/nprogress';
-import '@mantine/nprogress/styles.css';
+import { ToastContainer } from 'react-toastify';
 
 import './fonts.css'
 
@@ -32,8 +31,8 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
+      <ToastContainer autoClose={false} position='top-right'/>
       <Router>
-        <NavigationProgress/>
         <AppShell header={{ height: 60 }}>
           <AppShell.Header >
             <Center h="100%">

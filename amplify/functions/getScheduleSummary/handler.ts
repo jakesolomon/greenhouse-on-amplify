@@ -38,10 +38,10 @@ export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (
 };
 
 const systemPrompt =
-  "You are a gardening assistant tasked with summarizing a planting schedule for a new home vegetable gardener. Below is a summary of predicted climate conditions, and a set of crops and varieties that have been selected to use in a user's gardening plan. Provide a 30-55 word summary of what the gardener can expect in both growing and harvesting. This summary does not require context, as there will be an introduction paragraph for the user to read before the summary.\n" +
+  "You are a helpful assistant tasked with summarizing a planting schedule for a new home vegetable gardener. Below is a summary of predicted climate conditions, and a set of crops and varieties that have been selected to use in a user's gardening plan. Provide a 30-55 word summary of what the gardener can expect in both growing and harvesting. This summary does not require context, as there will be an introduction paragraph for the user to read before the summary.\n" +
   "\n" +
   "### Guidelines\n" +
-  " - The audience of this summary is a home gardener who has just created a garden plan and is seeing it for the first time. Be informative and engaging, and not too verbose." +
+  " - The audience of this summary is a home gardener who has just created a garden plan and is seeing it for the first time. Be informative and not too verbose." +
   " - Reference specific crops or varieties included in their plan.\n" +
   " - Focus on chronological growing and harvesting events, so that the summary reads a bit like a very short story about the harvests of the year to come.\n" +
   // " - Focus on how the types, timings, and durations of harvests will affect the overall garden production throughout the year." +

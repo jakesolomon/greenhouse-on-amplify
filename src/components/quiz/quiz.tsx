@@ -7,7 +7,6 @@ import {
   Flex
 } from '@mantine/core';
 import { useForm, useField } from "@mantine/form";
-import { nprogress } from '@mantine/nprogress';
 
 import { UserInputs } from "../../types.ts";
 
@@ -27,7 +26,6 @@ function Quiz(props: QuizProps) {
 
   const nextFormPage = () => {
     setFormPage(formPage + 1);
-    nprogress.set((formPage)/numberOfPages * 100)
   }
 
   const form = useForm<UserInputs>({
@@ -50,7 +48,6 @@ function Quiz(props: QuizProps) {
   const currentInputIsValid = form.isValid(currentInput);
   const currentInputIsDirty = form.isDirty(currentInput);
   const enableContinue = currentInputIsValid && currentInputIsDirty
-  const numberOfPages = Object.keys(formInputByPage).length;
   const isFirstPage = formPage === 1;
 
   const zipCodeRegex = /^\d{5}(-\d{4})?$/;

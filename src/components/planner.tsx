@@ -1,6 +1,7 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { generateClient } from "aws-amplify/api";
 import { Center, Notification, Overlay, Stack } from "@mantine/core"
+import { toast } from 'react-toastify';
 
 import { Schema } from "../../amplify/data/resource.ts";
 
@@ -21,13 +22,14 @@ const Planner = () => {
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
 
   const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
+  const [ loadingPlantingSchedule, setLoadingPlantingSchedule ] = useState<boolean>(false);
 
   const [ scheduleSummary, setScheduleSummary ] = useState<string>();
+  const [ loadingScheduleSummary, setLoadingScheduleSummary ] = useState<boolean>(false);
 
-  const [ error, setError ] = useState<string>();
+  const [ fatalError, setFatalError ] = useState<string>();
 
   const [ proceedToPlan, setProceedToPlan ] = useState<boolean>(false);
-
 
   const amplifyClient = generateClient<Schema>()
 
@@ -47,26 +49,26 @@ const Planner = () => {
     const crops: SelectableCropType[] = cropNames.map(cropName => trueLeafCropTypes[cropName])
 
     // Get list of varieties for each crop type (TrueLeaf)
-    const results = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops)})
-    console.log("results: ", results)
-    if (results.errors) {
-      console.error("Error fetching crop varieties: ", results.errors)
-      setError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
+    const varietyResponse = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops)})
+    if (varietyResponse.errors || !varietyResponse.data) {
+      console.error("Error fetching crop varieties: ", varietyResponse.errors)
+      setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
       setIsLoadingCropData(false)
+      return
     }
 
-    const varietyResults = JSON.parse(results.data!)
+    const varietyResults = JSON.parse(varietyResponse.data)
     console.log("varieties: ", varietyResults)
 
     // TODO: need to see what happens if a general data handle doesn't come back? Or subTypeParameters?
-    const topVarieties: SeedVariety[] = varietyResults.map(varietyResult => ({
-      trueSeedTitle: varietyResult.data.results[0].title,
-      descriptionHtml: varietyResult.data.results[0].descriptionHtml,
-      storeHandle: varietyResult.data.results[0].handle,
-      displayName: varietyResult.cropType.displayName,
-      collectionHandle: varietyResult.cropType.collectionHandle,
-      subTypeParameters: varietyResult.cropType.subTypeParameters,
-      generalDataHandle: varietyResult.cropType.generalDataHandle
+    const topVarieties: SeedVariety[] = varietyResults.map(variety => ({
+      trueSeedTitle: variety.data.results[0]?.title,
+      descriptionHtml: variety.data.results[0]?.descriptionHtml,
+      storeHandle: variety.data.results[0]?.handle,
+      displayName: variety.cropType.displayName,
+      collectionHandle: variety.cropType.collectionHandle,
+      subTypeParameters: variety.cropType.subTypeParameters,
+      generalDataHandle: variety.cropType.generalDataHandle
     }))
     console.log("topVarieties: ", topVarieties)
 
@@ -77,19 +79,16 @@ const Planner = () => {
           userMessage: cropVariety.descriptionHtml
         });
 
-        // Causes linting warning: 'throw' of exception caught locally
-        // TODO: This is probably not the right way to do this
         if (response.errors) {
-          throw new Error(`Failed to fetch data for ${cropVariety.displayName}: ${response.errors[0].message}`);
+          console.error(response.errors);
+          return { cropVariety, data: null }
         }
 
         const data = JSON.parse(response.data!)
-        console.log("data: ", data);
         return { cropVariety, data };
       } catch (error) {
         console.error(`Error fetching data for ${cropVariety.displayName}:`, error);
-        setError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
-        return { error: error };
+        return { cropVariety, error: error };
       }
     });
 
@@ -97,6 +96,14 @@ const Planner = () => {
 
     const successfulResults = allCropData.filter(result => !result.error);
     const failedResults = allCropData.filter(result => result.error);
+    if (successfulResults.length === 0) {
+      setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
+    }
+    if (failedResults.length > 0) {
+      const failedCropNames = failedResults.map(result => result.cropVariety.displayName)
+      console.error("Failed to extract data from crops: " + failedCropNames.join(", "))
+      toast.error(`We couldn't get planting requirements for ${failedCropNames.length === 1 ? "one" : "some"} of the crops you selected: ` + failedCropNames.join(", "))
+    }
 
     console.log("Successful results:", successfulResults);
     console.log("Failed results:", failedResults);
@@ -120,35 +127,28 @@ const Planner = () => {
 
     setCropData(cropsWithData)
     setIsLoadingCropData(false)
-
-    console.log("cropsWithData: ", cropsWithData)
-
-    await requestPlantingData(cropsWithData);
-    await requestScheduleSummary(cropsWithData);
   }
 
-  const requestPlantingData = async (cropData: Crop[]) => {
-    while (loadingClimateData && !climateData) {
-      setTimeout('', 2000);
-    }
+  const requestPlantingData = async () => {
+    setLoadingPlantingSchedule(true)
     try {
       const plantingScheduleRequestArguments = {
-        climateData: JSON.stringify(climateData!),
+        climateData: JSON.stringify(climateData),
         crops: JSON.stringify(cropData)
       }
       const response =
         await amplifyClient.queries.getPlantingScheduleData(plantingScheduleRequestArguments);
-      console.log(JSON.parse(response.data!))
+      console.log("requestPlantingData: ", JSON.parse(response.data!))
       setPlantingSchedule(JSON.parse(response.data!));
     } catch (error) {
       console.error('Error fetching planting data:', error);
+    } finally {
+      setLoadingPlantingSchedule(false);
     }
   };
 
-  const requestScheduleSummary = async (cropData: Crop[]) => {
-    while (loadingClimateData && !climateData) {
-      setTimeout('', 2000);
-    }
+  const requestScheduleSummary = async () => {
+    setLoadingScheduleSummary(true)
     try {
       const scheduleSummaryRequestArguments = {
         climateData: JSON.stringify(climateData!),
@@ -156,12 +156,29 @@ const Planner = () => {
       }
       const response =
         await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
-      console.log(response)
+      console.log("requestScheduleSummary: ", response)
       setScheduleSummary(response.data!);
     } catch (error) {
       console.error('Error fetching schedule summary:', error);
+    } finally {
+      setLoadingScheduleSummary(false)
     }
   };
+
+  // Request planting data and schedule summary once climate data and crop data return
+  useEffect(() => {
+    if (
+      !!climateData && // Climate data exists
+      !!cropData && // Crop data exists
+      !loadingPlantingSchedule && // We aren't already loading planting schedule
+      !plantingSchedule && // We don't already have a planting schedule
+      !loadingScheduleSummary && // We aren't already loading a schedule summary
+      !scheduleSummary // We don't already have a schedule summary
+    ) {
+      requestPlantingData();
+      requestScheduleSummary();
+    }
+  }, [climateData, cropData, requestPlantingData, requestScheduleSummary]);
 
   return(
     <>
@@ -182,7 +199,7 @@ const Planner = () => {
           summary={scheduleSummary}
         />
       }
-      { error &&
+      { fatalError &&
         <Overlay blur={2}>
           <Center>
             <Stack justify="center" h="60vh" >
@@ -192,7 +209,7 @@ const Planner = () => {
                 color="red"
                 withCloseButton={false}
               >
-                {error}
+                {fatalError}
               </Notification>
             </Stack>
           </Center>

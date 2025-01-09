@@ -26,7 +26,7 @@ const LandingPage = () => {
 
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
-  const isSmallScreen = trueWidth.toString() < theme.breakpoints.lg
+  const isSmallScreen = trueWidth.toString() < theme.breakpoints.xl
 
   const faqData = [
     {
@@ -70,7 +70,7 @@ const LandingPage = () => {
             <Grid.Col>
               {/*<Title order={1}>Your AI-Powered Vegetable Garden Planner</Title>*/}
               {/*<Title order={1}>Your Vegetable Garden Plan, In Seconds</Title>*/}
-              <Title order={1} style={{fontSize: isSmallScreen ? "2.3rem" : "3.8rem"}} >Your Vegetable Garden, {!isSmallScreen && <br/>}Planned In Seconds</Title>
+              <Title order={1} style={{fontSize: isSmallScreen ? "2.3rem" : "3.8rem"}} >Your Vegetable Garden Plan, {<br/>}In Under A Minute</Title>
               <Text size="lg" mt="md">
                 {/*Tailored planting schedules for your goals and space—made effortless with AI.*/}
                 Personalized plans for a thriving vegetable garden—made effortless with AI.
