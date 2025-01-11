@@ -90,7 +90,7 @@ const GanttChart = (props: GanttChartProps)=> {
         type: "task",
         start: transplantDate,
         end: overWinters ? endOfYear : harvestEndDate,
-        progress: 95 * durationBeforeHarvest / fullDuration,
+        progress: overWinters ? 100 : 95 * durationBeforeHarvest / fullDuration,
         styles: {
           backgroundColor: plotToColor[plotIndex][9],
           backgroundSelectedColor: plotToColor[plotIndex][9],
