@@ -1,6 +1,10 @@
 import fetch from 'node-fetch'; // For Node.js < 18. Use global fetch for Node.js 18+.
+import { Logger } from "@aws-lambda-powertools/logger";
+
 import { Schema } from "../../data/resource";
 import {SearchParameter, SelectableCropType} from "../../../src/helpers/true-leaf-crop-types";
+
+const logger = new Logger({ serviceName: "getPlantingScheduleData" });
 
 export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async (event) => {
 
@@ -36,16 +40,10 @@ export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async 
         body: formData,
       });
 
-      // Causes linting warning: 'throw' of exception caught locally
-      // TODO: This is probably not the right way to do this
-      if (!response.ok) {
-        throw new Error(`Failed to fetch data for ${cropType}: ${response.statusText}`);
-      }
-
       const data = await response.json();
       return { cropType, data }; // Return crop type and data for tracking
     } catch (error) {
-      console.error(`Error fetching data for ${cropType.displayName}:`, error);
+      logger.error(`Error fetching data for ${cropType.displayName}.`, error as Error);
       return { cropType, error: error }; // Return error info for tracking
     }
   });
