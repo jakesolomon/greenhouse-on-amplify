@@ -12,15 +12,14 @@ import {
   Image,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { NavigationProgress } from '@mantine/nprogress';
-import '@mantine/nprogress/styles.css';
+import { ToastContainer } from 'react-toastify';
 
 import './fonts.css'
 
 import LogoText from './assets/logo-text.svg'
 import './App.css'
-import Planner from "./planner.tsx";
-import LandingPage from "./landing-page.tsx";
+import Planner from "./components/planner.tsx";
+import LandingPage from "./components/landing-page.tsx";
 
 function App() {
 
@@ -32,8 +31,8 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
+      <ToastContainer autoClose={false} position='top-right'/>
       <Router>
-        <NavigationProgress/>
         <AppShell header={{ height: 60 }}>
           <AppShell.Header >
             <Center h="100%">
@@ -42,7 +41,7 @@ function App() {
               </Link>
             </Center>
           </AppShell.Header>
-          <AppShell.Main>
+          <AppShell.Main style={{minHeight: '85vh'}}>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/planner" element={<Planner />} />

@@ -20,6 +20,9 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const { plantingSchedule = skeletonPlantingData, loading } = props;
 
+  const noSuccessionPlanting = plantingSchedule?.plots.every((p) => p.length === 1);
+
+  // TODO: use mantine useQueryHook https://mantine.dev/styles/responsive/#use-media-query-hook
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
 
@@ -87,7 +90,7 @@ const GanttChart = (props: GanttChartProps)=> {
         type: "task",
         start: transplantDate,
         end: overWinters ? endOfYear : harvestEndDate,
-        progress: 95 * durationBeforeHarvest / fullDuration,
+        progress: overWinters ? 100 : 95 * durationBeforeHarvest / fullDuration,
         styles: {
           backgroundColor: plotToColor[plotIndex][9],
           backgroundSelectedColor: plotToColor[plotIndex][9],
@@ -155,7 +158,7 @@ const GanttChart = (props: GanttChartProps)=> {
 
   return (
     <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[5] }}/>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4] }}/>
       <Skeleton visible={loading}>
         <Gantt
           TooltipContent={ToolTip}
@@ -169,9 +172,15 @@ const GanttChart = (props: GanttChartProps)=> {
           TaskListTable={GanttChartListTable}
           TaskListHeader={GanttChartListHeader}
         />
-        <Text size="sm" mb="xs" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+        <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
+        {
+          noSuccessionPlanting &&
+          <Text size="sm" mb="xs" c="pink" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+            Looks like we couldn't plant anything in succession. You may not have selected enough crops, or crops with enough variation in growing climate.
+          </Text>
+        }
         <Flex
           gap="sm"
           justify={isSmallScreen ? "flex-start" : "flex-end"}

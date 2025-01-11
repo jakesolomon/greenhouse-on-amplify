@@ -2,26 +2,38 @@ import {Text, Container, Accordion, Skeleton, List, Title} from '@mantine/core';
 
 import {
   ClimateDataOutput,
-  CropDataOutput,
+  Crop,
   PlantingScheduleOutput
 } from '../types.ts'
 
 import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
+import {useEffect, useState} from "react";
 
 interface DataDisplayProps {
-  cropData?: CropDataOutput;
+  crops?: Crop[];
   plantingSchedule?: PlantingScheduleOutput;
   climateData?: ClimateDataOutput;
+  summary?: string;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { cropData, plantingSchedule, climateData } = props;
+  const { crops, plantingSchedule, climateData, summary } = props;
+
+  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsFakeLoading(false)
+    }, 1700);
+  }, []);
+
 
   const skeletonParagraph =
     <>
       <Skeleton height={10} radius="xl" />
+      <Skeleton height={10} mt={6} radius="xl" />
       <Skeleton height={10} mt={6} radius="xl" />
       <Skeleton height={10} mt={6} width="70%" radius="xl" />
     </>
@@ -31,17 +43,16 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Title mb="md">
         Plan Overview
       </Title>
+      <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
+        {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
+        Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
+      </Text>
       {
-        cropData
-          ? <Text size="md" mb="lg">{cropData.summary}</Text>
+        summary && !fakeLoading
+          ? <Text size="md" mb="lg">{summary}</Text>
           : <>{skeletonParagraph}<br/></>
       }
-      {
-        plantingSchedule
-          ? <Text size="md" mb="lg">{plantingSchedule.summary}</Text>
-          : <>{skeletonParagraph}<br/></>
-      }
-      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule}/>
+      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule || fakeLoading}/>
       <Accordion mt="md">
         {
           climateData &&
@@ -55,7 +66,7 @@ const PlanOverview = (props: DataDisplayProps) => {
         <Accordion.Item value="crops">
           <Accordion.Control icon="🥦">Crops</Accordion.Control>
           <Accordion.Panel>
-            <CropList crops={cropData ? cropData.crops : undefined}/>
+            <CropList crops={crops}/>
           </Accordion.Panel>
         </Accordion.Item>
         <Accordion.Item value="additionalAdvice">
@@ -63,8 +74,8 @@ const PlanOverview = (props: DataDisplayProps) => {
           <Accordion.Panel>
             <List>
               {
-                cropData
-                ? cropData.additionalAdvice.map((advice, index) =>
+                plantingSchedule && !fakeLoading
+                ? plantingSchedule.advice.map((advice, index) =>
                     <List.Item key={index}>{advice}</List.Item>)
                 : <>
                     <Skeleton height={10} width="70%" mb={14} radius="xl"/>
