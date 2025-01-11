@@ -19,7 +19,7 @@ const CropList = (props: CropListProps) => {
             {
               crop
               ? <Stack>
-                  <Text fw={500}>{crop.name} ({crop.variety})</Text>
+                  <Text fw={500}>{crop.name} {crop.variety && crop.variety}</Text>
                   <Text size="sm" c="dimmed">
                     {crop.shortDescription}
                   </Text>
@@ -33,11 +33,14 @@ const CropList = (props: CropListProps) => {
                     <Badge color={theme.colors.green[9]}>Growth: {crop.growthDuration}</Badge>
                     <Badge color={theme.colors.green[9]}>Harvest: {crop.harvestDuration}</Badge>
                   </Group>
-                  <Anchor href={"https://trueleafmarket.com/products/" + crop.storeHandle} target="_blank">
-                    <Button variant="light" color={theme.colors.green[7]} >
-                      Buy Seeds
-                    </Button>
-                  </Anchor>
+                  {
+                    crop.storeHandle &&
+                    <Anchor href={"https://trueleafmarket.com/products/" + crop.storeHandle} target="_blank">
+                      <Button variant="light" color={theme.colors.green[7]} >
+                        Buy Seeds
+                      </Button>
+                    </Anchor>
+                  }
                 </Stack>
               : <>
                   <Skeleton height={10} mt={10} radius="xl" />

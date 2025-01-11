@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getPlantingScheduleData';
+import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
 
@@ -19,6 +20,8 @@ const PlantingScheduleOutput = z.object({
   plots: z.array(z.array(Planting)),
   advice: z.array(z.string()),
 });
+
+const logger = new Logger({ serviceName: "getPlantingScheduleData" });
 
 export const handler: Schema["getPlantingScheduleData"]["functionHandler"]  = async (event) => {
 
@@ -51,7 +54,7 @@ export const handler: Schema["getPlantingScheduleData"]["functionHandler"]  = as
 
   const plantingScheduleOutput = completion.choices[0].message;
   if (plantingScheduleOutput.refusal) {
-    console.log(plantingScheduleOutput.refusal);
+    logger.error("Planting schedule data request to LLM refused.", plantingScheduleOutput.refusal);
   }
 
   return plantingScheduleOutput.content;
@@ -62,7 +65,7 @@ const plantingScheduleSystemPrompt =
   // "In addition, produce a summary describing the gardening plan. The tone should be informative but also not too impersonal, focusing on information that would encourage home gardeners. It should be 4-8 sentences long and would explain how the visual diagram in their plan informs the user about when to plant their crops, as well as in which areas of their garden. (The UI of the plan includes a color-coded diagram of planting times where each planting is colored to indicate which plot it is in.)\n" +
   "In addition, use the `advice` parameter of our output to summarize some of the most important points of guidance for successfully growing these crops/varieties. Draw upon specific details collected from crop data, or your general knowledge about these crop types. Aim for 4-7 pointers, each 1-3 sentences long.\n" +
   "\n" +
-  "### Format:\n" +
+  "### Output Format:\n" +
   "“Plot List”: an array of plots\n" +
   "“Plot”: an array of plantings\n" +
   "“Planting”: a crop which occupies a plot for a given amount of time (the growth duration plus the harvest duration)\n" +
@@ -82,6 +85,8 @@ const plantingScheduleSystemPrompt =
   "### Guidelines:\n" +
   "   - Format dates as \"yyyy-mm-dd\"\n" +
   "   - Name crops according to their short name, not their variety. (e.g. a crop with name `Carrot` and variety `Carrot Seeds - Tendersweet` should be named `Carrot` in the planting.)\n" +
+  "   - Note that the input parameters on each crop `seedlingDuration`, `growthDuration`, and `harvestDuration` are all in days.\n" +
+  "   - For crops that should overwinter (plant in fall and harvest the following year), plant in 2025 and harvest in 2026." +
   "\n"
 
 const plantingScheduleUserPrompt = (climateData: string, cropData: string) =>

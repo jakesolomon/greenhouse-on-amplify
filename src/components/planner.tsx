@@ -37,9 +37,15 @@ const Planner = () => {
 
   const submitZipCode = async (zipCode: string) => {
     setIsLoadingClimateData(true)
-    const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
-    setClimateData(JSON.parse(result.data!));
-    setIsLoadingClimateData(false)
+    try {
+      const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
+      setClimateData(JSON.parse(result.data!));
+    } catch (error) {
+      console.error('Error fetching regional climate data: ', error);
+      setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
+    } finally {
+      setIsLoadingClimateData(false)
+    }
   }
 
   const getAllCropData = async (cropNames: string[]) => {
@@ -53,7 +59,6 @@ const Planner = () => {
     if (varietyResponse.errors || !varietyResponse.data) {
       console.error("Error fetching crop varieties: ", varietyResponse.errors)
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
-      setIsLoadingCropData(false)
       return
     }
 
@@ -61,30 +66,43 @@ const Planner = () => {
     console.log("varieties: ", varietyResults)
 
     // TODO: need to see what happens if a general data handle doesn't come back? Or subTypeParameters?
-    const topVarieties: SeedVariety[] = varietyResults.map(variety => ({
-      trueSeedTitle: variety.data.results[0]?.title,
-      descriptionHtml: variety.data.results[0]?.descriptionHtml,
-      storeHandle: variety.data.results[0]?.handle,
-      displayName: variety.cropType.displayName,
-      collectionHandle: variety.cropType.collectionHandle,
-      subTypeParameters: variety.cropType.subTypeParameters,
-      generalDataHandle: variety.cropType.generalDataHandle
-    }))
+    // Filter out "microgreen" or "sprout"
+    const topVarieties: SeedVariety[] = varietyResults.map(variety => {
+      const selectedVariety = variety.data.results.find(e =>
+        !e.title.toLowerCase().includes('sprout') &&
+        !e.title.toLowerCase().includes('microgreen')
+      )
+
+      if (!selectedVariety) {
+        console.log("Could not find True Seed variety for crop type: ", variety.cropType.displayName)
+      }
+
+      return {
+        trueSeedTitle: selectedVariety?.title,
+        descriptionHtml: selectedVariety?.descriptionHtml,
+        storeHandle: selectedVariety?.handle,
+        displayName: variety.cropType.displayName,
+        collectionHandle: variety.cropType.collectionHandle,
+        subTypeParameters: variety.cropType.subTypeParameters,
+        generalDataHandle: variety.cropType.generalDataHandle
+      }
+    })
     console.log("topVarieties: ", topVarieties)
 
     const fetchPromises = topVarieties.map(async (cropVariety) => {
       try {
         const response = await amplifyClient.queries.getCropDataFromTrueLeafDescription({
           generalDataHandle: cropVariety.generalDataHandle,
-          userMessage: cropVariety.descriptionHtml
+          varietyDescription: cropVariety?.descriptionHtml
         });
 
-        if (response.errors) {
-          console.error(response.errors);
-          return { cropVariety, data: null }
+        const data = JSON.parse(response.data!)
+
+        // Fail result if returned with an error in response.
+        if (data.error) {
+          return { cropVariety, error: data.error };
         }
 
-        const data = JSON.parse(response.data!)
         return { cropVariety, data };
       } catch (error) {
         console.error(`Error fetching data for ${cropVariety.displayName}:`, error);
@@ -98,6 +116,7 @@ const Planner = () => {
     const failedResults = allCropData.filter(result => result.error);
     if (successfulResults.length === 0) {
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
+      return;
     }
     if (failedResults.length > 0) {
       const failedCropNames = failedResults.map(result => result.cropVariety.displayName)
@@ -178,7 +197,16 @@ const Planner = () => {
       requestPlantingData();
       requestScheduleSummary();
     }
-  }, [climateData, cropData, requestPlantingData, requestScheduleSummary]);
+  }, [
+    climateData,
+    cropData,
+    requestPlantingData,
+    loadingPlantingSchedule,
+    plantingSchedule,
+    requestScheduleSummary,
+    loadingScheduleSummary,
+    scheduleSummary
+  ]);
 
   return(
     <>

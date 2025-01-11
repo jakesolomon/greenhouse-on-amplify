@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCropData';
+import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
 
@@ -28,57 +29,84 @@ const Crop = z.object({
   upperTempBound: z.number().int(),
 });
 
+const logger = new Logger({ serviceName: "getCropDataFromTrueLeafDescription" });
+
 // This function accepts a variety name and description (it will accept an array of these)
 // and outputs a Crop with data needed to construct a planting schedule.
 // It does so by:
-// 1. Sending the htmlDescription to an LLM to check for data quality
-// 2. If high quality, sending again to LLM for data extraction.
+// 1. Checking if there is a variety description. If not --> extract generic data and append warning for description output. Return.
+// 2. If there is a variety description, send to an LLM to check for data quality
+// 3. If high quality, sending again to LLM for data extraction.
 // 4. If low quality, only extract the description from variety data, and send the corresponding general description for data extraction.
-// 3. Append the final returned Crop object with a dataSource of type 'variety' | 'general'
-
-// @ts-ignore
-// TODO: need to find out how to return stuff as a promise ^^
+// 5. Append the final returned Crop object with a dataSource of type 'variety' | 'general'
 export const handler: Schema["getCropDataFromTrueLeafDescription"]["functionHandler"]  = async (event) => {
 
   const openai = new OpenAI({
     apiKey: env.API_KEY
   });
 
+  const { generalDataHandle, varietyDescription } = event.arguments
+  const noVarietyFound = !varietyDescription;
+  const generalDataAvailable = !!generalDataHandle && Object.keys(handbookData).includes(generalDataHandle)
+
   try {
+    // If no True Seed description was attached, only try generic data. If that isn't available, return error.
+    if (noVarietyFound) {
+      if (!generalDataAvailable) {
+        logger.error("No variety supplied, and generic data unavailable");
+        return JSON.stringify({ error: "No variety supplied, and generic data unavailable" })
+      }
+
+      logger.info("No variety supplied, proceeding with generic data.", generalDataHandle)
+      const genericDataExtractionCompletion2 = await openai.chat.completions.create({
+        model: "gpt-4o-mini-2024-07-18",
+        messages: [
+          { role: "system", content: dataExtractionSystemPrompt },
+          // @ts-ignore we've already checked that generalDataHandle is a key of handbookData
+          { role: "user", content: handbookData[generalDataHandle] },
+        ],
+        response_format: zodResponseFormat(Crop, "crop_data_output"),
+      });
+
+      // If data extraction request returns a refusal, log and return error.
+      const genericDataExtractionOutput2 = genericDataExtractionCompletion2.choices[0].message;
+      if (genericDataExtractionOutput2.refusal) {
+        logger.error("Data extraction refused with: ", genericDataExtractionOutput2.refusal);
+        return JSON.stringify({ error: `Failed to extract generic crop data. Data extraction refused with: ${genericDataExtractionOutput2.refusal}` })
+      }
+
+      const appendedGenericDataExtraction = JSON.parse(genericDataExtractionOutput2.content!)
+      appendedGenericDataExtraction.shortDescription = "True Leaf variety not found."
+      appendedGenericDataExtraction.dataSource = "generic"
+      logger.info("Returning generic data with no variety description for: ", generalDataHandle);
+      return JSON.stringify(appendedGenericDataExtraction)
+    }
+
     // Evaluate data quality in variety description
     // Initial tests show this prompt may be a bit lenient. It accepts some pretty low-quality descriptions.
     // However, this may reflect the LLM's ability to "infer" information effectively.
-    const { generalDataHandle, userMessage } = event.arguments
     const dataQualityCompletion = await openai.chat.completions.create({
       model: "gpt-4o-mini-2024-07-18",
       messages: [
         { role: "system", content: dataEvaluationSystemPrompt },
-        { role: "user", content: userMessage! }
+        { role: "user", content: varietyDescription }
       ],
       response_format: zodResponseFormat(dataQuality, "data_quality_output"),
     });
 
-    // If data quality request returns a refusal, log and return 500.
+    // If data quality request returns a refusal, log and return error.
     const dataQualityOutput = dataQualityCompletion.choices[0].message;
     if (dataQualityOutput.refusal) {
-      console.error("Data quality check refused with: ", dataQualityOutput.refusal);
-      // TODO: Does this error response need to be stringified?
-      return JSON.stringify({
-        statusCode: 500,
-        body: JSON.stringify({ error: "Failed to determine variety data quality" }),
-      });
+      logger.error("Data quality check refused with: ", dataQualityOutput.refusal);
+      return JSON.stringify({error: "Failed to determine variety data quality" });
     }
 
     const varietyDataQualityIsGood = JSON.parse(dataQualityOutput.content!).sufficientDataQuality
 
-    // If variety data is low quality and general data is unavailable, return a 500
-    const generalDataAvailable = !!generalDataHandle && Object.keys(handbookData).includes(generalDataHandle)
+    // If variety data is low quality and general data is unavailable, return error.
     if (!varietyDataQualityIsGood && !generalDataAvailable) {
-      console.error("Failed to extract crop data, and generic data unavailable");
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Failed to extract crop data, and generic data unavailable" }),
-      };
+      logger.error("Failed to extract crop data, and generic data unavailable");
+      return JSON.stringify({ error: "Variety crop data is insufficient, and generic data unavailable" })
     }
 
     // Send variety description to LLM for data extraction.
@@ -87,65 +115,55 @@ export const handler: Schema["getCropDataFromTrueLeafDescription"]["functionHand
       model: "gpt-4o-mini-2024-07-18",
       messages: [
         { role: "system", content: dataExtractionSystemPrompt },
-        { role: "user", content: userMessage! },
+        { role: "user", content: varietyDescription },
       ],
       response_format: zodResponseFormat(Crop, "crop_data_output"),
     });
 
-    // If data extraction request returns a refusal, log and return 500.
+    // If data extraction request returns a refusal, log and return error.
     const varietyDataExtractionOutput = varietyDataExtractionCompletion.choices[0].message;
     if (varietyDataExtractionOutput.refusal) {
-      console.error("Data extraction refused with: ", dataQualityOutput.refusal);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Failed to extract crop data" }),
-      };
+      logger.error("Data extraction refused with: ", varietyDataExtractionOutput.refusal);
     }
 
     // If variety data is of sufficient quality, append with dataSource "variety" and return
     // Otherwise, send generic description to LLM for data extraction,
     // and append with variety description and datasource "generic".
-    if (varietyDataQualityIsGood) {
-      console.log("Variety data is good, proceeding with data extraction.")
+    if (varietyDataQualityIsGood && varietyDataExtractionOutput.content) {
+      logger.info("Variety data is good, proceeding with data extraction.")
 
-      const appendedVarietyDataExtraction = JSON.parse(varietyDataExtractionOutput.content!)
+      const appendedVarietyDataExtraction = JSON.parse(varietyDataExtractionOutput.content)
       appendedVarietyDataExtraction.dataSource = "variety"
       return JSON.stringify(appendedVarietyDataExtraction)
     } else {
-      console.log("Variety data is insufficient, proceeding with generic data.")
+      logger.info("Variety data is insufficient, proceeding with generic data.")
 
-      const genericDataExtractionCompletion = await openai.chat.completions.create({
+      const genericDataExtractionCompletion2 = await openai.chat.completions.create({
         model: "gpt-4o-mini-2024-07-18",
         messages: [
           { role: "system", content: dataExtractionSystemPrompt },
-          // @ts-ignore
+          // @ts-ignore we've already checked that generalDataHandle is a key of handbookData
           { role: "user", content: handbookData[generalDataHandle] },
         ],
         response_format: zodResponseFormat(Crop, "crop_data_output"),
       });
 
-      // If data extraction request returns a refusal, log and return 500.
-      const genericDataExtractionOutput = genericDataExtractionCompletion.choices[0].message;
-      if (genericDataExtractionOutput.refusal) {
-        console.error("Data extraction refused with: ", dataQualityOutput.refusal);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: "Failed to extract crop data" }),
-        };
+      // If data extraction request returns a refusal, log and return error.
+      const genericDataExtractionOutput2 = genericDataExtractionCompletion2.choices[0].message;
+      if (genericDataExtractionOutput2.refusal) {
+        logger.error("Data extraction refused with: ", genericDataExtractionOutput2.refusal);
+        return JSON.stringify({ error: `Failed to extract crop data. Data extraction refused with: ${genericDataExtractionOutput2.refusal}` })
       }
 
       const varietyDataExtraction = JSON.parse(varietyDataExtractionOutput.content!)
-      const appendedGenericDataExtraction = JSON.parse(genericDataExtractionOutput.content!)
-      appendedGenericDataExtraction.shortDescription = varietyDataExtraction["shortDescription"]
-      appendedGenericDataExtraction.dataSource = "generic"
-      return JSON.stringify(appendedGenericDataExtraction)
+      const appendedGenericDataExtraction2 = JSON.parse(genericDataExtractionOutput2.content!)
+      appendedGenericDataExtraction2.shortDescription = varietyDataExtraction["shortDescription"]
+      appendedGenericDataExtraction2.dataSource = "generic"
+      return JSON.stringify(appendedGenericDataExtraction2)
     }
   } catch (error) {
-    console.error("Error in chat completion with GPT: ", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Failed to extract crop data" }),
-    };
+    logger.error("Error in chat completion with LLM: ", error as Error);
+    return JSON.stringify({ error: `Failed to extract crop data. Error in chat completion with LLM: ${error}` })
   }
 };
 
@@ -199,8 +217,8 @@ const dataExtractionSystemPrompt =
   " - upperTempBound: (Upper bound of TEMP PREFERENCE in fahrenheit)\n" +
   "\n" +
   "### Harvest Duration Rules\n" +
-  "- For crops that can be harvested continuously (e.g. using cut-and-come-again technique, or crops that continue to produce fruit such as cucumbers): this value is the number of days a crop can be harvested before productivity declines (e.g. bolting, weather conditions)\n" +
-  "- For crops that are harvested only once per planting (e.g. carrots): this value should be 0.\n" +
+  " - For crops that can be harvested continuously (e.g. using cut-and-come-again technique, or crops that continue to produce fruit such as cucumbers): this value is the number of days a crop can be harvested before productivity declines (e.g. bolting, weather conditions)\n" +
+  " - For crops that are harvested only once per planting (e.g. carrots): this value should be 0.\n" +
   "\n"
 
 // Below data was collected from https://cdn.shopify.com/s/files/1/2016/2681/files/vegetable-guide.pdf?v=1674594967

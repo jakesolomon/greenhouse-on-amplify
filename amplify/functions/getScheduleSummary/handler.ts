@@ -29,11 +29,6 @@ export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (
     ],
   });
 
-  // const scheduleSummary = completion.choices[0].message;
-  // if (scheduleSummary.refusal) {
-  //   console.log(scheduleSummary.refusal);
-  // }
-
   return completion.choices[0].message.content;
 };
 

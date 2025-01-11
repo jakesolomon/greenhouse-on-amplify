@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCropData';
+import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
 
@@ -39,6 +40,8 @@ const ClimateDataOutput = z.object({
   hardinessZone: z.number(),
 });
 
+const logger = new Logger({ serviceName: "getClimateData" });
+
 export const handler: Schema["getClimateData"]["functionHandler"]  = async (event) => {
 
   const openai = new OpenAI({
@@ -59,7 +62,7 @@ export const handler: Schema["getClimateData"]["functionHandler"]  = async (even
 
   const overviewOutput = completion.choices[0].message;
   if (overviewOutput.refusal) {
-    console.log(overviewOutput.refusal);
+    logger.error("Climate data request to LLM refused.", overviewOutput.refusal);
   }
 
   return overviewOutput.content;
