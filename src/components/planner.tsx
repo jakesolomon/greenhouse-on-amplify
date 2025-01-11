@@ -33,8 +33,6 @@ const Planner = () => {
 
   const amplifyClient = generateClient<Schema>()
 
-  // TODO wrap these in a try/catch
-
   const submitZipCode = async (zipCode: string) => {
     setIsLoadingClimateData(true)
     try {
@@ -65,7 +63,6 @@ const Planner = () => {
     const varietyResults = JSON.parse(varietyResponse.data)
     console.log("varieties: ", varietyResults)
 
-    // TODO: need to see what happens if a general data handle doesn't come back? Or subTypeParameters?
     // Filter out "microgreen" or "sprout"
     const topVarieties: SeedVariety[] = varietyResults.map(variety => {
       const selectedVariety = variety.data.results.find(e =>
@@ -148,44 +145,44 @@ const Planner = () => {
     setIsLoadingCropData(false)
   }
 
-  const requestPlantingData = async () => {
-    setLoadingPlantingSchedule(true)
-    try {
-      const plantingScheduleRequestArguments = {
-        climateData: JSON.stringify(climateData),
-        crops: JSON.stringify(cropData)
-      }
-      const response =
-        await amplifyClient.queries.getPlantingScheduleData(plantingScheduleRequestArguments);
-      console.log("requestPlantingData: ", JSON.parse(response.data!))
-      setPlantingSchedule(JSON.parse(response.data!));
-    } catch (error) {
-      console.error('Error fetching planting data:', error);
-    } finally {
-      setLoadingPlantingSchedule(false);
-    }
-  };
-
-  const requestScheduleSummary = async () => {
-    setLoadingScheduleSummary(true)
-    try {
-      const scheduleSummaryRequestArguments = {
-        climateData: JSON.stringify(climateData!),
-        crops: JSON.stringify(cropData)
-      }
-      const response =
-        await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
-      console.log("requestScheduleSummary: ", response)
-      setScheduleSummary(response.data!);
-    } catch (error) {
-      console.error('Error fetching schedule summary:', error);
-    } finally {
-      setLoadingScheduleSummary(false)
-    }
-  };
-
   // Request planting data and schedule summary once climate data and crop data return
   useEffect(() => {
+    const requestPlantingData = async () => {
+      setLoadingPlantingSchedule(true)
+      try {
+        const plantingScheduleRequestArguments = {
+          climateData: JSON.stringify(climateData),
+          crops: JSON.stringify(cropData)
+        }
+        const response =
+          await amplifyClient.queries.getPlantingScheduleData(plantingScheduleRequestArguments);
+        console.log("requestPlantingData: ", JSON.parse(response.data!))
+        setPlantingSchedule(JSON.parse(response.data!));
+      } catch (error) {
+        console.error('Error fetching planting data:', error);
+      } finally {
+        setLoadingPlantingSchedule(false);
+      }
+    };
+
+    const requestScheduleSummary = async () => {
+      setLoadingScheduleSummary(true)
+      try {
+        const scheduleSummaryRequestArguments = {
+          climateData: JSON.stringify(climateData!),
+          crops: JSON.stringify(cropData)
+        }
+        const response =
+          await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
+        console.log("requestScheduleSummary: ", response)
+        setScheduleSummary(response.data!);
+      } catch (error) {
+        console.error('Error fetching schedule summary:', error);
+      } finally {
+        setLoadingScheduleSummary(false)
+      }
+    };
+
     if (
       !!climateData && // Climate data exists
       !!cropData && // Crop data exists
@@ -198,12 +195,11 @@ const Planner = () => {
       requestScheduleSummary();
     }
   }, [
+    amplifyClient.queries,
     climateData,
     cropData,
-    requestPlantingData,
     loadingPlantingSchedule,
     plantingSchedule,
-    requestScheduleSummary,
     loadingScheduleSummary,
     scheduleSummary
   ]);

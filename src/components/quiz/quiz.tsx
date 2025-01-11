@@ -36,7 +36,7 @@ function Quiz(props: QuizProps) {
     },
 
     validate: {
-      crops: (value) => (value.length === 0 ? "Select at least one crop." : null )
+      crops: (value) => (value.length < 3 ? "Select at least three crops." : null )
     },
   });
 
