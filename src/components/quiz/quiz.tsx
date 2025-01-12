@@ -4,7 +4,8 @@ import {
   Container,
   Group,
   TextInput,
-  Flex
+  Flex,
+  InputError
 } from '@mantine/core';
 import { useForm, useField } from "@mantine/form";
 
@@ -20,7 +21,7 @@ interface QuizProps {
 
 function Quiz(props: QuizProps) {
 
-  const { getAllCropData, submitZipCode } = props;
+  const { getAllCropData, submitZipCode, hardinessZone } = props;
 
   const [ formPage, setFormPage ] = useState<number>(1);
 
@@ -29,7 +30,7 @@ function Quiz(props: QuizProps) {
   }
 
   const form = useForm<UserInputs>({
-    mode: 'uncontrolled',
+    mode: 'controlled',
     validateInputOnChange: true,
     initialValues: {
       crops: [],
@@ -80,9 +81,11 @@ function Quiz(props: QuizProps) {
               inputKey={form.key('crops')}
               inputProps={{...form.getInputProps('crops')}}
               setFieldValue={(value) => form.setFieldValue('crops', value)}
+              value={form.getValues().crops}
+              hardinessZone={hardinessZone}
             />
           }
-          <Group justify="flex-end" mt="md">
+          <Group justify="flex-start" mt="md">
             {
               isFirstPage &&
               <Button
@@ -101,6 +104,7 @@ function Quiz(props: QuizProps) {
                 Next
               </Button>
             }
+            { form.isDirty() && form.errors['crops'] && <InputError>{form.errors['crops']}</InputError> }
           </Group>
         </form>
       </Flex>
