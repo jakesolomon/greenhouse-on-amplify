@@ -39,7 +39,7 @@ const LandingPage = () => {
       value: "vegetable-types",
       question: "What types of vegetables does the app support?",
       answer:
-        "The app supports a wide variety of vegetables, herbs, and other common garden plants. From tomatoes and carrots to basil and lettuce, we’ve included options for all skill levels and preferences. You can also choose plants based on your climate and available space.",
+        <Text>The app focuses on <em>annual</em> vegetables, herbs, and other common garden plants. Annuals are ideal for one-season planning, as they grow, produce, and are harvested within a single year.</Text>,
     },
     {
       value: "subscription",
