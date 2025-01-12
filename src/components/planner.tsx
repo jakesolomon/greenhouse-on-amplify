@@ -208,7 +208,7 @@ const Planner = () => {
     <>
       {
         cropData === undefined && !loadingCropData &&
-        <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} />
+        <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} hardinessZone={climateData?.hardinessZone}/>
       }
       {
         !proceedToPlan && !(cropData === undefined && !loadingCropData) &&
