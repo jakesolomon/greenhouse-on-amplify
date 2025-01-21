@@ -43,7 +43,6 @@ const schema = a.schema({
   getCropDataFromTrueLeafDescription: a
     .query()
     .arguments({
-      generalDataHandle: a.string(),
       varietyDescription: a.string(),
     })
     .returns(a.string())

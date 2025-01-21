@@ -1,9 +1,9 @@
-import {Text, Container, Accordion, Skeleton, List, Title} from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, Title, Pagination} from '@mantine/core';
 
 import {
   ClimateDataOutput,
   Crop,
-  PlantingScheduleOutput
+  Planting
 } from '../types.ts'
 
 import GanttChart from "./gantt-chart.tsx";
@@ -13,15 +13,18 @@ import {useEffect, useState} from "react";
 
 interface DataDisplayProps {
   crops?: Crop[];
-  plantingSchedule?: PlantingScheduleOutput;
+  plantingSchedules?: Planting[][][];
   climateData?: ClimateDataOutput;
   summary?: string;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { crops, plantingSchedule, climateData, summary } = props;
+  const { crops, plantingSchedules = [[[]]], climateData, summary } = props;
+
+  const plantingSchedulesLoading = plantingSchedules.length === 0;
 
   const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
+  const [ scheduleIndex , setScheduleIndex ] = useState<number>(1)
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,6 +46,8 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Title mb="md">
         Plan Overview
       </Title>
+      {/*TODO remove this pagination thing when I make plantingSchedule not an array*/}
+      <Pagination total={plantingSchedules.length} value={scheduleIndex} onChange={setScheduleIndex} mt="sm" />
       <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
         {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
         Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
@@ -52,7 +57,7 @@ const PlanOverview = (props: DataDisplayProps) => {
           ? <Text size="md" mb="lg">{summary}</Text>
           : <>{skeletonParagraph}<br/></>
       }
-      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule || fakeLoading}/>
+      <GanttChart plantingSchedule={plantingSchedules[scheduleIndex-1]} loading={plantingSchedulesLoading || fakeLoading}/>
       <Accordion mt="md">
         {
           climateData &&
@@ -72,20 +77,21 @@ const PlanOverview = (props: DataDisplayProps) => {
         <Accordion.Item value="additionalAdvice">
           <Accordion.Control icon="📝">Additional Advice</Accordion.Control>
           <Accordion.Panel>
-            <List>
-              {
-                plantingSchedule && !fakeLoading
-                ? plantingSchedule.advice.map((advice, index) =>
-                    <List.Item key={index}>{advice}</List.Item>)
-                : <>
-                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
-                  </>
-              }
-            </List>
+            {/*TODO bring this accordion back*/}
+            {/*<List>*/}
+            {/*  {*/}
+            {/*    plantingSchedule && !fakeLoading*/}
+            {/*    ? plantingSchedule.advice.map((advice, index) =>*/}
+            {/*        <List.Item key={index}>{advice}</List.Item>)*/}
+            {/*    : <>*/}
+            {/*        <Skeleton height={10} width="70%" mb={14} radius="xl"/>*/}
+            {/*        <Skeleton height={10} width="80%" mb={14} radius="xl"/>*/}
+            {/*        <Skeleton height={10} width="75%" mb={14} radius="xl"/>*/}
+            {/*        <Skeleton height={10} width="70%" mb={14} radius="xl"/>*/}
+            {/*        <Skeleton height={10} width="80%" mb={14} radius="xl"/>*/}
+            {/*      </>*/}
+            {/*  }*/}
+            {/*</List>*/}
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>

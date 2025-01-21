@@ -82,7 +82,7 @@ const ClimateChart = (props: ClimateChartProps) => {
       <Text mb="sm">
         Based on the ZIP code you provided, the following estimates have been made about average temperatures in your area. These predictions were then used to inform planting times.
       </Text>
-      <Text mb="lg">Estimated date for last spring frost is <b>{data.lastFrostDate}</b>, and the first autumn frost is <b>{data.firstFrostDate}</b>.</Text>
+      <Text mb="lg">Estimated date for last spring frost is <b>{data.lastSpringFrostDate}</b>, and the first autumn frost is <b>{data.firstFallFrostDate}</b>.</Text>
       {
         isSmallScreen
           ? verticalTable

@@ -9,7 +9,7 @@ import {
   InputLabel
 } from '@mantine/core';
 
-import { trueLeafCropTypes } from "../../helpers/true-leaf-crop-types.ts";
+import { cropTypes } from "../../helpers/crop-types.ts";
 
 import './true-leaf-crops-page.css'
 
@@ -30,19 +30,19 @@ function TrueLeafCropsPage(props: CropsPageProps) {
   useEffect(() => {
     if (hardinessZone !== undefined) {
       setFieldValue(value.filter((v) =>
-        trueLeafCropTypes[v].idealHardinessZones.includes(hardinessZone)));
+        cropTypes[v].idealHardinessZones.includes(hardinessZone)));
     }
   }, [
     hardinessZone
   ])
 
   const renderChips = (_hardinessZone?: number) =>
-    Object.keys(trueLeafCropTypes).map(crop => {
-      const disabled = !!_hardinessZone && !trueLeafCropTypes[crop].idealHardinessZones.includes(_hardinessZone)
+    Object.keys(cropTypes).map(crop => {
+      const disabled = !!_hardinessZone && !cropTypes[crop].idealHardinessZones.includes(_hardinessZone)
       const chipClass = !_hardinessZone || disabled ? undefined : "suitable"
       return (
         <Chip
-          w="12rem"
+          w="14rem"
           key={crop}
           value={crop}
           className={chipClass}

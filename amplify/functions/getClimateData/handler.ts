@@ -19,24 +19,24 @@ const TemperatureDataByMonth = z.object({
 });
 
 // const TemperatureDataByMonth = z.object({
-//   january: TemperatureData,
-//   february: TemperatureData,
-//   march: TemperatureData,
-//   april: TemperatureData,
-//   may: TemperatureData,
-//   june: TemperatureData,
-//   july: TemperatureData,
-//   august: TemperatureData,
-//   september: TemperatureData,
-//   october: TemperatureData,
-//   november: TemperatureData,
-//   december: TemperatureData,
+//   January: TemperatureData,
+//   February: TemperatureData,
+//   March: TemperatureData,
+//   April: TemperatureData,
+//   May: TemperatureData,
+//   June: TemperatureData,
+//   July: TemperatureData,
+//   August: TemperatureData,
+//   September: TemperatureData,
+//   October: TemperatureData,
+//   November: TemperatureData,
+//   December: TemperatureData,
 // });
 
 const ClimateDataOutput = z.object({
   temperatureData: z.array(TemperatureDataByMonth),
-  lastFrostDate: z.string(),
-  firstFrostDate: z.string(),
+  lastSpringFrostDate: z.string(),
+  firstFallFrostDate: z.string(),
   hardinessZone: z.number(),
 });
 
