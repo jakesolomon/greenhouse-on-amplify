@@ -126,9 +126,9 @@ const addPlanting = (
     })
   } else {
     currentPlantingSchedule = tryAddingExtraPlantings(currentPlantingSchedule, allCrops) // need to have original list of available plantings.
-    console.log("optimalPlantingSchedule: ", optimalPlantingSchedule)
 
     const isFirstSchedule = optimalPlantingSchedule.length === 0
+
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
       console.log("I better see this exactly once (per bucket)")
@@ -161,10 +161,12 @@ const addPlantingToNewPlot = (
 
   // Stop right away if we've exceeded the most efficient planting schedules' plot usage
   const isFirstSchedule = optimalPlantingSchedule.length === 0
-  const isAlreadyLessEfficient = (currentPlantingSchedule.length < optimalPlantingSchedule.length)
+  const isAlreadyLessEfficient = (currentPlantingSchedule.length > optimalPlantingSchedule.length)
+
   if (isAlreadyLessEfficient && !isFirstSchedule) {
     return
   }
+
   if (remainingCrops[0]) {
     remainingCrops.forEach((crop, index) => {
       // deep clone remaining crops and remove crop
@@ -361,7 +363,7 @@ export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] 
   // Each time a "decision" is made (a crop is selected to add next, or a timing is chosen for that crop) we "branch" again by creating new schedules for each possibility.
   // Send the original plantingSchedules object through all branches, so that at their end, the complete schedule is added to plantingSchedules.
 
-  if (cropData.length < 7) {
+  if (cropData.length < 8) {
     console.log("going oldschoolmode with cropData lenght ", cropData.length)
     cropData.forEach((crop, index) => {
       // Deep clone cropData. This method turns dates into strings, so we have to convert them back before creating plantings from them.
