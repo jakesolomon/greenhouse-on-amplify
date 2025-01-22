@@ -37,8 +37,6 @@ const PlanOverview = (props: DataDisplayProps) => {
     content: crop.guidance.split(".").filter(sentence => !sentence.includes("rotat")).map(sentence => sentence + ".").slice(0, -1),
   }))
 
-  console.log("growing tips ", growingTips)
-
   const skeletonParagraph =
     <>
       <Skeleton height={10} radius="xl" />
