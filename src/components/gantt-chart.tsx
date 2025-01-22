@@ -56,7 +56,8 @@ const GanttChart = (props: GanttChartProps)=> {
   const theme = useMantineTheme();
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
 
-  const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
+  // const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
+  const tooltipText = "Plots represent sub-divisions of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed."
 
   const tooltip = (text: string) => (
     <HoverCard width={400} shadow="md" closeDelay={20}>
@@ -222,7 +223,9 @@ const GanttChart = (props: GanttChartProps)=> {
           TaskListHeader={GanttChartListHeader}
         />
         <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
-          Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.
+          {/*Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.*/}
+          {/*Colors indicate what plot of land a crop is grown in, where each plot represent a sub-division of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed. Lighter regions indicate growing time, while darker regions indicate harvests.*/}
+          Colors indicate {tooltip("what plot of land a crop is grown in.")}<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
         {
           noSuccessionPlanting &&

@@ -81,6 +81,7 @@ export interface Crop {
   // soilPhPreference: string;
   // sunlightPreference: string;
   frostHardy: boolean;
+  directSow: boolean;
   guidance: string;
 
   lowerTempBound: number;

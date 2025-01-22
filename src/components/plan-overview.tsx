@@ -1,4 +1,4 @@
-import { Text, Container, Accordion, Skeleton, Title } from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, Title, List} from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -31,6 +31,13 @@ const PlanOverview = (props: DataDisplayProps) => {
     }, 1700);
   }, []);
 
+  // Extract growing tips. Remove any sentence that refers to crop rotation.
+  const growingTips = crops?.map(crop => ({
+    name: crop.name,
+    content: crop.guidance.split(".").filter(sentence => !sentence.includes("rotat")).map(sentence => sentence + ".").slice(0, -1),
+  }))
+
+  console.log("growing tips ", growingTips)
 
   const skeletonParagraph =
     <>
@@ -75,23 +82,22 @@ const PlanOverview = (props: DataDisplayProps) => {
           </Accordion.Panel>
         </Accordion.Item>
         <Accordion.Item value="additionalAdvice">
-          <Accordion.Control icon="📝">Additional Advice</Accordion.Control>
+          <Accordion.Control icon="📝">Growing Tips</Accordion.Control>
           <Accordion.Panel>
-            {/*TODO bring this accordion back*/}
-            {/*<List>*/}
-            {/*  {*/}
-            {/*    plantingSchedule && !fakeLoading*/}
-            {/*    ? plantingSchedule.advice.map((advice, index) =>*/}
-            {/*        <List.Item key={index}>{advice}</List.Item>)*/}
-            {/*    : <>*/}
-            {/*        <Skeleton height={10} width="70%" mb={14} radius="xl"/>*/}
-            {/*        <Skeleton height={10} width="80%" mb={14} radius="xl"/>*/}
-            {/*        <Skeleton height={10} width="75%" mb={14} radius="xl"/>*/}
-            {/*        <Skeleton height={10} width="70%" mb={14} radius="xl"/>*/}
-            {/*        <Skeleton height={10} width="80%" mb={14} radius="xl"/>*/}
-            {/*      </>*/}
-            {/*  }*/}
-            {/*</List>*/}
+            <List>
+              {
+                growingTips && !fakeLoading
+                ? growingTips.map((advice, index) =>
+                    <List.Item key={index}><b>{advice.name}:</b> {advice.content}</List.Item>)
+                : <>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                  </>
+              }
+            </List>
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>
