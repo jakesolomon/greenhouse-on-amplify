@@ -1,4 +1,4 @@
-import {Text, Container, Accordion, Skeleton, Title, Pagination} from '@mantine/core';
+import { Text, Container, Accordion, Skeleton, Title } from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -13,18 +13,17 @@ import {useEffect, useState} from "react";
 
 interface DataDisplayProps {
   crops?: Crop[];
-  plantingSchedules?: Planting[][][];
+  plantingSchedule: Planting[][];
   climateData?: ClimateDataOutput;
   summary?: string;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { crops, plantingSchedules = [[[]]], climateData, summary } = props;
+  const { crops, plantingSchedule, climateData, summary } = props;
 
-  const plantingSchedulesLoading = plantingSchedules.length === 0;
+  const plantingScheduleLoading = plantingSchedule.length === 0;
 
   const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
-  const [ scheduleIndex , setScheduleIndex ] = useState<number>(1)
 
   useEffect(() => {
     setTimeout(() => {
@@ -46,8 +45,6 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Title mb="md">
         Plan Overview
       </Title>
-      {/*TODO remove this pagination thing when I make plantingSchedule not an array*/}
-      <Pagination total={plantingSchedules.length} value={scheduleIndex} onChange={setScheduleIndex} mt="sm" />
       <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
         {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
         Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
@@ -57,7 +54,10 @@ const PlanOverview = (props: DataDisplayProps) => {
           ? <Text size="md" mb="lg">{summary}</Text>
           : <>{skeletonParagraph}<br/></>
       }
-      <GanttChart plantingSchedule={plantingSchedules[scheduleIndex-1]} loading={plantingSchedulesLoading || fakeLoading}/>
+      <GanttChart
+        plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
+        loading={plantingScheduleLoading || fakeLoading}
+      />
       <Accordion mt="md">
         {
           climateData &&
