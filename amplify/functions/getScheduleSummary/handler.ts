@@ -1,5 +1,6 @@
 import OpenAI from "openai";
-import { env } from '$amplify/env/getPlantingScheduleData';
+import { env } from '$amplify/env/getScheduleSummary';
+import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
 

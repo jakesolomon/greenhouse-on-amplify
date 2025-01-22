@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { env } from '$amplify/env/getCropData';
+import { env } from '$amplify/env/getCropDataFromTrueLeafDescription';
 import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
