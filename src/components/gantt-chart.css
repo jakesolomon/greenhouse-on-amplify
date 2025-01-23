@@ -2,27 +2,37 @@ g.calendar text {
   font-weight: bold;
 }
 
-._2B2zv {
-  overflow-x: hidden !important;
-  width: 100% !important;
+/* For some reason these break the width on iphone*/
+@media (min-width: $mantine-breakpoint-md) {
+  ._2B2zv {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  ._2B2zv {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  .gantt-chart ._3eULf svg {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  .grid {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  .gridBody {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  .rows {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
 }
 
-.gantt-chart ._3eULf svg {
-  overflow-x: hidden !important;
-  width: 100% !important;
-}
-
-.grid {
-  overflow-x: hidden !important;
-  width: 100% !important;
-}
-
-.gridBody {
-  overflow-x: hidden !important;
-  width: 100% !important;
-}
-
-.rows {
-  overflow-x: hidden !important;
-  width: 100% !important;
-}
