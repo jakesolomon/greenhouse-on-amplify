@@ -9,19 +9,20 @@ import {
 } from '@mantine/core';
 import { useForm, useField } from "@mantine/form";
 
-import { UserInputs } from "../../types.ts";
+import {ClimateDataOutput, UserInputs} from "../../types.ts";
 
 import TrueLeafCropsPage from "./true-leaf-crops-page.tsx";
 
 interface QuizProps {
-  getAllCropData: (arg0: string[]) => void
+  getAllCropData: (crops: string[], climateData: ClimateDataOutput) => void
   submitZipCode: (arg0: string) => Promise<void>
-  hardinessZone?: number
+  climateData?: ClimateDataOutput
 }
 
 function Quiz(props: QuizProps) {
 
-  const { getAllCropData, submitZipCode, hardinessZone } = props;
+  const { getAllCropData, submitZipCode, climateData } = props;
+  const hardinessZone = climateData?.hardinessZone;
 
   const [ formPage, setFormPage ] = useState<number>(1);
 
@@ -65,7 +66,7 @@ function Quiz(props: QuizProps) {
   return (
     <Container size="xl" pt="xl">
       <Flex align="center">
-        <form onSubmit={form.onSubmit((values) => getAllCropData(values.crops))}>
+        <form onSubmit={form.onSubmit((values) => getAllCropData(values.crops, climateData!))}>
           {
             (formPage === 1) &&
             <TextInput
@@ -99,7 +100,8 @@ function Quiz(props: QuizProps) {
               !isFirstPage &&
               <Button
                 type="submit"
-                disabled={!enableContinue}
+                disabled={!enableContinue || !climateData}
+                loading={!climateData}
               >
                 Next
               </Button>

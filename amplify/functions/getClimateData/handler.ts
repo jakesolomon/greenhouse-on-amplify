@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { env } from '$amplify/env/getCropData';
+import { env } from '$amplify/env/getClimateData';
 import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
@@ -19,24 +19,24 @@ const TemperatureDataByMonth = z.object({
 });
 
 // const TemperatureDataByMonth = z.object({
-//   january: TemperatureData,
-//   february: TemperatureData,
-//   march: TemperatureData,
-//   april: TemperatureData,
-//   may: TemperatureData,
-//   june: TemperatureData,
-//   july: TemperatureData,
-//   august: TemperatureData,
-//   september: TemperatureData,
-//   october: TemperatureData,
-//   november: TemperatureData,
-//   december: TemperatureData,
+//   January: TemperatureData,
+//   February: TemperatureData,
+//   March: TemperatureData,
+//   April: TemperatureData,
+//   May: TemperatureData,
+//   June: TemperatureData,
+//   July: TemperatureData,
+//   August: TemperatureData,
+//   September: TemperatureData,
+//   October: TemperatureData,
+//   November: TemperatureData,
+//   December: TemperatureData,
 // });
 
 const ClimateDataOutput = z.object({
   temperatureData: z.array(TemperatureDataByMonth),
-  lastFrostDate: z.string(),
-  firstFrostDate: z.string(),
+  lastSpringFrostDate: z.string(),
+  firstFallFrostDate: z.string(),
   hardinessZone: z.number(),
 });
 

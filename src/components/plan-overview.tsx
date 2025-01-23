@@ -1,9 +1,9 @@
-import {Text, Container, Accordion, Skeleton, List, Title} from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, Title, List} from '@mantine/core';
 
 import {
   ClimateDataOutput,
   Crop,
-  PlantingScheduleOutput
+  Planting
 } from '../types.ts'
 
 import GanttChart from "./gantt-chart.tsx";
@@ -13,13 +13,15 @@ import {useEffect, useState} from "react";
 
 interface DataDisplayProps {
   crops?: Crop[];
-  plantingSchedule?: PlantingScheduleOutput;
+  plantingSchedule: Planting[][];
   climateData?: ClimateDataOutput;
   summary?: string;
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary } = props;
+
+  const plantingScheduleLoading = plantingSchedule.length === 0;
 
   const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
 
@@ -29,6 +31,11 @@ const PlanOverview = (props: DataDisplayProps) => {
     }, 1700);
   }, []);
 
+  // Extract growing tips. Remove any sentence that refers to crop rotation.
+  const growingTips = crops?.map(crop => ({
+    name: crop.name,
+    content: crop.guidance.split(".").filter(sentence => !sentence.includes("rotat")).map(sentence => sentence + ".").slice(0, -1),
+  }))
 
   const skeletonParagraph =
     <>
@@ -52,7 +59,10 @@ const PlanOverview = (props: DataDisplayProps) => {
           ? <Text size="md" mb="lg">{summary}</Text>
           : <>{skeletonParagraph}<br/></>
       }
-      <GanttChart plantingSchedule={plantingSchedule} loading={!plantingSchedule || fakeLoading}/>
+      <GanttChart
+        plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
+        loading={plantingScheduleLoading || fakeLoading}
+      />
       <Accordion mt="md">
         {
           climateData &&
@@ -70,13 +80,13 @@ const PlanOverview = (props: DataDisplayProps) => {
           </Accordion.Panel>
         </Accordion.Item>
         <Accordion.Item value="additionalAdvice">
-          <Accordion.Control icon="📝">Additional Advice</Accordion.Control>
+          <Accordion.Control icon="📝">Growing Tips</Accordion.Control>
           <Accordion.Panel>
             <List>
               {
-                plantingSchedule && !fakeLoading
-                ? plantingSchedule.advice.map((advice, index) =>
-                    <List.Item key={index}>{advice}</List.Item>)
+                growingTips && !fakeLoading
+                ? growingTips.map((advice, index) =>
+                    <List.Item key={index}><b>{advice.name}:</b> {advice.content}</List.Item>)
                 : <>
                     <Skeleton height={10} width="70%" mb={14} radius="xl"/>
                     <Skeleton height={10} width="80%" mb={14} radius="xl"/>

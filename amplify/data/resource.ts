@@ -43,7 +43,6 @@ const schema = a.schema({
   getCropDataFromTrueLeafDescription: a
     .query()
     .arguments({
-      generalDataHandle: a.string(),
       varietyDescription: a.string(),
     })
     .returns(a.string())
@@ -56,7 +55,7 @@ const schema = a.schema({
     .query()
     .arguments({
       climateData: a.string(),
-      crops: a.string()
+      plantingSchedule: a.string()
     })
     .returns(a.string())
     .handler(a.handler.function(getScheduleSummary))

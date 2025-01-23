@@ -1,18 +1,44 @@
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import { useEffect, useState } from "react";
-import {Container, useMantineTheme, Badge, Flex, Text, Card, LoadingOverlay, Skeleton} from "@mantine/core";
+
+import {
+  IconInfoCircle
+} from '@tabler/icons-react';
+import {
+  Container,
+  useMantineTheme,
+  Badge,
+  Flex,
+  Text,
+  Card,
+  LoadingOverlay,
+  Skeleton,
+  HoverCard
+} from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
-import { Planting, PlantingScheduleOutput} from '../types.ts'
-
-import useWindowSize from '../helpers/useWindowSize.ts';
+import { Planting } from '../types.ts'
 
 import "./gantt-chart.css";
+import {useViewportSize} from "@mantine/hooks";
 
-const skeletonPlantingData = {"plots":[[{"name":"","transplantingDate":"2025-03-15","harvestStartDate":"2025-04-14","harvestEndDate":"2025-04-28"},{"name":"","transplantingDate":"2025-04-29","harvestStartDate":"2025-06-13","harvestEndDate":"2025-07-04"},{"name":"","transplantingDate":"2025-07-05","harvestStartDate":"2025-08-24","harvestEndDate":"2025-09-23"},{"name":"","transplantingDate":"2025-09-24","harvestStartDate":"2025-10-15","harvestEndDate":"2025-10-22"}],[{"name":"","transplantingDate":"2025-03-15","harvestStartDate":"2025-04-05","harvestEndDate":"2025-04-12"},{"name":"","transplantingDate":"2025-05-11","harvestStartDate":"2025-07-25","harvestEndDate":"2025-09-23"},{"name":"","transplantingDate":"2025-09-24","harvestStartDate":"2025-11-08","harvestEndDate":"2025-11-29"}]],"summary":["Plot 1: Added Spinach for fall gap.","Plot 2: No suitable spring crop due to early frost risk.","Plot 3: Added Spinach for fall gap.","Plot 4: Added Radishes for spring gap.","Plot 5: Added Radishes for spring gap."]}
+const skeletonPlantingData: Planting[][] =
+  [
+    [
+      {"name":"","transplantingDate": new Date("2025-03-15"),"harvestStartDate": new Date("2025-04-14"),"harvestEndDate": new Date("2025-04-28")},
+      {"name":"","transplantingDate": new Date("2025-04-29"),"harvestStartDate": new Date("2025-06-13"),"harvestEndDate": new Date("2025-07-04")},
+      {"name":"","transplantingDate": new Date("2025-07-05"),"harvestStartDate": new Date("2025-08-24"),"harvestEndDate": new Date("2025-09-23")},
+      {"name":"","transplantingDate": new Date("2025-09-24"),"harvestStartDate": new Date("2025-10-15"),"harvestEndDate": new Date("2025-10-22")}
+    ],
+    [
+      {"name":"","transplantingDate": new Date("2025-03-15"),"harvestStartDate": new Date("2025-04-05"),"harvestEndDate": new Date("2025-04-12")},
+      {"name":"","transplantingDate": new Date("2025-05-11"),"harvestStartDate": new Date("2025-07-25"),"harvestEndDate": new Date("2025-09-23")},
+      {"name":"","transplantingDate": new Date("2025-09-24"),"harvestStartDate": new Date("2025-11-08"),"harvestEndDate": new Date("2025-11-29")}
+    ]
+  ]
 
 interface GanttChartProps {
-  plantingSchedule?: PlantingScheduleOutput
+  plantingSchedule?: Planting[][]
   loading: boolean
 }
 
@@ -20,14 +46,30 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const { plantingSchedule = skeletonPlantingData, loading } = props;
 
-  const noSuccessionPlanting = plantingSchedule?.plots.every((p) => p.length === 1);
+  const { width } = useViewportSize();
 
-  // TODO: use mantine useQueryHook https://mantine.dev/styles/responsive/#use-media-query-hook
-  const { width } = useWindowSize();
+  const noSuccessionPlanting = plantingSchedule?.every((p) => p.length === 1);
+
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
 
   const theme = useMantineTheme();
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
+
+  // const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
+  const tooltipText = "Plots represent sub-divisions of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed."
+
+  const tooltip = (text: string) => (
+    <HoverCard width={400} shadow="md" closeDelay={20}>
+      <HoverCard.Target>
+        <u>{text}</u>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <Text size="sm">
+          {tooltipText}
+        </Text>
+      </HoverCard.Dropdown>
+    </HoverCard>
+  )
 
   // Find month names and abbreviate if screen size is small
   const [headers, setHeaders] = useState<NodeListOf<Element>>();
@@ -68,29 +110,37 @@ const GanttChart = (props: GanttChartProps)=> {
   ]
 
   const getDaysBetween = (start: Date, end: Date): number => {
-    const timeBetween = start.getTime() - end.getTime();
+    const timeBetween = end.getTime() - start.getTime();
     return Math.round(timeBetween / (1000 * 60 * 60 * 24));
   }
 
   const endOfYear = new Date("2025-12-31");
 
   const chartItems: Task[] = [];
-  plantingSchedule.plots.forEach((plot: Planting[], plotIndex: number) => {
-    plot.forEach((planting: Planting, plantingIndex: number) =>{
-      const transplantDate = new Date(`${planting.transplantingDate}`);
-      const harvestStartDate = new Date(`${planting.harvestStartDate}`);
-      const harvestEndDate = new Date(`${planting.harvestEndDate}`);
-      const durationBeforeHarvest = getDaysBetween(transplantDate, harvestStartDate)
-      const fullDuration = getDaysBetween(transplantDate, harvestEndDate)
+  plantingSchedule.forEach((plot: Planting[], plotIndex: number) => {
+    plot.forEach((planting: Planting, plantingIndex: number) => {
+      // console.log(planting)
+      const plantingOverWinters: boolean = planting.harvestStartDate > endOfYear;
+      const harvestOverWinters: boolean = planting.harvestEndDate > endOfYear;
 
-      const overWinters: boolean = harvestEndDate > endOfYear;
+      const durationBeforeHarvest = getDaysBetween(planting.transplantingDate, planting.harvestStartDate)
+      const fullDuration = getDaysBetween(planting.transplantingDate, planting.harvestEndDate)
+
+      const shorteningFactorFromNYECutoff = harvestOverWinters
+        ? fullDuration / getDaysBetween(planting.transplantingDate, endOfYear)
+        : 1
 
       chartItems.push({
         name: planting.name,
         type: "task",
-        start: transplantDate,
-        end: overWinters ? endOfYear : harvestEndDate,
-        progress: overWinters ? 100 : 95 * durationBeforeHarvest / fullDuration,
+        start: planting.transplantingDate,
+        end: harvestOverWinters ? endOfYear : planting.harvestEndDate,
+        progress:
+          plantingOverWinters && harvestOverWinters
+            ? 100
+            : harvestOverWinters
+              ? 95 * durationBeforeHarvest / fullDuration * shorteningFactorFromNYECutoff
+              : 95 * durationBeforeHarvest / fullDuration,
         styles: {
           backgroundColor: plotToColor[plotIndex][9],
           backgroundSelectedColor: plotToColor[plotIndex][9],
@@ -102,7 +152,7 @@ const GanttChart = (props: GanttChartProps)=> {
     })
   });
 
-  const legend = plantingSchedule.plots.map((_, index) =>
+  const legend = plantingSchedule.map((_, index) =>
     <Badge
       key={index}
       color={plotToColor[index][7]}
@@ -115,11 +165,10 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const getEarliestPlantingMonth = () => {
     let earliestPlantingDate = new Date("2025-12-31");
-    plantingSchedule.plots.forEach((plot: Planting[]) => {
+    plantingSchedule.forEach((plot: Planting[]) => {
       plot.forEach((planting: Planting) =>{
-        const transplantDate = new Date(`${planting.transplantingDate}`);
-        if (transplantDate < earliestPlantingDate) {
-          earliestPlantingDate = transplantDate
+        if (planting.transplantingDate < earliestPlantingDate) {
+          earliestPlantingDate = planting.transplantingDate
         }
       })
     });
@@ -137,6 +186,8 @@ const GanttChart = (props: GanttChartProps)=> {
       date.toDateString().split(" ")[1] + " " + date.toDateString().split(" ")[2]
 
     const overWinters: boolean = planting.end === endOfYear;
+    const harvestStartDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestStartDate
+    const harvestEndDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestEndDate
 
     return (
       <Card withBorder>
@@ -148,7 +199,11 @@ const GanttChart = (props: GanttChartProps)=> {
         </Text>
         <Text size="sm">
           {
-            overWinters ? "(overwinters)" : `Remove: ${formatDate(planting.end)}`
+            overWinters
+            ? "(overwinters)"
+            : harvestStartDate && harvestEndDate
+            ? `Harvest: ${formatDate(harvestStartDate!)}-${formatDate(harvestEndDate)}`
+            : `Remove: ${formatDate(planting.end)}`
           }
         </Text>
       </Card>
@@ -165,7 +220,7 @@ const GanttChart = (props: GanttChartProps)=> {
           preStepsCount={getEarliestPlantingMonth()}
           tasks={chartItems}
           headerHeight={isSmallScreen ? 25 : undefined}
-          barFill={100}
+          barFill={95}
           viewMode={ViewMode.Month}
           rowHeight={28}
           columnWidth={trueWidth/12}
@@ -173,7 +228,9 @@ const GanttChart = (props: GanttChartProps)=> {
           TaskListHeader={GanttChartListHeader}
         />
         <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
-          Colors indicate what plot of land a crop is grown in. Lighter regions indicate growing time, while darker regions indicate harvests.
+          {/*Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.*/}
+          {/*Colors indicate what plot of land a crop is grown in, where each plot represent a sub-division of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed. Lighter regions indicate growing time, while darker regions indicate harvests.*/}
+          Colors indicate {tooltip("what plot of land a crop is grown in.")}<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
         {
           noSuccessionPlanting &&

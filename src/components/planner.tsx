@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/api";
 import { Center, Notification, Overlay, Stack } from "@mantine/core"
 import { toast } from 'react-toastify';
@@ -7,8 +7,9 @@ import { Schema } from "../../amplify/data/resource.ts";
 
 import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
-import { ClimateDataOutput, Crop, PlantingScheduleOutput, SeedVariety } from "../types.ts";
-import { trueLeafCropTypes, SelectableCropType } from "../helpers/true-leaf-crop-types.ts";
+import { ClimateDataOutput, Crop, Planting, SeedVariety } from "../types.ts";
+import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
+import { generateOptimalPlantingSchedule } from "../helpers/schedule-helpers.tsx"
 import FakeQuizQuestion from "./quiz/fake-quiz-question.tsx";
 
 const Planner = () => {
@@ -16,13 +17,11 @@ const Planner = () => {
   // TODO: wrap these into a useApiRequestHelper()
 
   const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
-  const [ loadingClimateData, setIsLoadingClimateData ] = useState<boolean>(false);
 
   const [ cropData, setCropData ] = useState<Crop[]>();
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
 
-  const [ plantingSchedule, setPlantingSchedule ] = useState<PlantingScheduleOutput>();
-  const [ loadingPlantingSchedule, setLoadingPlantingSchedule ] = useState<boolean>(false);
+  const [ plantingSchedule, setPlantingSchedule ] = useState<Planting[][]>([]);
 
   const [ scheduleSummary, setScheduleSummary ] = useState<string>();
   const [ loadingScheduleSummary, setLoadingScheduleSummary ] = useState<boolean>(false);
@@ -34,15 +33,12 @@ const Planner = () => {
   const amplifyClient = generateClient<Schema>()
 
   const submitZipCode = async (zipCode: string) => {
-    setIsLoadingClimateData(true)
     try {
       const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
       setClimateData(JSON.parse(result.data!));
     } catch (error) {
       console.error('Error fetching regional climate data: ', error);
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
-    } finally {
-      setIsLoadingClimateData(false)
     }
   }
 
@@ -50,7 +46,7 @@ const Planner = () => {
     setIsLoadingCropData(true)
 
     // Retrieve SelectableCropType using crop names
-    const crops: SelectableCropType[] = cropNames.map(cropName => trueLeafCropTypes[cropName])
+    const crops: SelectableCropType[] = cropNames.map(cropName => cropTypes[cropName])
 
     // Get list of varieties for each crop type (TrueLeaf)
     const varietyResponse = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops)})
@@ -65,31 +61,30 @@ const Planner = () => {
 
     // Filter out "microgreen" or "sprout"
     const topVarieties: SeedVariety[] = varietyResults.map(variety => {
-      const selectedVariety = variety.data.results.find(e =>
+      const selectedVariety = variety.data.results?.find(e =>
         !e.title.toLowerCase().includes('sprout') &&
         !e.title.toLowerCase().includes('microgreen')
       )
 
-      if (!selectedVariety) {
-        console.log("Could not find True Seed variety for crop type: ", variety.cropType.displayName)
+      if (!variety.data.results || !selectedVariety) {
+        console.error("Could not find True Seed variety for crop type: ", variety.cropType.displayName)
+        toast.error(`Could not find True Seed variety for: ${variety.cropType.displayName}`)
       }
 
       return {
         trueSeedTitle: selectedVariety?.title,
         descriptionHtml: selectedVariety?.descriptionHtml,
         storeHandle: selectedVariety?.handle,
-        displayName: variety.cropType.displayName,
-        collectionHandle: variety.cropType.collectionHandle,
-        subTypeParameters: variety.cropType.subTypeParameters,
-        generalDataHandle: variety.cropType.generalDataHandle
+        imageUrl: selectedVariety?.images.nodes[0].url,
+        ...variety.cropType,
       }
     })
+
     console.log("topVarieties: ", topVarieties)
 
     const fetchPromises = topVarieties.map(async (cropVariety) => {
       try {
         const response = await amplifyClient.queries.getCropDataFromTrueLeafDescription({
-          generalDataHandle: cropVariety.generalDataHandle,
           varietyDescription: cropVariety?.descriptionHtml
         });
 
@@ -121,56 +116,77 @@ const Planner = () => {
       toast.error(`We couldn't get planting requirements for ${failedCropNames.length === 1 ? "one" : "some"} of the crops you selected: ` + failedCropNames.join(", "))
     }
 
-    console.log("Successful results:", successfulResults);
     console.log("Failed results:", failedResults);
 
-    const cropsWithData = successfulResults.map(result => ({
-      name: result.cropVariety!.displayName,
-      variety: result.cropVariety!.trueSeedTitle,
-      shortDescription: result.data.shortDescription,
-      storeHandle: result.cropVariety!.storeHandle,
+    const cropsWithData: Crop[] = successfulResults.map(result => {
 
-      seedlingDuration: result.data.seedlingDuration,
-      growthDuration: result.data.growthDuration,
-      harvestDuration: result.data.harvestDuration,
+      // The functions for plantingDates (and harvestDuration) get lost in JSON.Stringify, so we have to find the original selected crops.
+      const selectedCrop = crops.find(crop => crop.displayName === result.cropVariety.displayName)
+      const daysToMaturity = result.cropVariety.daysToMaturity ? result.cropVariety.daysToMaturity : selectedCrop!.daysToMaturity // TODO this is wrong, it's named someting else
 
-      frostHardy: result.data.frostHardy,
-      guidance: result.data.guidance,
+      const plantingRanges = selectedCrop!.plantingDates(climateData!, daysToMaturity).map(plantingDate => {
+        const calculatedHarvestDuration = selectedCrop!.harvestDuration(
+          climateData!,
+          plantingDate,
+          selectedCrop!.daysToMaturity
+        )
+        const harvestStartDate = new Date(plantingDate)
+        harvestStartDate.setDate(harvestStartDate.getDate() + selectedCrop!.daysToMaturity)
+        const harvestEndDate = new Date(harvestStartDate)
+        harvestEndDate.setDate(harvestEndDate.getDate() + calculatedHarvestDuration)
+        return {
+          transplantingDate: plantingDate,
+          harvestStartDate: harvestStartDate,
+          harvestEndDate: harvestEndDate,
+        }
+      })
+      return ({
+        name: result.cropVariety!.displayName,
+        variety: result.data.varietyTitle,
+        shortDescription: result.data.shortDescription,
+        storeHandle: result.cropVariety!.storeHandle,
+        imageUrl: result.cropVariety!.imageUrl,
 
-      lowerTempBound: result.data.lowerTempBound,
-      upperTempBound: result.data.upperTempBound
-    }))
+        seedlingDuration: result.data.seedlingDuration,
+        growthDuration: result.data.growthDuration,
+        harvestDuration: result.data.harvestDuration,
+
+        optimalGrowingDateRanges: plantingRanges,
+        frostHardy: result.cropVariety!.frostHardy,
+        directSow: result.cropVariety!.directSow,
+        guidance: result.data.guidance,
+
+        lowerTempBound: result.data.lowerTempBound,
+        upperTempBound: result.data.upperTempBound
+      })
+    })
+
+    console.log("Successful results (with data):", cropsWithData);
 
     setCropData(cropsWithData)
+    const optimalPlantingSchedule = generateOptimalPlantingSchedule(cropsWithData)
+    console.log(optimalPlantingSchedule)
+    setPlantingSchedule(optimalPlantingSchedule)
     setIsLoadingCropData(false)
   }
 
-  // Request planting data and schedule summary once climate data and crop data return
+  // Request schedule summary when planting schedule returns
   useEffect(() => {
-    const requestPlantingData = async () => {
-      setLoadingPlantingSchedule(true)
-      try {
-        const plantingScheduleRequestArguments = {
-          climateData: JSON.stringify(climateData),
-          crops: JSON.stringify(cropData)
-        }
-        const response =
-          await amplifyClient.queries.getPlantingScheduleData(plantingScheduleRequestArguments);
-        console.log("requestPlantingData: ", JSON.parse(response.data!))
-        setPlantingSchedule(JSON.parse(response.data!));
-      } catch (error) {
-        console.error('Error fetching planting data:', error);
-      } finally {
-        setLoadingPlantingSchedule(false);
-      }
-    };
 
     const requestScheduleSummary = async () => {
       setLoadingScheduleSummary(true)
       try {
+        const plantingScheduleFormattedForLLM = plantingSchedule.map(plot => plot.map(planting => ({
+          name: planting.name,
+          plantingDate: planting.transplantingDate,
+          harvestStartDate: planting.harvestStartDate,
+          harvestEndDate: planting.harvestEndDate,
+          frostHardy: cropData?.find(crop => crop.name === planting.name)?.frostHardy,
+          sowingStrategy: cropData?.find(crop => crop.name === planting.name)?.directSow ? "Direct Sow" : "Transplant seedlings",
+        })))
         const scheduleSummaryRequestArguments = {
           climateData: JSON.stringify(climateData!),
-          crops: JSON.stringify(cropData)
+          plantingSchedule: JSON.stringify(plantingScheduleFormattedForLLM)
         }
         const response =
           await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
@@ -184,21 +200,16 @@ const Planner = () => {
     };
 
     if (
-      !!climateData && // Climate data exists
-      !!cropData && // Crop data exists
-      !loadingPlantingSchedule && // We aren't already loading planting schedule
-      !plantingSchedule && // We don't already have a planting schedule
+      !!climateData && // We have climate data
+      !!plantingSchedule[0] && // We have a planting schedule that isn't empty
       !loadingScheduleSummary && // We aren't already loading a schedule summary
       !scheduleSummary // We don't already have a schedule summary
     ) {
-      requestPlantingData();
       requestScheduleSummary();
     }
   }, [
     amplifyClient.queries,
     climateData,
-    cropData,
-    loadingPlantingSchedule,
     plantingSchedule,
     loadingScheduleSummary,
     scheduleSummary
@@ -208,7 +219,7 @@ const Planner = () => {
     <>
       {
         cropData === undefined && !loadingCropData &&
-        <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} hardinessZone={climateData?.hardinessZone}/>
+        <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} climateData={climateData}/>
       }
       {
         !proceedToPlan && !(cropData === undefined && !loadingCropData) &&
