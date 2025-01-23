@@ -19,9 +19,8 @@ import "gantt-task-react/dist/index.css";
 
 import { Planting } from '../types.ts'
 
-import useWindowSize from '../helpers/useWindowSize.ts';
-
 import "./gantt-chart.css";
+import {useViewportSize} from "@mantine/hooks";
 
 const skeletonPlantingData: Planting[][] =
   [
@@ -47,10 +46,10 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const { plantingSchedule = skeletonPlantingData, loading } = props;
 
+  const { width } = useViewportSize();
+
   const noSuccessionPlanting = plantingSchedule?.every((p) => p.length === 1);
 
-  // TODO: use mantine useQueryHook https://mantine.dev/styles/responsive/#use-media-query-hook
-  const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
 
   const theme = useMantineTheme();
