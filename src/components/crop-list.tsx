@@ -1,4 +1,4 @@
-import {Text, Card, Group, Grid, Badge, Skeleton, useMantineTheme, Anchor, Button, Stack} from '@mantine/core';
+import {Text, Card, Group, Grid, Skeleton, useMantineTheme, Anchor, Button, Stack, Image} from '@mantine/core';
 
 import { Crop } from '../types.ts'
 
@@ -14,25 +14,25 @@ const CropList = (props: CropListProps) => {
   return (
     <Grid>
       {(crops ? crops : Array(5).fill(null)).map((crop, index) => (
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={index}>
+        <Grid.Col span={{ base: 12, xs: 6, md: 4 }} key={index}>
           <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
             {
               crop
               ? <Stack>
+                  {
+                    crop.imageUrl &&
+                    <Card.Section>
+                      <Image
+                        src={crop.imageUrl}
+                        height={150}
+                        alt={crop.name}
+                      />
+                    </Card.Section>
+                  }
                   <Text fw={500}>{crop.name} {crop.variety && crop.variety}</Text>
                   <Text size="sm" c="dimmed">
                     {crop.shortDescription}
                   </Text>
-                  <Text size="sm" c="dimmed">
-                    Temperature Preference: {crop.lowerTempBound}–{crop.upperTempBound} &deg;F
-                  </Text>
-                  <Group >
-                    <Badge color={theme.colors.green[9]}>
-                      {crop.seedlingDuration === 0 ? "Direct Sow" : `Seedling: ${crop.seedlingDuration}`}
-                    </Badge>
-                    <Badge color={theme.colors.green[9]}>Growth: {crop.growthDuration}</Badge>
-                    <Badge color={theme.colors.green[9]}>Harvest: {crop.harvestDuration}</Badge>
-                  </Group>
                   {
                     crop.storeHandle &&
                     <Anchor href={"https://trueleafmarket.com/products/" + crop.storeHandle} target="_blank">

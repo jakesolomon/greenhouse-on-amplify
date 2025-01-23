@@ -75,6 +75,7 @@ const Planner = () => {
         trueSeedTitle: selectedVariety?.title,
         descriptionHtml: selectedVariety?.descriptionHtml,
         storeHandle: selectedVariety?.handle,
+        imageUrl: selectedVariety?.images.nodes[0].url,
         ...variety.cropType,
       }
     })
@@ -141,9 +142,10 @@ const Planner = () => {
       })
       return ({
         name: result.cropVariety!.displayName,
-        variety: result.cropVariety!.trueSeedTitle,
+        variety: result.data.varietyTitle,
         shortDescription: result.data.shortDescription,
         storeHandle: result.cropVariety!.storeHandle,
+        imageUrl: result.cropVariety!.imageUrl,
 
         seedlingDuration: result.data.seedlingDuration,
         growthDuration: result.data.growthDuration,

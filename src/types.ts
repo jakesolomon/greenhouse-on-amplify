@@ -6,6 +6,7 @@ export interface SeedVariety extends SelectableCropType {
   trueSeedTitle: string;
   descriptionHtml: string;
   storeHandle: string;
+  imageUrl: string;
 }
 
 interface TemperatureData {
@@ -69,6 +70,7 @@ export interface Crop {
   variety: string; // I will supply this
   shortDescription: string;
   storeHandle: string;
+  imageUrl: string;
 
   seedlingDuration: number; // 0 for direct sow. Number represents the reasonable amt of time before transplant. Might actually be able to ignore this value until month-to-month schedule is created.
   growthDuration: number; // basically, days to maturity. Starts with transplant date or direct sow date.

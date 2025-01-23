@@ -64,7 +64,7 @@ const systemPrompt =
   // " - Do not explain the purpose of the plan. This will be explained in an earlier paragraph.\n" +
   // " - Do not mention what year the plan takes place in.\n" +
   // " - Reference the number of plots used by the plan, explaining that these are subdivisions of a user's available gardening space (for example, if a plan includes four plots and the user has four garden beds, each bed is a plot. If the plan uses for plots and the user only has two garden beds, then each plot represents half of a garden bed.)\n" +
-  " - Don't give instructions—this will be covered in other parts of the plan.\n" +
+  " - Don't give instructions—this will be covered in other parts of the plan. For example, one previous output to this prompt ended with `Attention to frost hardiness will ensure bountiful success.` That sounds unnecessary and wordy. If you don't have enough information say on-topic things about the schedule itself, just give a shorter answer.\n" +
   // " - Don't repeat the names of crop varieties.\n" +
   " - Do not reference the year 2025.\n" +
   // " - Do not repeat information from the `Introduction Paragraph`, listed below\n" +
