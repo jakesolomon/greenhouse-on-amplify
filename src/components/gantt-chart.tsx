@@ -186,6 +186,8 @@ const GanttChart = (props: GanttChartProps)=> {
       date.toDateString().split(" ")[1] + " " + date.toDateString().split(" ")[2]
 
     const overWinters: boolean = planting.end === endOfYear;
+    const harvestStartDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestStartDate
+    const harvestEndDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestEndDate
 
     return (
       <Card withBorder>
@@ -197,7 +199,11 @@ const GanttChart = (props: GanttChartProps)=> {
         </Text>
         <Text size="sm">
           {
-            overWinters ? "(overwinters)" : `Remove: ${formatDate(planting.end)}`
+            overWinters
+            ? "(overwinters)"
+            : harvestStartDate && harvestEndDate
+            ? `Harvest: ${formatDate(harvestStartDate!)}-${formatDate(harvestEndDate)}`
+            : `Remove: ${formatDate(planting.end)}`
           }
         </Text>
       </Card>
