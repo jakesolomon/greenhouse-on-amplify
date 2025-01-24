@@ -233,23 +233,20 @@ const tryAddingExtraPlantings = (
       currentPlantingSchedule.forEach((plot: Planting[], plotIndex: number) => {
         const conflicts = plot.some(existingPlanting => plantingsAreInConflict(planting, existingPlanting))
         let fudgedPlanting;
-        if (!conflicts) {
+        if (!conflicts && !plantedThisCrop) {
           currentPlantingSchedule[plotIndex].push(getPlantings(crop)[plantingIndex]) // add planting to schedule
           haveAddedCrops = true;
           plantedThisCrop = true;
         } else {
           // Deep copy planting
           fudgedPlanting = fudgePlanting(JSON.parse(JSON.stringify(planting)), plot)
-          if (fudgedPlanting) {
+          if (fudgedPlanting && !plantedThisCrop) {
             currentPlantingSchedule[plotIndex].push(fudgedPlanting) // add fudged planting to schedule
             haveAddedCrops = true;
             plantedThisCrop = true;
           }
         }
       })
-      if (plantedThisCrop) {
-        return true
-      }
     })
   })
   // If crops have been added, call the function again to see if more can be added still. Otherwise, exit.
