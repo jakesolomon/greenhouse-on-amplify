@@ -128,7 +128,7 @@ const Planner = () => {
 
       // The functions for plantingDates (and harvestDuration) get lost in JSON.Stringify, so we have to find the original selected crops.
       const selectedCrop = crops.find(crop => crop.displayName === result.cropVariety.displayName)
-      const daysToMaturity = result.cropVariety.daysToMaturity ? result.cropVariety.daysToMaturity : selectedCrop!.daysToMaturity // TODO this is wrong, it's named someting else
+      const daysToMaturity = result.cropVariety.daysToMaturity ? result.cropVariety.daysToMaturity : selectedCrop!.daysToMaturity // if LLM returns daysToMaturity based on description, use it. If not, use generic from crop-types.ts
 
       const plantingRanges = selectedCrop!.plantingDates(climateData!, daysToMaturity).map(plantingDate => {
         const calculatedHarvestDuration = selectedCrop!.harvestDuration(
