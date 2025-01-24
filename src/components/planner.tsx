@@ -38,6 +38,16 @@ const Planner = () => {
 
   const amplifyClient = generateClient<Schema>()
 
+  const startPlanOver = () => {
+    setClimateData(undefined)
+    setCropData(undefined)
+    setPlantingSchedule([])
+    setScheduleSummary(undefined)
+    setCompanionPlantingAdvice(undefined)
+    setCompanionPlants(undefined)
+    setProceedToPlan(false)
+  }
+
   const submitZipCode = async (zipCode: string) => {
     try {
       const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
@@ -176,53 +186,6 @@ const Planner = () => {
     setIsLoadingCropData(false)
   }
 
-  const getCompanionPlantLinksFromPlantingAdvice = async (companionPlantingAdvice: string[]) => {
-    const foundPlants: {name: string, collectionHandle: string}[] = []
-
-    companionPlantingAdvice.forEach(text => {
-      Object.values(availableCompanionPlants).forEach(plant => {
-        const regex = new RegExp(`\\b${plant.name}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
-        if (regex.test(text)) {
-          foundPlants.push(plant);
-        }
-      });
-    });
-    console.log("foundCompanionPlants: ", foundPlants)
-
-    try {
-      const varietyResponse =
-        await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(foundPlants), mode: 'companionPlant'})
-      if (varietyResponse.errors || !varietyResponse.data) {
-        console.error("Error fetching crop varieties: ", varietyResponse.errors)
-        toast.error("We couldn't get seed varieties for companion plants.")
-        return
-      }
-
-      const varietyResults = JSON.parse(varietyResponse.data)
-      console.log("companion plant varieties: ", varietyResults)
-
-      // Filter out "microgreen" or "sprout" // TODO prefer in stock
-      const topVarieties = varietyResults.map(variety => {
-        const selectedVariety = variety.data.results?.find(e =>
-          !e.title.toLowerCase().includes('sprout') &&
-          !e.title.toLowerCase().includes('microgreen')
-        )
-
-        if (!variety.data.results || !selectedVariety) {
-          console.error("Could not find True Seed variety for companion plant: ", variety.cropType.displayName)
-        }
-        return {
-          storeHandle: selectedVariety?.handle,
-          name: variety.cropType.name,
-        }
-      })
-      console.log("Top companion plant varieties: ", topVarieties)
-      setCompanionPlants(topVarieties)
-    } catch (error) {
-      console.error("Error getting companion plants: ", error)
-    }
-  }
-
   // Request schedule summary when planting schedule returns
   useEffect(() => {
 
@@ -278,6 +241,53 @@ const Planner = () => {
   // Request companion plants when planting schedule returns
   useEffect(() => {
 
+    const getCompanionPlantLinksFromPlantingAdvice = async (companionPlantingAdvice: string[]) => {
+      const foundPlants: {name: string, collectionHandle: string}[] = []
+
+      companionPlantingAdvice.forEach(text => {
+        Object.values(availableCompanionPlants).forEach(plant => {
+          const regex = new RegExp(`\\b${plant.name}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
+          if (regex.test(text)) {
+            foundPlants.push(plant);
+          }
+        });
+      });
+      console.log("foundCompanionPlants: ", foundPlants)
+
+      try {
+        const varietyResponse =
+          await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(foundPlants), mode: 'companionPlant'})
+        if (varietyResponse.errors || !varietyResponse.data) {
+          console.error("Error fetching crop varieties: ", varietyResponse.errors)
+          toast.error("We couldn't get seed varieties for companion plants.")
+          return
+        }
+
+        const varietyResults = JSON.parse(varietyResponse.data)
+        console.log("companion plant varieties: ", varietyResults)
+
+        // Filter out "microgreen" or "sprout" // TODO prefer in stock
+        const topVarieties = varietyResults.map(variety => {
+          const selectedVariety = variety.data.results?.find(e =>
+            !e.title.toLowerCase().includes('sprout') &&
+            !e.title.toLowerCase().includes('microgreen')
+          )
+
+          if (!variety.data.results || !selectedVariety) {
+            console.error("Could not find True Seed variety for companion plant: ", variety.cropType.displayName)
+          }
+          return {
+            storeHandle: selectedVariety?.handle,
+            name: variety.cropType.name,
+          }
+        })
+        console.log("Top companion plant varieties: ", topVarieties)
+        setCompanionPlants(topVarieties)
+      } catch (error) {
+        console.error("Error getting companion plants: ", error)
+      }
+    }
+
     const requestCompanionPlants = async () => {
       setLoadingCompanionPlantingAdvice('true')
       try {
@@ -317,8 +327,7 @@ const Planner = () => {
     climateData,
     plantingSchedule,
     loadingCompanionPlantingAdvice,
-    companionPlantingAdvice,
-    getCompanionPlantLinksFromPlantingAdvice
+    companionPlantingAdvice
   ]);
 
   return(
@@ -340,6 +349,7 @@ const Planner = () => {
           summary={scheduleSummary}
           companionPlantingAdvice={companionPlantingAdvice}
           companionPlants={companionPlants}
+          startPlanOver={startPlanOver}
         />
       }
       { fatalError &&

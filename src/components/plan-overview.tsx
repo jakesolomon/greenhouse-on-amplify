@@ -8,7 +8,8 @@ import {
   AppShell,
   Center,
   Image,
-  useMantineTheme
+  useMantineTheme,
+  Anchor
 } from '@mantine/core';
 import {useViewportSize} from "@mantine/hooks";
 
@@ -31,19 +32,27 @@ interface DataDisplayProps {
   summary?: string;
   companionPlantingAdvice?: string[],
   companionPlants?: {name: string, storeHandle: string}[]
+  startPlanOver: () => void
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants } = props;
+  const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants, startPlanOver } = props;
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
 
   const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
+  const [ showLoadingTimeWarning, setShowLoadingTimeWarning ] = useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
       setIsFakeLoading(false)
     }, 1700);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowLoadingTimeWarning(true)
+    }, 6500);
   }, []);
 
   const { width } = useViewportSize();
@@ -122,6 +131,7 @@ const PlanOverview = (props: DataDisplayProps) => {
       <GanttChart
         plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
         loading={plantingScheduleLoading || fakeLoading}
+        showLoadingTimeWarning={showLoadingTimeWarning}
       />
       <Accordion mt="md" transitionDuration={350}>
         <Accordion.Item value="crops">
@@ -179,6 +189,9 @@ const PlanOverview = (props: DataDisplayProps) => {
           </Accordion.Item>
         }
       </Accordion>
+      <Container my="md" display="flex">
+        <Text size="sm" c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
+      </Container>
       <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
         <Center py="md">
           <Image src={Logo} className="footer-logo" alt="logo" />

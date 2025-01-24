@@ -13,7 +13,7 @@ import {
   Card,
   LoadingOverlay,
   Skeleton,
-  HoverCard
+  HoverCard, Loader
 } from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
@@ -40,20 +40,21 @@ const skeletonPlantingData: Planting[][] =
 interface GanttChartProps {
   plantingSchedule?: Planting[][]
   loading: boolean
+  showLoadingTimeWarning: boolean
 }
 
 const GanttChart = (props: GanttChartProps)=> {
 
-  const { plantingSchedule = skeletonPlantingData, loading } = props;
-
-  const { width } = useViewportSize();
+  const { plantingSchedule = skeletonPlantingData, loading, showLoadingTimeWarning } = props;
 
   const noSuccessionPlanting = plantingSchedule?.every((p) => p.length === 1);
 
+  const { width } = useViewportSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
-
   const theme = useMantineTheme();
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
+
+  const loadingTimeWarning = <Text size="sm" c="dimmed">This sometimes takes a few seconds<Loader color={theme.colors.gray[5]} size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></Text>
 
   // const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
   const tooltipText = "Plots represent sub-divisions of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed."
@@ -257,7 +258,7 @@ const GanttChart = (props: GanttChartProps)=> {
 
   return (
     <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4] }}/>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4], children: showLoadingTimeWarning ? loadingTimeWarning : undefined }}/>
       <Skeleton visible={loading}>
         <Gantt
           TooltipContent={ToolTip}
