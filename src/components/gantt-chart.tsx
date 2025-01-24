@@ -94,6 +94,51 @@ const GanttChart = (props: GanttChartProps)=> {
     }
   });
 
+  // Fixes issue where tooltips aren't always rendered on mobile tap
+  useEffect(() => {
+    const ganttContainer = document.querySelector(".gantt-chart");
+    if (!ganttContainer) {
+      console.error("Gantt chart container not found.");
+      return;
+    }
+
+    // Define the type for the last hovered task element
+    let lastHoveredTask: SVGElement | null = null;
+
+    const handleTapEvent = (event: MouseEvent) => {
+      // Ensure event target is an element
+      const target = event.target as Element | null;
+      if (!target) return;
+
+      // Find the closest task element
+      const task = target.closest("g._KxSXS") as SVGElement | null;
+      if (!task) return;
+
+      // Trigger 'mouseleave' on the last hovered task
+      if (lastHoveredTask && lastHoveredTask !== task) {
+        const mouseLeaveEvent = new MouseEvent("mouseleave", { bubbles: true });
+        lastHoveredTask.dispatchEvent(mouseLeaveEvent);
+      }
+
+      // Trigger 'mouseover' on the new task
+      const mouseOverEvent = new MouseEvent("mouseover", { bubbles: true });
+      task.dispatchEvent(mouseOverEvent);
+
+      // Update lastHoveredTask to the current task
+      lastHoveredTask = task;
+    };
+
+    // Add the tap listener to the Gantt chart container
+    ganttContainer.addEventListener("click", handleTapEvent as EventListener);
+
+    // Cleanup listener on component unmount
+    return () => {
+      ganttContainer.removeEventListener("click", handleTapEvent as EventListener);
+    };
+  }, []);
+
+
+
   const plotToColor = [
     theme.colors.green,
     theme.colors.yellow,
@@ -190,7 +235,7 @@ const GanttChart = (props: GanttChartProps)=> {
     const harvestEndDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestEndDate
 
     return (
-      <Card withBorder>
+      <Card withBorder style={isSmallScreen ? {position: "fixed", top: 25, left: 20} : undefined}>
         <Text size="sm">
           <b>{planting.name}</b>
         </Text>
@@ -209,7 +254,6 @@ const GanttChart = (props: GanttChartProps)=> {
       </Card>
     )
   }
-
 
   return (
     <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
