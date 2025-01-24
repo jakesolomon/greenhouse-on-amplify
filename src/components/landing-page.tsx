@@ -8,7 +8,7 @@ import {
   useMantineTheme,
   Card,
   ThemeIcon,
-  Timeline, Accordion
+  Timeline, Accordion, AppShell, Center, Image
 } from "@mantine/core";
 import {
   IconSun,
@@ -17,6 +17,7 @@ import {
 } from '@tabler/icons-react';
 import useWindowSize from "../helpers/useWindowSize.ts";
 import { useState } from "react";
+import Logo from "../assets/full-logo-text-color.svg";
 
 const LandingPage = () => {
 
@@ -201,7 +202,7 @@ const LandingPage = () => {
           </Timeline.Item>
         </Timeline>
       </Container>
-      <Container size="md" py="xl">
+      <Container size="md" py="xl" px={0}>
         <Title order={2} ta="center" mb="lg">
           Frequently Asked Questions
         </Title>
@@ -222,8 +223,12 @@ const LandingPage = () => {
             </Accordion.Item>
           ))}
         </Accordion>
+        <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+          <Center py="md">
+            <Image src={Logo} className="footer-logo" alt="logo" />
+          </Center>
+        </AppShell.Footer>
       </Container>
-
     </>
   )
 }

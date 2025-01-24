@@ -33,7 +33,7 @@ function App() {
     <MantineProvider theme={theme}>
       <ToastContainer autoClose={false} position='top-right'/>
       <Router>
-        <AppShell header={{ height: 60 }}>
+        <AppShell header={{ height: 60 }} footer={{ height: 60 }}>
           <AppShell.Header >
             <Center h="100%">
               <Link to={'/'}>

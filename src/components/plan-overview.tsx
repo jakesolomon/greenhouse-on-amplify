@@ -1,4 +1,4 @@
-import {Text, Container, Accordion, Skeleton, Title, List} from '@mantine/core';
+import {Text, Container, Accordion, Skeleton, Title, List, AppShell, Center, Image} from '@mantine/core';
 
 import {
   ClimateDataOutput,
@@ -10,6 +10,7 @@ import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
 import {useEffect, useState} from "react";
+import Logo from "../assets/full-logo-text-color.svg";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -94,7 +95,7 @@ const PlanOverview = (props: DataDisplayProps) => {
         plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
         loading={plantingScheduleLoading || fakeLoading}
       />
-      <Accordion mt="md">
+      <Accordion mt="md" transitionDuration={350}>
         <Accordion.Item value="crops">
           <Accordion.Control icon="🥦">Crops</Accordion.Control>
           <Accordion.Panel>
@@ -150,6 +151,11 @@ const PlanOverview = (props: DataDisplayProps) => {
           </Accordion.Item>
         }
       </Accordion>
+      <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+        <Center py="md">
+          <Image src={Logo} className="footer-logo" alt="logo" />
+        </Center>
+      </AppShell.Footer>
     </Container>
   );
 };
