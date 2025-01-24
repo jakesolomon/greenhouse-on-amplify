@@ -16,10 +16,12 @@ interface DataDisplayProps {
   plantingSchedule: Planting[][];
   climateData?: ClimateDataOutput;
   summary?: string;
+  companionPlantingAdvice?: string[],
+  companionPlants?: {name: string, storeHandle: string}[]
 }
 
 const PlanOverview = (props: DataDisplayProps) => {
-  const { crops, plantingSchedule, climateData, summary } = props;
+  const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants } = props;
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
 
@@ -34,7 +36,7 @@ const PlanOverview = (props: DataDisplayProps) => {
   // Extract growing tips. Remove any sentence that refers to crop rotation.
   const growingTips = crops?.map(crop => ({
     name: crop.name,
-    content: crop.guidance.split(".").filter(sentence => !sentence.includes("rotat")).map(sentence => sentence + ".").slice(0, -1),
+    content: crop.guidance.split(".").filter(sentence => !sentence.includes("rotat")).map(sentence => sentence + ".").slice(0, -1).join(" "),
   }))
 
   const skeletonParagraph =
@@ -44,6 +46,35 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Skeleton height={10} mt={6} radius="xl" />
       <Skeleton height={10} mt={6} width="70%" radius="xl" />
     </>
+
+  const replaceCompanionPlantsWithLinks = (advice: string, plantsWithLinks: {name: string, storeHandle: string}[]) => {
+    // Create a map for faster lookup of storeHandles by plant name
+    const plantMap: Record<string, string> = plantsWithLinks.reduce((map, plant) => {
+      map[plant.name] = plant.storeHandle;
+      return map;
+    }, {} as Record<string, string>);
+
+    // Generate a regex to match all plant names
+    const plantNames = plantsWithLinks.map(plant => plant.name).join("|");
+    const regex = new RegExp(`\\b(${plantNames})\\b`, "gi");
+
+    // Track which plants have already been linked
+    const linkedPlants = new Set<string>();
+
+    // Replace plant names with React links
+    return advice.split(regex).map((chunk, index) => {
+      const normalizedChunk = chunk.toLowerCase();
+      if (plantMap[chunk] && !linkedPlants.has(normalizedChunk)) {
+        linkedPlants.add(normalizedChunk); // Mark this plant as linked
+        return (
+          <a key={index} href={plantMap[chunk]} target="_blank" rel="noopener noreferrer">
+            {chunk}
+          </a>
+        );
+      }
+      return chunk;
+    });
+  }
 
   return (
     <Container px={0}>
@@ -64,15 +95,6 @@ const PlanOverview = (props: DataDisplayProps) => {
         loading={plantingScheduleLoading || fakeLoading}
       />
       <Accordion mt="md">
-        {
-          climateData &&
-          <Accordion.Item value="climateData">
-            <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
-            <Accordion.Panel>
-              <ClimateChart data={climateData}/>
-            </Accordion.Panel>
-          </Accordion.Item>
-        }
         <Accordion.Item value="crops">
           <Accordion.Control icon="🥦">Crops</Accordion.Control>
           <Accordion.Panel>
@@ -98,6 +120,35 @@ const PlanOverview = (props: DataDisplayProps) => {
             </List>
           </Accordion.Panel>
         </Accordion.Item>
+        <Accordion.Item value="companionPlants">
+          <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
+          <Accordion.Panel>
+            <List>
+              <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting certain crops together, companion planting boosts your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
+              {
+                companionPlantingAdvice && companionPlants && !fakeLoading
+                  ? companionPlantingAdvice.map((advice, index) =>
+                    <List.Item key={index}><b>{advice.split("***")[0]}</b> {replaceCompanionPlantsWithLinks(advice.split("***")[1], companionPlants)}</List.Item>)
+                  : <>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                  </>
+              }
+            </List>
+          </Accordion.Panel>
+        </Accordion.Item>
+        {
+          climateData &&
+          <Accordion.Item value="climateData">
+            <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
+            <Accordion.Panel>
+              <ClimateChart data={climateData}/>
+            </Accordion.Panel>
+          </Accordion.Item>
+        }
       </Accordion>
     </Container>
   );

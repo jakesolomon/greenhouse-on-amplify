@@ -131,7 +131,7 @@ const addPlanting = (
 
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
-      console.log("I better see this exactly once (per bucket)")
+      // console.log("I better see this exactly once (per bucket)")
     }
     const hasMorePlantingsAndIsEquallyEfficient = (
       currentPlantingSchedule.length === optimalPlantingSchedule.length &&
@@ -142,7 +142,7 @@ const addPlanting = (
       hasMorePlantingsAndIsEquallyEfficient ||
       isMoreEfficient
     ) {
-      console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
+      // console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
       optimalPlantingSchedule.splice(0, optimalPlantingSchedule.length);
       optimalPlantingSchedule.push(...currentPlantingSchedule)
     }
@@ -178,7 +178,7 @@ const addPlantingToNewPlot = (
     currentPlantingSchedule = tryAddingExtraPlantings(currentPlantingSchedule, allCrops)
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
-      console.log("I better see this exactly once")
+      // console.log("I better see this exactly once")
     }
     const hasMorePlantingsAndIsEquallyEfficient = (
       currentPlantingSchedule.length === optimalPlantingSchedule.length &&
@@ -190,7 +190,7 @@ const addPlantingToNewPlot = (
       hasMorePlantingsAndIsEquallyEfficient ||
       isMoreEfficient
     ) {
-      console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
+      // console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
       optimalPlantingSchedule.splice(0, optimalPlantingSchedule.length);
       optimalPlantingSchedule.push(...currentPlantingSchedule)
       console.log(optimalPlantingSchedule)
