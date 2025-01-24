@@ -10,8 +10,7 @@ import {
 } from '@mantine/core';
 
 import { cropTypes } from "../../helpers/crop-types.ts";
-
-import './true-leaf-crops-page.css'
+import {useViewportSize} from "@mantine/hooks";
 
 interface CropsPageProps {
   inputKey: string;
@@ -25,8 +24,6 @@ function TrueLeafCropsPage(props: CropsPageProps) {
 
   const { inputKey, inputProps, setFieldValue, value, hardinessZone } = props;
 
-  const theme = useMantineTheme();
-
   useEffect(() => {
     if (hardinessZone !== undefined) {
       setFieldValue(value.filter((v) =>
@@ -36,16 +33,21 @@ function TrueLeafCropsPage(props: CropsPageProps) {
     hardinessZone
   ])
 
+  const { width } = useViewportSize();
+  const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
+  const theme = useMantineTheme();
+  const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
+
   const renderChips = (_hardinessZone?: number) =>
     Object.keys(cropTypes).map(crop => {
       const disabled = !!_hardinessZone && !cropTypes[crop].idealHardinessZones.includes(_hardinessZone)
-      const chipClass = !_hardinessZone || disabled ? undefined : "suitable"
       return (
         <Chip
-          w="14rem"
+          w={isSmallScreen ? undefined : "14rem"}
+          style={isSmallScreen ? {minWidth: "7rem"} : undefined}
+          pb={isSmallScreen ? "xs" : undefined}
           key={crop}
           value={crop}
-          className={chipClass}
           disabled={disabled}
           checked={false}
         >
@@ -60,7 +62,7 @@ function TrueLeafCropsPage(props: CropsPageProps) {
       <InputLabel>What crops are you interested in growing?</InputLabel>
       <Text c="dimmed" size="sm" mb="md" >{
         hardinessZone
-          ? <>USDA Plant Hardiness Zone {hardinessZone} found for your location. Suitable crops are highlighted in green.</>
+          ? <>USDA Plant Hardiness Zone {hardinessZone} found for your location. Unsuitable crops are disabled.</>
           : <>Finding your USDA Plant Hardiness Zone <Loader color={theme.colors.gray[6]} type="dots" size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></>
       }</Text>
       <Chip.Group
@@ -70,7 +72,7 @@ function TrueLeafCropsPage(props: CropsPageProps) {
         key={inputKey}
         {...inputProps}
       >
-        <Group justify="left">
+        <Group justify="space-between">
           {renderChips(hardinessZone)}
         </Group>
       </Chip.Group>

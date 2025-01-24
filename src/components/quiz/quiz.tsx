@@ -64,7 +64,7 @@ function Quiz(props: QuizProps) {
   }
 
   return (
-    <Container size="xl" pt="xl">
+    <Container size="xl" pt="xl" h="30vh">
       <Flex align="center">
         <form onSubmit={form.onSubmit((values) => getAllCropData(values.crops, climateData!))}>
           {
@@ -86,7 +86,8 @@ function Quiz(props: QuizProps) {
               hardinessZone={hardinessZone}
             />
           }
-          <Group justify="flex-start" mt="md">
+          <Group justify="flex-start" my
+            ="md">
             {
               isFirstPage &&
               <Button

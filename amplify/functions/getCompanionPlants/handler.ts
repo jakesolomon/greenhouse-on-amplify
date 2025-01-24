@@ -76,7 +76,7 @@ const systemPrompt =
   "\n" +
   "### Guidelines\n" +
   " - Format each recommendation list item with the plot number, three asterisks, and then the advice, as follows: `Plot 1:***1-3 sentences about what companion plants are recommended for crops in Plot 1 and how and where to plant them.`\n" +
-  " - Only recommend companion plants from the list below, delineated by triple backticks. Refer to them exactly by their name in the list. For example, `Yarrow` is listed as `Yarrow (Achillea)`. If you recommend this plant, it should be listed in your recommendation item as `Yarrow (Achillea)`.\n" +
+  // " - Only recommend companion plants from the list below, delineated by triple backticks. Refer to them exactly by their name in the list. For example, `Yarrow` is listed as `Yarrow (Achillea)`. If you recommend this plant, it should be listed in your recommendation item as `Yarrow (Achillea)`.\n" +
   " - If there are no good recommendations to be made for a particular plot, do not create a list item for that plot at all.\n" +
   " - For aggressive growers like mint, recommend planting them in pots so they do not take over the garden.\n" +
   " - If a companion plant is useful for repelling pests from a crop, be specific about the pests that the crop is vulnerable to.\n" +

@@ -1,4 +1,16 @@
-import {Text, Container, Accordion, Skeleton, Title, List, AppShell, Center, Image} from '@mantine/core';
+import {
+  Text,
+  Container,
+  Accordion,
+  Skeleton,
+  Title,
+  List,
+  AppShell,
+  Center,
+  Image,
+  useMantineTheme
+} from '@mantine/core';
+import {useViewportSize} from "@mantine/hooks";
 
 import {
   ClimateDataOutput,
@@ -34,6 +46,11 @@ const PlanOverview = (props: DataDisplayProps) => {
     }, 1700);
   }, []);
 
+  const { width } = useViewportSize();
+  const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
+  const theme = useMantineTheme();
+  const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
+
   // Extract growing tips. Remove any sentence that refers to crop rotation.
   const growingTips = crops?.map(crop => ({
     name: crop.name,
@@ -42,10 +59,21 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   const skeletonParagraph =
     <>
-      <Skeleton height={10} radius="xl" />
-      <Skeleton height={10} mt={6} radius="xl" />
-      <Skeleton height={10} mt={6} radius="xl" />
-      <Skeleton height={10} mt={6} width="70%" radius="xl" />
+      <Skeleton height={10} radius="xl" mb="sm" />
+      <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+      <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+      <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+      {
+        isSmallScreen &&
+        <>
+          <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+          <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+          <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+          <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+          <Skeleton height={10} mt={6} radius="xl" mb="sm" />
+        </>
+      }
+      <Skeleton height={10} mt={6} width="70%" radius="xl" mb="sm" />
     </>
 
   const replaceCompanionPlantsWithLinks = (advice: string, plantsWithLinks: {name: string, storeHandle: string}[]) => {
