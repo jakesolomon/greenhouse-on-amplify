@@ -258,7 +258,7 @@ const Planner = () => {
         const varietyResponse =
           await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(foundPlants), mode: 'companionPlant'})
         if (varietyResponse.errors || !varietyResponse.data) {
-          console.error("Error fetching crop varieties: ", varietyResponse.errors)
+          console.error("Error fetching companionPlant varieties: ", varietyResponse.errors)
           toast.error("We couldn't get seed varieties for companion plants.")
           return
         }

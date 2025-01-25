@@ -42,7 +42,7 @@ const daysOfPlantingOverlap = (newPlanting: Planting, existingPlanting: Planting
 }
 
 const fudgePlanting = (planting: Planting, plot: Planting[]): Planting | undefined => {
-  let fudgeDays: number;
+  let fudgeDays = 0;
   let fudgeRangeIsAcceptable = false;
   let fudgedPlanting: Planting;
   let fudgedPlantingConflictsWithPlot = false;

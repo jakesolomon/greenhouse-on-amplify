@@ -4,5 +4,5 @@ export const getCompanionPlants = defineFunction({
   environment: {
     API_KEY: secret('OPENAI_API_KEY')
   },
-  timeoutSeconds: 30
+  timeoutSeconds: 45
 });
