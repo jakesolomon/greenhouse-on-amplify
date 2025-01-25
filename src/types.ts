@@ -3,10 +3,10 @@
 import { SelectableCropType } from './helpers/crop-types.ts'
 
 export interface SeedVariety extends SelectableCropType {
-  trueSeedTitle: string;
-  descriptionHtml: string;
-  storeHandle: string;
-  imageUrl: string;
+  trueSeedTitle?: string;
+  descriptionHtml?: string;
+  storeHandle?: string;
+  imageUrl?: string;
 }
 
 interface TemperatureData {
@@ -69,12 +69,12 @@ export interface Crop {
   name: string; // I will supply this
   variety: string; // I will supply this
   shortDescription: string;
-  storeHandle: string;
-  imageUrl: string;
+  storeHandle?: string;
+  imageUrl?: string;
 
-  seedlingDuration: number; // 0 for direct sow. Number represents the reasonable amt of time before transplant. Might actually be able to ignore this value until month-to-month schedule is created.
-  growthDuration: number; // basically, days to maturity. Starts with transplant date or direct sow date.
-  harvestDuration: number; // days that something can be harvested. Longer for cut-and-come-again.
+  // seedlingDuration: number; // 0 for direct sow. Number represents the reasonable amt of time before transplant. Might actually be able to ignore this value until month-to-month schedule is created.
+  // growthDuration: number; // basically, days to maturity. Starts with transplant date or direct sow date.
+  // harvestDuration: number; // days that something can be harvested. Longer for cut-and-come-again.
 
   // optimalPlantingDates: Date[]; // based on "sow ## days before frost" type language combined with climate data. // One response I got was short date ranges. This is good to allow some flexibility, it might help optimize space.
   // optimalGrowingDateRanges: Date[][]

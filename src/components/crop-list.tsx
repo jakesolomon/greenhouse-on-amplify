@@ -29,7 +29,7 @@ const CropList = (props: CropListProps) => {
                       />
                     </Card.Section>
                   }
-                  <Text fw={500}>{crop.name} - {crop.variety && crop.variety}</Text>
+                  <Text fw={500}>{crop.name} - {crop.variety ? crop.variety : "(no variety found)"}</Text>
                   <Text size="sm" c="dimmed">
                     {crop.shortDescription}
                   </Text>

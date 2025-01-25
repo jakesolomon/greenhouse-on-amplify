@@ -17,6 +17,29 @@ const Planner = () => {
 
   // TODO: wrap these into a useApiRequestHelper()
 
+  // TODO I should "type guard" my API responses as per chat GPT's example.
+  // const isVarietyArray = (data: unknown): data is VarietyArray => {
+  //   return Array.isArray(data) && data.every(
+  //     (item) =>
+  //       typeof item === "object" &&
+  //       item !== null &&
+  //       "id" in item &&
+  //       "name" in item &&
+  //       "plantingDate" in item
+  //   );
+  // };
+  //
+  // const resultsString = await someApiCall();
+  // const parsedResults = JSON.parse(resultsString);
+  //
+  // if (isVarietyArray(parsedResults)) {
+  //   parsedResults.map((variety) => {
+  //     console.log(variety.name);
+  //   });
+  // } else {
+  //   console.error("Invalid API response structure");
+  // }
+
   const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
 
   const [ cropData, setCropData ] = useState<Crop[]>();
@@ -72,7 +95,7 @@ const Planner = () => {
       return
     }
 
-    const varietyResults = JSON.parse(varietyResponse.data)
+    const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
     console.log("varieties: ", varietyResults)
 
     // Filter out "microgreen" or "sprout"
@@ -166,9 +189,9 @@ const Planner = () => {
         storeHandle: result.cropVariety!.storeHandle,
         imageUrl: result.cropVariety!.imageUrl,
 
-        seedlingDuration: result.data.seedlingDuration,
-        growthDuration: result.data.growthDuration,
-        harvestDuration: result.data.harvestDuration,
+        // seedlingDuration: result.data.seedlingDuration,
+        // growthDuration: result.data.growthDuration,
+        // harvestDuration: result.data.harvestDuration,
 
         optimalGrowingDateRanges: plantingRanges,
         frostHardy: result.cropVariety!.frostHardy,
