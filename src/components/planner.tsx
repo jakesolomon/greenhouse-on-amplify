@@ -77,7 +77,10 @@ const Planner = () => {
 
     // Filter out "microgreen" or "sprout"
     const topVarieties: SeedVariety[] = varietyResults.map(variety => {
+      // If it is lettuce, it cannot include any tag with "mix"
+      const isLettuce = variety.cropType.displayName === "Lettuce"
       const selectedVariety = variety.data.results?.find(e =>
+        (!isLettuce || !e.tags.some(e => e.toLowerCase().includes('mix'))) &&
         !e.title.toLowerCase().includes('sprout') &&
         !e.title.toLowerCase().includes('microgreen')
       )
