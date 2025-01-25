@@ -9,7 +9,7 @@ import { Schema } from "../../data/resource";
 const Crop = z.object({
   shortDescription: z.string(),
   varietyTitle: z.string(),
-  timeToMaturity: z.number().int().nullable(),
+  daysToMaturity: z.number().int().nullable(),
   guidance: z.string(),
 });
 

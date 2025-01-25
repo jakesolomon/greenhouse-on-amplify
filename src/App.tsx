@@ -33,7 +33,7 @@ function App() {
     <MantineProvider theme={theme}>
       <ToastContainer autoClose={false} position='top-right'/>
       <Router>
-        <AppShell header={{ height: 60 }}>
+        <AppShell header={{ height: 60 }} footer={{ height: 60 }}>
           <AppShell.Header >
             <Center h="100%">
               <Link to={'/'}>
@@ -41,7 +41,7 @@ function App() {
               </Link>
             </Center>
           </AppShell.Header>
-          <AppShell.Main style={{minHeight: '85vh'}}>
+          <AppShell.Main style={{minHeight: '75vh'}}>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/planner" element={<Planner />} />

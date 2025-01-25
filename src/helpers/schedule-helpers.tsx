@@ -42,7 +42,7 @@ const daysOfPlantingOverlap = (newPlanting: Planting, existingPlanting: Planting
 }
 
 const fudgePlanting = (planting: Planting, plot: Planting[]): Planting | undefined => {
-  let fudgeDays: number;
+  let fudgeDays = 0;
   let fudgeRangeIsAcceptable = false;
   let fudgedPlanting: Planting;
   let fudgedPlantingConflictsWithPlot = false;
@@ -131,7 +131,7 @@ const addPlanting = (
 
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
-      console.log("I better see this exactly once (per bucket)")
+      // console.log("I better see this exactly once (per bucket)")
     }
     const hasMorePlantingsAndIsEquallyEfficient = (
       currentPlantingSchedule.length === optimalPlantingSchedule.length &&
@@ -142,7 +142,7 @@ const addPlanting = (
       hasMorePlantingsAndIsEquallyEfficient ||
       isMoreEfficient
     ) {
-      console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
+      // console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
       optimalPlantingSchedule.splice(0, optimalPlantingSchedule.length);
       optimalPlantingSchedule.push(...currentPlantingSchedule)
     }
@@ -178,7 +178,7 @@ const addPlantingToNewPlot = (
     currentPlantingSchedule = tryAddingExtraPlantings(currentPlantingSchedule, allCrops)
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
-      console.log("I better see this exactly once")
+      // console.log("I better see this exactly once")
     }
     const hasMorePlantingsAndIsEquallyEfficient = (
       currentPlantingSchedule.length === optimalPlantingSchedule.length &&
@@ -190,7 +190,7 @@ const addPlantingToNewPlot = (
       hasMorePlantingsAndIsEquallyEfficient ||
       isMoreEfficient
     ) {
-      console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
+      // console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
       optimalPlantingSchedule.splice(0, optimalPlantingSchedule.length);
       optimalPlantingSchedule.push(...currentPlantingSchedule)
       console.log(optimalPlantingSchedule)
@@ -233,23 +233,20 @@ const tryAddingExtraPlantings = (
       currentPlantingSchedule.forEach((plot: Planting[], plotIndex: number) => {
         const conflicts = plot.some(existingPlanting => plantingsAreInConflict(planting, existingPlanting))
         let fudgedPlanting;
-        if (!conflicts) {
+        if (!conflicts && !plantedThisCrop) {
           currentPlantingSchedule[plotIndex].push(getPlantings(crop)[plantingIndex]) // add planting to schedule
           haveAddedCrops = true;
           plantedThisCrop = true;
         } else {
           // Deep copy planting
           fudgedPlanting = fudgePlanting(JSON.parse(JSON.stringify(planting)), plot)
-          if (fudgedPlanting) {
+          if (fudgedPlanting && !plantedThisCrop) {
             currentPlantingSchedule[plotIndex].push(fudgedPlanting) // add fudged planting to schedule
             haveAddedCrops = true;
             plantedThisCrop = true;
           }
         }
       })
-      if (plantedThisCrop) {
-        return true
-      }
     })
   })
   // If crops have been added, call the function again to see if more can be added still. Otherwise, exit.

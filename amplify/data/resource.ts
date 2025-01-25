@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend"
 import { getCropData } from "../functions/getCropData/resource"
+import { getCompanionPlants } from "../functions/getCompanionPlants/resource"
 import { getTrueLeafSeedData } from "../functions/getTrueLeafSeedData/resource";
 import { getCropDataFromTrueLeafDescription } from "../functions/getCropDataFromTrueLeafDescription/resource";
 import { getClimateData } from "../functions/getClimateData/resource"
@@ -29,10 +30,23 @@ const schema = a.schema({
       allow.publicApiKey(),
     ]),
 
+  getCompanionPlants: a
+    .query()
+    .arguments({
+      climateData: a.string(),
+      plantingSchedule: a.string()
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getCompanionPlants))
+    .authorization(allow => [
+      allow.publicApiKey(),
+    ]),
+
   getTrueLeafSeedData: a
     .query()
     .arguments({
-      cropTypes: a.string()
+      cropTypes: a.string(),
+      mode: a.string()
     })
     .returns(a.string())
     .handler(a.handler.function(getTrueLeafSeedData))

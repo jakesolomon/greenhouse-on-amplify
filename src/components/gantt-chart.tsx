@@ -13,7 +13,7 @@ import {
   Card,
   LoadingOverlay,
   Skeleton,
-  HoverCard
+  HoverCard, Loader
 } from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
@@ -40,20 +40,21 @@ const skeletonPlantingData: Planting[][] =
 interface GanttChartProps {
   plantingSchedule?: Planting[][]
   loading: boolean
+  showLoadingTimeWarning: boolean
 }
 
 const GanttChart = (props: GanttChartProps)=> {
 
-  const { plantingSchedule = skeletonPlantingData, loading } = props;
-
-  const { width } = useViewportSize();
+  const { plantingSchedule = skeletonPlantingData, loading, showLoadingTimeWarning } = props;
 
   const noSuccessionPlanting = plantingSchedule?.every((p) => p.length === 1);
 
+  const { width } = useViewportSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
-
   const theme = useMantineTheme();
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
+
+  const loadingTimeWarning = <Text size="sm" c="dimmed">This sometimes takes a few seconds<Loader color={theme.colors.gray[5]} size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></Text>
 
   // const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
   const tooltipText = "Plots represent sub-divisions of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed."
@@ -93,6 +94,51 @@ const GanttChart = (props: GanttChartProps)=> {
       el.remove()
     }
   });
+
+  // Fixes issue where tooltips aren't always rendered on mobile tap
+  useEffect(() => {
+    const ganttContainer = document.querySelector(".gantt-chart");
+    if (!ganttContainer) {
+      console.error("Gantt chart container not found.");
+      return;
+    }
+
+    // Define the type for the last hovered task element
+    let lastHoveredTask: SVGElement | null = null;
+
+    const handleTapEvent = (event: MouseEvent) => {
+      // Ensure event target is an element
+      const target = event.target as Element | null;
+      if (!target) return;
+
+      // Find the closest task element
+      const task = target.closest("g._KxSXS") as SVGElement | null;
+      if (!task) return;
+
+      // Trigger 'mouseleave' on the last hovered task
+      if (lastHoveredTask && lastHoveredTask !== task) {
+        const mouseLeaveEvent = new MouseEvent("mouseleave", { bubbles: true });
+        lastHoveredTask.dispatchEvent(mouseLeaveEvent);
+      }
+
+      // Trigger 'mouseover' on the new task
+      const mouseOverEvent = new MouseEvent("mouseover", { bubbles: true });
+      task.dispatchEvent(mouseOverEvent);
+
+      // Update lastHoveredTask to the current task
+      lastHoveredTask = task;
+    };
+
+    // Add the tap listener to the Gantt chart container
+    ganttContainer.addEventListener("click", handleTapEvent as EventListener);
+
+    // Cleanup listener on component unmount
+    return () => {
+      ganttContainer.removeEventListener("click", handleTapEvent as EventListener);
+    };
+  }, []);
+
+
 
   const plotToColor = [
     theme.colors.green,
@@ -190,7 +236,7 @@ const GanttChart = (props: GanttChartProps)=> {
     const harvestEndDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestEndDate
 
     return (
-      <Card withBorder>
+      <Card withBorder style={isSmallScreen ? {position: "fixed", top: 25, left: 20} : undefined}>
         <Text size="sm">
           <b>{planting.name}</b>
         </Text>
@@ -210,10 +256,9 @@ const GanttChart = (props: GanttChartProps)=> {
     )
   }
 
-
   return (
     <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4] }}/>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4], children: showLoadingTimeWarning ? loadingTimeWarning : undefined }}/>
       <Skeleton visible={loading}>
         <Gantt
           TooltipContent={ToolTip}

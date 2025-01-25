@@ -11,6 +11,7 @@ import { ClimateDataOutput, Crop, Planting, SeedVariety } from "../types.ts";
 import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
 import { generateOptimalPlantingSchedule } from "../helpers/schedule-helpers.tsx"
 import FakeQuizQuestion from "./quiz/fake-quiz-question.tsx";
+import { availableCompanionPlants } from "./available-companion-plants.ts"
 
 const Planner = () => {
 
@@ -24,13 +25,28 @@ const Planner = () => {
   const [ plantingSchedule, setPlantingSchedule ] = useState<Planting[][]>([]);
 
   const [ scheduleSummary, setScheduleSummary ] = useState<string>();
-  const [ loadingScheduleSummary, setLoadingScheduleSummary ] = useState<boolean>(false);
+  const [ loadingScheduleSummary, setLoadingScheduleSummary ] = useState<'true' | 'false' | 'failed'>('false');
+
+  const [ companionPlantingAdvice , setCompanionPlantingAdvice ] = useState<string[]>();
+  const [ loadingCompanionPlantingAdvice , setLoadingCompanionPlantingAdvice ] = useState<'true' | 'false' | 'failed'>('false');
+
+  const [ companionPlants , setCompanionPlants ] = useState<[]>();
 
   const [ fatalError, setFatalError ] = useState<string>();
 
   const [ proceedToPlan, setProceedToPlan ] = useState<boolean>(false);
 
   const amplifyClient = generateClient<Schema>()
+
+  const startPlanOver = () => {
+    setClimateData(undefined)
+    setCropData(undefined)
+    setPlantingSchedule([])
+    setScheduleSummary(undefined)
+    setCompanionPlantingAdvice(undefined)
+    setCompanionPlants(undefined)
+    setProceedToPlan(false)
+  }
 
   const submitZipCode = async (zipCode: string) => {
     try {
@@ -49,7 +65,7 @@ const Planner = () => {
     const crops: SelectableCropType[] = cropNames.map(cropName => cropTypes[cropName])
 
     // Get list of varieties for each crop type (TrueLeaf)
-    const varietyResponse = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops)})
+    const varietyResponse = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops), mode: 'crop'})
     if (varietyResponse.errors || !varietyResponse.data) {
       console.error("Error fetching crop varieties: ", varietyResponse.errors)
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
@@ -61,7 +77,10 @@ const Planner = () => {
 
     // Filter out "microgreen" or "sprout"
     const topVarieties: SeedVariety[] = varietyResults.map(variety => {
+      // If it is lettuce, it cannot include any tag with "mix"
+      const isLettuce = variety.cropType.displayName === "Lettuce"
       const selectedVariety = variety.data.results?.find(e =>
+        (!isLettuce || !e.tags.some(e => e.toLowerCase().includes('mix'))) &&
         !e.title.toLowerCase().includes('sprout') &&
         !e.title.toLowerCase().includes('microgreen')
       )
@@ -122,7 +141,7 @@ const Planner = () => {
 
       // The functions for plantingDates (and harvestDuration) get lost in JSON.Stringify, so we have to find the original selected crops.
       const selectedCrop = crops.find(crop => crop.displayName === result.cropVariety.displayName)
-      const daysToMaturity = result.cropVariety.daysToMaturity ? result.cropVariety.daysToMaturity : selectedCrop!.daysToMaturity // TODO this is wrong, it's named someting else
+      const daysToMaturity = result.cropVariety.daysToMaturity ? result.cropVariety.daysToMaturity : selectedCrop!.daysToMaturity // if LLM returns daysToMaturity based on description, use it. If not, use generic from crop-types.ts
 
       const plantingRanges = selectedCrop!.plantingDates(climateData!, daysToMaturity).map(plantingDate => {
         const calculatedHarvestDuration = selectedCrop!.harvestDuration(
@@ -174,7 +193,7 @@ const Planner = () => {
   useEffect(() => {
 
     const requestScheduleSummary = async () => {
-      setLoadingScheduleSummary(true)
+      setLoadingScheduleSummary('true')
       try {
         const plantingScheduleFormattedForLLM = plantingSchedule.map(plot => plot.map(planting => ({
           name: planting.name,
@@ -191,18 +210,25 @@ const Planner = () => {
         const response =
           await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
         console.log("requestScheduleSummary: ", response)
-        setScheduleSummary(response.data!);
+        // Fail result if returned with an error in response.
+        if (response.errors) {
+          setLoadingScheduleSummary('failed')
+          console.error("Error fetching scheduleSummary: ", response.errors)
+          toast.error(`Unable to generate planting schedule summary.`)
+        } else {
+          setScheduleSummary(response.data!);
+          setLoadingScheduleSummary('false')
+        }
       } catch (error) {
-        console.error('Error fetching schedule summary:', error);
-      } finally {
-        setLoadingScheduleSummary(false)
+        console.error('Error thrown fetching schedule summary:', error);
+        setLoadingScheduleSummary('failed')
       }
     };
 
     if (
       !!climateData && // We have climate data
       !!plantingSchedule[0] && // We have a planting schedule that isn't empty
-      !loadingScheduleSummary && // We aren't already loading a schedule summary
+      loadingScheduleSummary === 'false' && // We aren't already loading a schedule summary
       !scheduleSummary // We don't already have a schedule summary
     ) {
       requestScheduleSummary();
@@ -213,6 +239,98 @@ const Planner = () => {
     plantingSchedule,
     loadingScheduleSummary,
     scheduleSummary
+  ]);
+
+  // Request companion plants when planting schedule returns
+  useEffect(() => {
+
+    const getCompanionPlantLinksFromPlantingAdvice = async (companionPlantingAdvice: string[]) => {
+      const foundPlants: {name: string, collectionHandle: string}[] = []
+
+      companionPlantingAdvice.forEach(text => {
+        Object.values(availableCompanionPlants).forEach(plant => {
+          const regex = new RegExp(`\\b${plant.name}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
+          if (regex.test(text)) {
+            foundPlants.push(plant);
+          }
+        });
+      });
+      console.log("foundCompanionPlants: ", foundPlants)
+
+      try {
+        const varietyResponse =
+          await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(foundPlants), mode: 'companionPlant'})
+        if (varietyResponse.errors || !varietyResponse.data) {
+          console.error("Error fetching companionPlant varieties: ", varietyResponse.errors)
+          toast.error("We couldn't get seed varieties for companion plants.")
+          return
+        }
+
+        const varietyResults = JSON.parse(varietyResponse.data)
+        console.log("companion plant varieties: ", varietyResults)
+
+        // Filter out "microgreen" or "sprout" // TODO prefer in stock
+        const topVarieties = varietyResults.map(variety => {
+          const selectedVariety = variety.data.results?.find(e =>
+            !e.title.toLowerCase().includes('sprout') &&
+            !e.title.toLowerCase().includes('microgreen')
+          )
+
+          if (!variety.data.results || !selectedVariety) {
+            console.error("Could not find True Seed variety for companion plant: ", variety.cropType.displayName)
+          }
+          return {
+            storeHandle: selectedVariety?.handle,
+            name: variety.cropType.name,
+          }
+        })
+        console.log("Top companion plant varieties: ", topVarieties)
+        setCompanionPlants(topVarieties)
+      } catch (error) {
+        console.error("Error getting companion plants: ", error)
+      }
+    }
+
+    const requestCompanionPlants = async () => {
+      setLoadingCompanionPlantingAdvice('true')
+      try {
+        const companionPlantsRequestArguments = {
+          climateData: JSON.stringify(climateData!),
+          plantingSchedule: JSON.stringify(plantingSchedule)
+        }
+        const response =
+          await amplifyClient.queries.getCompanionPlants(companionPlantsRequestArguments);
+        // Fail result if returned with an error in response.
+        if (response.errors) {
+          setLoadingCompanionPlantingAdvice('failed')
+          console.error("Error fetching companionPlants: ", response.errors)
+          toast.error(`Unable to find companion plantings info.`)
+        } else {
+          console.log("requestCompanionPlants: ", JSON.parse(response.data!))
+          setCompanionPlantingAdvice(JSON.parse(response.data!).companionPlantingAdvice);
+          setLoadingCompanionPlantingAdvice('false')
+          await getCompanionPlantLinksFromPlantingAdvice(JSON.parse(response.data!).companionPlantingAdvice)
+        }
+      } catch (error) {
+        console.error('Error thrown fetching companionPlants:', error);
+        setLoadingCompanionPlantingAdvice('failed')
+      }
+    };
+
+    if (
+      !!climateData && // We have climate data
+      !!plantingSchedule[0] && // We have a planting schedule that isn't empty
+      loadingCompanionPlantingAdvice === 'false' && // We aren't already loading companion plants
+      !companionPlantingAdvice // We don't already have companion plants
+    ) {
+      requestCompanionPlants();
+    }
+  }, [
+    amplifyClient.queries,
+    climateData,
+    plantingSchedule,
+    loadingCompanionPlantingAdvice,
+    companionPlantingAdvice
   ]);
 
   return(
@@ -232,6 +350,9 @@ const Planner = () => {
           plantingSchedule={plantingSchedule}
           climateData={climateData}
           summary={scheduleSummary}
+          companionPlantingAdvice={companionPlantingAdvice}
+          companionPlants={companionPlants}
+          startPlanOver={startPlanOver}
         />
       }
       { fatalError &&
