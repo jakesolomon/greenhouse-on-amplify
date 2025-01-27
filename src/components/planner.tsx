@@ -53,7 +53,7 @@ const Planner = () => {
   const [ companionPlantingAdvice , setCompanionPlantingAdvice ] = useState<string[]>();
   const [ loadingCompanionPlantingAdvice , setLoadingCompanionPlantingAdvice ] = useState<'true' | 'false' | 'failed'>('false');
 
-  const [ companionPlants , setCompanionPlants ] = useState<[]>();
+  const [ companionPlants , setCompanionPlants ] = useState<{storeHandle: string, name: string}[]>();
 
   const [ fatalError, setFatalError ] = useState<string>();
 
@@ -289,11 +289,12 @@ const Planner = () => {
           return
         }
 
-        const varietyResults = JSON.parse(varietyResponse.data)
+        const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
+        // const varietyResults = JSON.parse(varietyResponse.data)
         console.log("companion plant varieties: ", varietyResults)
 
         // Filter out "microgreen" or "sprout" // TODO prefer in stock
-        const topVarieties = varietyResults.map(variety => {
+        const topVarieties: {storeHandle: string, name: string}[] = varietyResults.map(variety => {
           const selectedVariety = variety.data.results?.find(e =>
             !e.title.toLowerCase().includes('sprout') &&
             !e.title.toLowerCase().includes('microgreen')
@@ -303,8 +304,8 @@ const Planner = () => {
             console.error("Could not find True Seed variety for companion plant: ", variety.cropType.displayName)
           }
           return {
-            storeHandle: selectedVariety?.handle,
-            name: variety.cropType.name,
+            storeHandle: selectedVariety!.handle,
+            name: variety.cropType.displayName,
           }
         })
         console.log("Top companion plant varieties: ", topVarieties)
