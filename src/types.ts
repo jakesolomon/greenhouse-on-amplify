@@ -92,19 +92,6 @@ export interface Crop {
 //   Might actually not need this ^ boolean at all if I send summarized planner info as a backup along with each description.
 }
 
-// Old crop object
-// export interface Crop {
-//   name: string;
-//   variety: string;
-//   shortDescription: string;
-//   storeHandle: string;
-//   seedlingDuration: number;
-//   growthDuration: number;
-//   harvestDuration: number;
-//   lowerTempBound: number;
-//   upperTempBound: number;
-// }
-
 export interface GardenArea {
   id: number;
   dimensions: Dimensions;

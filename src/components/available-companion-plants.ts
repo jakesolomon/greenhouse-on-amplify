@@ -1,118 +1,118 @@
 export const availableCompanionPlants = {
   "Amaranth": {
-    name: "Amaranth",
+    displayName: "Amaranth",
     collectionHandle: "amaranth"
   },
   "Arugula": {
-    name: "Arugula",
+    displayName: "Arugula",
     collectionHandle: "arugula"
   },
   "Basil": {
-    name: "Basil",
+    displayName: "Basil",
     collectionHandle: "basil"
   },
   "Borage": {
-    name: "Borage",
+    displayName: "Borage",
     collectionHandle: "borage"
   },
   "Calendula": {
-    name: "Calendula",
+    displayName: "Calendula",
     collectionHandle: "calendula-flower-seeds"
   },
   "Catnip": {
-    name: "Catnip",
+    displayName: "Catnip",
     collectionHandle: "catnip"
   },
   "Chamomile": {
-    name: "Chamomile",
+    displayName: "Chamomile",
     collectionHandle: "chamomile"
   },
   "Chervil": {
-    name: "Chervil",
+    displayName: "Chervil",
     collectionHandle: "chervil"
   },
   "Chives": {
-    name: "Chives",
+    displayName: "Chives",
     collectionHandle: "chives"
   },
   "Cilantro": {
-    name: "Cilantro",
+    displayName: "Cilantro",
     collectionHandle: "cilantro"
   },
   "Dill": {
-    name: "Dill",
+    displayName: "Dill",
     collectionHandle: "dill"
   },
   "Fennel": {
-    name: "Fennel",
+    displayName: "Fennel",
     collectionHandle: "fennel"
   },
   "Hyssop": {
-    name: "Hyssop",
+    displayName: "Hyssop",
     collectionHandle: "hyssop"
   },
   "Lemon Balm": {
-    name: "Lemon Balm",
+    displayName: "Lemon Balm",
     collectionHandle: "lemon-balm"
   },
   "Lemon Grass": {
-    name: "Lemon Grass",
+    displayName: "Lemon Grass",
     collectionHandle: "lemon-grass"
   },
   "Lovage": {
-    name: "Lovage",
+    displayName: "Lovage",
     collectionHandle: "lovage"
   },
   "Marigold": {
-    name: "Marigold",
+    displayName: "Marigold",
     collectionHandle: "marigold-flower-seed"
   },
   "Mint": {
-    name: "Mint",
+    displayName: "Mint",
     collectionHandle: "mint-seeds"
   },
   "Nasturtium": {
-    name: "Nasturtium",
+    displayName: "Nasturtium",
     collectionHandle: "nasturtium-flower-garden-seed"
   },
   "Oregano": {
-    name: "Oregano",
+    displayName: "Oregano",
     collectionHandle: "oregano"
   },
   "Parsley": {
-    name: "Parsley",
+    displayName: "Parsley",
     collectionHandle: "parsley"
   },
   "Rosemary": {
-    name: "Rosemary",
+    displayName: "Rosemary",
     collectionHandle: "rosemary"
   },
   "Sage": {
-    name: "Sage",
+    displayName: "Sage",
     collectionHandle: "sage"
   },
   "Savory": {
-    name: "Savory",
+    displayName: "Savory",
     collectionHandle: "summer-savory"
   },
   "Shiso": {
-    name: "Shiso",
+    displayName: "Shiso",
     collectionHandle: "shiso"
   },
   "Spearmint": {
-    name: "Spearmint",
+    displayName: "Spearmint",
     collectionHandle: "spearmint"
   },
   "Tarragon": {
-    name: "Tarragon",
+    displayName: "Tarragon",
     collectionHandle: "tarragon"
   },
   "Thyme": {
-    name: "Thyme",
+    displayName: "Thyme",
     collectionHandle: "thyme"
   },
   "Yarrow": {
-    name: "Yarrow",
+    displayName: "Yarrow",
     collectionHandle: "yarrow"
   },
 };

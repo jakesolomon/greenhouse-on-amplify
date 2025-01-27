@@ -53,7 +53,7 @@ const Planner = () => {
   const [ companionPlantingAdvice , setCompanionPlantingAdvice ] = useState<string[]>();
   const [ loadingCompanionPlantingAdvice , setLoadingCompanionPlantingAdvice ] = useState<'true' | 'false' | 'failed'>('false');
 
-  const [ companionPlants , setCompanionPlants ] = useState<{storeHandle: string, name: string}[]>();
+  const [ companionPlants , setCompanionPlants ] = useState<{storeHandle: string, displayName: string}[]>();
 
   const [ fatalError, setFatalError ] = useState<string>();
 
@@ -159,12 +159,13 @@ const Planner = () => {
     }
 
     console.log("Failed results:", failedResults);
+    console.log("Successful results:", successfulResults);
 
     const cropsWithData: Crop[] = successfulResults.map(result => {
 
       // The functions for plantingDates (and harvestDuration) get lost in JSON.Stringify, so we have to find the original selected crops.
       const selectedCrop = crops.find(crop => crop.displayName === result.cropVariety.displayName)
-      const daysToMaturity = result.cropVariety.daysToMaturity ? result.cropVariety.daysToMaturity : selectedCrop!.daysToMaturity // if LLM returns daysToMaturity based on description, use it. If not, use generic from crop-types.ts
+      const daysToMaturity = result.data.daysToMaturity ? result.data.daysToMaturity : selectedCrop!.daysToMaturity // if LLM returns daysToMaturity based on description, use it. If not, use generic from crop-types.ts
 
       const plantingRanges = selectedCrop!.plantingDates(climateData!, daysToMaturity).map(plantingDate => {
         const calculatedHarvestDuration = selectedCrop!.harvestDuration(
@@ -268,11 +269,11 @@ const Planner = () => {
   useEffect(() => {
 
     const getCompanionPlantLinksFromPlantingAdvice = async (companionPlantingAdvice: string[]) => {
-      const foundPlants: {name: string, collectionHandle: string}[] = []
+      const foundPlants: {displayName: string, collectionHandle: string}[] = []
 
       companionPlantingAdvice.forEach(text => {
         Object.values(availableCompanionPlants).forEach(plant => {
-          const regex = new RegExp(`\\b${plant.name}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
+          const regex = new RegExp(`\\b${plant.displayName}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
           if (regex.test(text)) {
             foundPlants.push(plant);
           }
@@ -294,7 +295,7 @@ const Planner = () => {
         console.log("companion plant varieties: ", varietyResults)
 
         // Filter out "microgreen" or "sprout" // TODO prefer in stock
-        const topVarieties: {storeHandle: string, name: string}[] = varietyResults.map(variety => {
+        const topVarieties: {storeHandle: string, displayName: string}[] = varietyResults.map(variety => {
           const selectedVariety = variety.data.results?.find(e =>
             !e.title.toLowerCase().includes('sprout') &&
             !e.title.toLowerCase().includes('microgreen')
@@ -305,7 +306,7 @@ const Planner = () => {
           }
           return {
             storeHandle: selectedVariety!.handle,
-            name: variety.cropType.displayName,
+            displayName: variety.cropType.displayName,
           }
         })
         console.log("Top companion plant varieties: ", topVarieties)

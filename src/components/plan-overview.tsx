@@ -31,7 +31,7 @@ interface DataDisplayProps {
   climateData?: ClimateDataOutput;
   summary?: string;
   companionPlantingAdvice?: string[],
-  companionPlants?: {name: string, storeHandle: string}[]
+  companionPlants?: {displayName: string, storeHandle: string}[]
   startPlanOver: () => void
 }
 
@@ -85,16 +85,18 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Skeleton height={10} mt={6} width="70%" radius="xl" mb="sm" />
     </>
 
-  const replaceCompanionPlantsWithLinks = (advice: string, plantsWithLinks: {name: string, storeHandle: string}[]) => {
+  const replaceCompanionPlantsWithLinks = (advice: string, plantsWithLinks: {displayName: string, storeHandle: string}[]) => {
     // Create a map for faster lookup of storeHandles by plant name
     const plantMap: Record<string, string> = plantsWithLinks.reduce((map, plant) => {
-      map[plant.name] = plant.storeHandle;
+      map[plant.displayName.toLowerCase()] = plant.storeHandle;
       return map;
     }, {} as Record<string, string>);
 
     // Generate a regex to match all plant names
-    const plantNames = plantsWithLinks.map(plant => plant.name).join("|");
-    const regex = new RegExp(`\\b(${plantNames})\\b`, "gi");
+    const plantNames = plantsWithLinks.map(plant => plant.displayName);
+    const regex = new RegExp(`\\b(${plantNames.map(name => `${name}s?`).join('|')})\\b`, 'i');
+    console.log("plantNames: ", plantNames)
+    console.log("regex: ", regex)
 
     // Track which plants have already been linked
     const linkedPlants = new Set<string>();
@@ -102,10 +104,22 @@ const PlanOverview = (props: DataDisplayProps) => {
     // Replace plant names with React links
     return advice.split(regex).map((chunk, index) => {
       const normalizedChunk = chunk.toLowerCase();
-      if (plantMap[chunk] && !linkedPlants.has(normalizedChunk)) {
+      console.log("normalizedChunk: ", normalizedChunk);
+      // Check for uppercase, lowercase, and remove last letter from each (in case plural).
+      if ((plantMap[chunk] || plantMap[normalizedChunk]) && !linkedPlants.has(normalizedChunk)) {
+        console.log('plantMap[chunk]: ', plantMap[chunk])
         linkedPlants.add(normalizedChunk); // Mark this plant as linked
         return (
-          <a key={index} href={plantMap[chunk]} target="_blank" rel="noopener noreferrer">
+          <a key={index} href={`https://trueleafmarket.com/products/${plantMap[normalizedChunk]}`} target="_blank" rel="noopener noreferrer">
+            {chunk}
+          </a>
+        );
+      }
+      if ((plantMap[chunk.slice(0, chunk.length -1)] || plantMap[normalizedChunk.slice(0, normalizedChunk.length -1)]) && !linkedPlants.has(normalizedChunk)) {
+        console.log('plantMap[chunk]: ', plantMap[chunk])
+        linkedPlants.add(normalizedChunk); // Mark this plant as linked
+        return (
+          <a key={index} href={`https://trueleafmarket.com/products/${plantMap[normalizedChunk.slice(0, normalizedChunk.length -1)]}`} target="_blank" rel="noopener noreferrer">
             {chunk}
           </a>
         );
