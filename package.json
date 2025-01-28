@@ -1,7 +1,7 @@
 {
   "name": "greenhouse-on-amplify",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,12 +10,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.7.1",
+    "@aws-lambda-powertools/logger": "^2.12.0",
+    "@mantine/core": "^7.14.3",
+    "@mantine/form": "^7.14.3",
+    "@mantine/hooks": "^7.14.3",
+    "@mantine/nprogress": "^7.14.3",
+    "@tabler/icons-react": "^3.26.0",
     "aws-amplify": "^6.10.2",
+    "aws-lambda": "^1.0.7",
+    "gantt-task-react": "^0.3.9",
+    "openai": "^4.76.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.1.1",
+    "react-toastify": "^11.0.2",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "^1.8.0",
+    "@aws-amplify/backend": "^1.9.0",
     "@aws-amplify/backend-cli": "^1.4.2",
     "@eslint/js": "^9.15.0",
     "@types/react": "^18.3.12",
@@ -29,6 +42,9 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.12.0",
+    "postcss": "^8.4.49",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.15.0",
