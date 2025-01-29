@@ -40,8 +40,21 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
 
-  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
   const [ showLoadingTimeWarning, setShowLoadingTimeWarning ] = useState<boolean>(false);
+  // const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
+  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>((): boolean => {
+    const saved = localStorage.getItem("fakeLoading");
+    const initialValue = true;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("fakeLoading", JSON.stringify(fakeLoading));
+  }, [fakeLoading]);
 
   useEffect(() => {
     setTimeout(() => {
