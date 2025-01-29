@@ -52,7 +52,7 @@ const PlanOverview = (props: DataDisplayProps) => {
   useEffect(() => {
     setTimeout(() => {
       setShowLoadingTimeWarning(true)
-    }, 6500);
+    }, 5500);
   }, []);
 
   const { width } = useViewportSize();
