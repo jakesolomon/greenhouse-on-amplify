@@ -273,7 +273,7 @@ const Planner = () => {
 
       companionPlantingAdvice.forEach(text => {
         Object.values(availableCompanionPlants).forEach(plant => {
-          const regex = new RegExp(`\\b${plant.displayName}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
+          const regex = new RegExp(`\\b${plant.displayName}s?\\b`, 'i'); // Word-boundary regex for case-insensitive matching
           if (regex.test(text)) {
             foundPlants.push(plant);
           }
