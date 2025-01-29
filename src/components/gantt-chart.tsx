@@ -84,16 +84,16 @@ const GanttChart = (props: GanttChartProps)=> {
     }
   });
 
-  // Remove calendar year if screen size is small
-  const [calendarYear, setCalendarYear] = useState<NodeListOf<Element>>();
-  useEffect(() => {
-    setCalendarYear(document.querySelectorAll('.calendarTop > text'));
-  }, []);
-  calendarYear?.forEach((el) => {
-    if (isSmallScreen) {
-      el.remove()
-    }
-  });
+  // // Remove calendar year if screen size is small
+  // const [calendarYear, setCalendarYear] = useState<NodeListOf<Element>>();
+  // useEffect(() => {
+  //   setCalendarYear(document.querySelectorAll('.calendarTop > text'));
+  // }, []);
+  // calendarYear?.forEach((el) => {
+  //   if (isSmallScreen) {
+  //     el.remove()
+  //   }
+  // });
 
   // Fixes issue where tooltips aren't always rendered on mobile tap
   useEffect(() => {
@@ -236,7 +236,7 @@ const GanttChart = (props: GanttChartProps)=> {
     const harvestEndDate = plantingSchedule.flat().find(p => p.name === planting.name)?.harvestEndDate
 
     return (
-      <Card withBorder style={isSmallScreen ? {position: "fixed", top: 25, left: 20} : undefined}>
+      <Card withBorder style={isSmallScreen ? {position: "fixed", top: 0, left: 0} : undefined}>
         <Text size="sm">
           <b>{planting.name}</b>
         </Text>
@@ -264,7 +264,7 @@ const GanttChart = (props: GanttChartProps)=> {
           TooltipContent={ToolTip}
           preStepsCount={getEarliestPlantingMonth()}
           tasks={chartItems}
-          headerHeight={isSmallScreen ? 25 : undefined}
+          // headerHeight={isSmallScreen ? 25 : undefined}
           barFill={95}
           viewMode={ViewMode.Month}
           rowHeight={28}
