@@ -172,7 +172,7 @@ const PlanOverview = (props: DataDisplayProps) => {
           <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
           <Accordion.Panel>
             <List>
-              <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting certain crops together, companion planting boosts your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
+              <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
               {
                 companionPlantingAdvice && companionPlants && !fakeLoading
                   ? companionPlantingAdvice.map((advice, index) =>
