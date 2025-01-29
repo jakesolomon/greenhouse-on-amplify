@@ -822,34 +822,34 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   collectionHandle: "tatsoi-tat-choy-seed",
   //   idealHardinessZones: [5, 6, 7, 8, 9, 10]
   // },
-  "Tomato (determinate)": {
-    displayName: "Tomato (determinate)",
-    collectionHandle: "tomato-vegetable-seed",
-    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11],
-    subTypeParameters: [
-      {"name":"Determinate","tags":["Determinate"],"category":"Determinacy"},
-    ],
-    frostHardy: false,
-    daysToMaturity: 75,
-    directSow: false,
-    harvestDuration: () => 18, // Assuming 2.5 weeks of yield.
-    plantingDates: (climateData: ClimateDataOutput, daysToMaturity: number) => {
-      // Seed 7 weeks prior to last frost date, transplant after risk of frost (1-2 weeks)
-      const earlyPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
-      earlyPlantingDate.setDate(earlyPlantingDate.getDate() + 10)
-      const daysUntilLastPossibleHarvest = daysUntilSuboptimalTemperature(climateData, {min: 50}, earlyPlantingDate, 'Tomato (determinate)')
-      // If daysUntilLastPossibleHarvest fails, do not return a planting date that uses it.
-      if (daysUntilLastPossibleHarvest === -1) {
-        return [earlyPlantingDate]
-      }
-      const harvestDuration = 18
-      const latestPlantingDate = new Date(earlyPlantingDate)
-      latestPlantingDate.setDate(earlyPlantingDate.getDate() + daysUntilLastPossibleHarvest - daysToMaturity - harvestDuration - 7) // Adding a buffer of 7 days.
-      return [earlyPlantingDate, latestPlantingDate]
-    }
-  },
-  "Tomato (indeterminate)": {
-    displayName: "Tomato (indeterminate)",
+  // "Tomato (determinate)": {
+  //   displayName: "Tomato (determinate)",
+  //   collectionHandle: "tomato-vegetable-seed",
+  //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11],
+  //   subTypeParameters: [
+  //     {"name":"Determinate","tags":["Determinate"],"category":"Determinacy"},
+  //   ],
+  //   frostHardy: false,
+  //   daysToMaturity: 75,
+  //   directSow: false,
+  //   harvestDuration: () => 18, // Assuming 2.5 weeks of yield.
+  //   plantingDates: (climateData: ClimateDataOutput, daysToMaturity: number) => {
+  //     // Seed 7 weeks prior to last frost date, transplant after risk of frost (1-2 weeks)
+  //     const earlyPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+  //     earlyPlantingDate.setDate(earlyPlantingDate.getDate() + 10)
+  //     const daysUntilLastPossibleHarvest = daysUntilSuboptimalTemperature(climateData, {min: 50}, earlyPlantingDate, 'Tomato (determinate)')
+  //     // If daysUntilLastPossibleHarvest fails, do not return a planting date that uses it.
+  //     if (daysUntilLastPossibleHarvest === -1) {
+  //       return [earlyPlantingDate]
+  //     }
+  //     const harvestDuration = 18
+  //     const latestPlantingDate = new Date(earlyPlantingDate)
+  //     latestPlantingDate.setDate(earlyPlantingDate.getDate() + daysUntilLastPossibleHarvest - daysToMaturity - harvestDuration - 7) // Adding a buffer of 7 days.
+  //     return [earlyPlantingDate, latestPlantingDate]
+  //   }
+  // },
+  "Tomato": { // indeterminate. TODO make both available when improving crop selection UI.
+    displayName: "Tomato",
     collectionHandle: "tomato-vegetable-seed",
     subTypeParameters: [
       {"name":"Indeterminate","tags":["Indeterminate"],"category":"Determinacy"},
@@ -865,7 +865,7 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
     ) => {
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
-      return daysUntilSuboptimalTemperature(climateData, {min: 50}, harvestStartDate, 'Tomato (indeterminate)')
+      return daysUntilSuboptimalTemperature(climateData, {min: 50}, harvestStartDate, 'Tomato')
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // Seed 7 weeks prior to last frost date, transplant after risk of frost (1-2 weeks)
