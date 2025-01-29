@@ -54,6 +54,20 @@ const GanttChart = (props: GanttChartProps)=> {
   const theme = useMantineTheme();
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
 
+  const [ highlightedPlot, setHighlightedPlot ] = useState<string>()
+
+  // Find month names and abbreviate if screen size is small
+  const [headers, setHeaders] = useState<NodeListOf<Element>>();
+  useEffect(() => {
+    setHeaders(document.querySelectorAll('.calendar > text'));
+  }, []);
+  headers?.forEach((el) => {
+    const maxChars = 1;
+    if (el?.textContent?.length && el?.textContent?.length > maxChars && isSmallScreen) {
+      el.textContent = el.textContent.substring(0, maxChars);
+    }
+  });
+
   const loadingTimeWarning = <Text size="sm" c="dimmed">This sometimes takes a few seconds<Loader color={theme.colors.gray[5]} size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></Text>
 
   // const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
@@ -71,18 +85,6 @@ const GanttChart = (props: GanttChartProps)=> {
       </HoverCard.Dropdown>
     </HoverCard>
   )
-
-  // Find month names and abbreviate if screen size is small
-  const [headers, setHeaders] = useState<NodeListOf<Element>>();
-  useEffect(() => {
-    setHeaders(document.querySelectorAll('.calendar > text'));
-  }, []);
-  headers?.forEach((el) => {
-    const maxChars = 1;
-    if (el?.textContent?.length && el?.textContent?.length > maxChars && isSmallScreen) {
-      el.textContent = el.textContent.substring(0, maxChars);
-    }
-  });
 
   // // Remove calendar year if screen size is small
   // const [calendarYear, setCalendarYear] = useState<NodeListOf<Element>>();
@@ -164,8 +166,9 @@ const GanttChart = (props: GanttChartProps)=> {
 
   const chartItems: Task[] = [];
   plantingSchedule.forEach((plot: Planting[], plotIndex: number) => {
+    const isHighlighted = plotIndex.toString() === highlightedPlot
+
     plot.forEach((planting: Planting, plantingIndex: number) => {
-      // console.log(planting)
       const plantingOverWinters: boolean = planting.harvestStartDate > endOfYear;
       const harvestOverWinters: boolean = planting.harvestEndDate > endOfYear;
 
@@ -188,26 +191,37 @@ const GanttChart = (props: GanttChartProps)=> {
               ? 95 * durationBeforeHarvest / fullDuration * shorteningFactorFromNYECutoff
               : 95 * durationBeforeHarvest / fullDuration,
         styles: {
-          backgroundColor: plotToColor[plotIndex][9],
-          backgroundSelectedColor: plotToColor[plotIndex][9],
-          progressColor: plotToColor[plotIndex][7],
-          progressSelectedColor: plotToColor[plotIndex][7],
+          backgroundColor: plotToColor[plotIndex][isHighlighted ? 5 : 9],
+          backgroundSelectedColor: plotToColor[plotIndex][isHighlighted ? 5 : 9],
+          progressColor: plotToColor[plotIndex][isHighlighted ? 5 : 7],
+          progressSelectedColor: plotToColor[plotIndex][isHighlighted ? 5 : 7],
         },
         id: `${plotIndex}, ${plantingIndex}`
       });
     })
   });
 
-  const legend = plantingSchedule.map((_, index) =>
-    <Badge
-      key={index}
-      color={plotToColor[index][7]}
-      size="lg"
-      radius="sm"
-    >
-      Plot {index + 1}
-    </Badge>
-  )
+  const handleMouseOverLegendItem = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    console.log(e.currentTarget.id);
+    setHighlightedPlot(e.currentTarget.id)
+  }
+
+  const legend = plantingSchedule.map((_, index) => {
+    const isHighlighted = index.toString() === highlightedPlot
+    return (
+      <Badge
+        key={index}
+        id={index.toString()}
+        color={plotToColor[index][isHighlighted ? 5 : 7]}
+        size="lg"
+        radius="sm"
+        onMouseEnter={handleMouseOverLegendItem}
+        onMouseLeave={() => setHighlightedPlot(undefined)}
+      >
+        Plot {index + 1}
+      </Badge>
+      )
+  })
 
   const getEarliestPlantingMonth = () => {
     let earliestPlantingDate = new Date("2025-12-31");
