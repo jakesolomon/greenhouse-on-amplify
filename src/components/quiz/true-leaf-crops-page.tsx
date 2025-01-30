@@ -6,11 +6,12 @@ import {
   Text,
   Loader,
   Chip,
-  InputLabel
+  InputLabel, HoverCard
 } from '@mantine/core';
 
 import { cropTypes } from "../../helpers/crop-types.ts";
 import {useViewportSize} from "@mantine/hooks";
+import {IconHelpCircle} from "@tabler/icons-react";
 
 interface CropsPageProps {
   inputKey: string;
@@ -38,6 +39,21 @@ function TrueLeafCropsPage(props: CropsPageProps) {
   const theme = useMantineTheme();
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.md
 
+  const tooltipText = "USDA Plant Hardiness Zones divide regions by their average winter temperatures, helping gardeners choose plants that can handle their local climate. Knowing your zone ensures you plant crops that will grow successfully in your area."
+
+  const tooltip = (text: string) => (
+    <HoverCard width={400} shadow="md" closeDelay={20}>
+      <HoverCard.Target>
+        <u>{text}</u>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <Text size="sm">
+          {tooltipText}
+        </Text>
+      </HoverCard.Dropdown>
+    </HoverCard>
+  )
+
   const renderChips = (_hardinessZone?: number) =>
     Object.keys(cropTypes).map(crop => {
       const disabled = !!_hardinessZone && !cropTypes[crop].idealHardinessZones.includes(_hardinessZone)
@@ -62,7 +78,8 @@ function TrueLeafCropsPage(props: CropsPageProps) {
       <InputLabel>What crops are you interested in growing?</InputLabel>
       <Text c="dimmed" size="sm" mb="md" >{
         hardinessZone
-          ? <>USDA Plant Hardiness Zone {hardinessZone} found for your location. Unsuitable crops are disabled.</>
+          //
+          ? <>{tooltip(`USDA Plant Hardiness Zone ${hardinessZone}`)}<IconHelpCircle size="1rem" /> found for your location. Unsuitable crops are disabled.</>
           : <>Finding your USDA Plant Hardiness Zone <Loader color={theme.colors.gray[6]} type="dots" size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></>
       }</Text>
       <Chip.Group

@@ -54,7 +54,7 @@ const systemPrompt =
   "You are a helpful assistant tasked with summarizing a planting schedule for a new home vegetable gardener. Below is a summary of predicted climate conditions, and a crop planting schedule. Provide a one-paragraph summary, 60-100 words, of what the gardener can expect in both growing and harvesting. This summary does not require context, as there will be an introduction paragraph for the user to read before the summary.\n" +
   "\n" +
   "### Guidelines\n" +
-  " - The audience of this summary is a home gardener who has just created a garden plan and is seeing it for the first time. Be informative and not too verbose.\n" +
+  " - The audience of this summary is a home gardener who has just created a garden plan and is seeing it for the first time. Be informative and not too verbose. Write as though to the gardener themself, (i.e. use `you` instead of 3rd person).\n" +
   " - Planting dates for crops of `sowingStrategy = Transplant seedlings` represent the date that seedlings are transplanted into the garden." +
   // " - Reference specific crops or varieties included in their plan.\n" +
   // " - Focus on chronological growing and harvesting events, so that the summary reads a bit like a very short story about the harvests of the year to come.\n" +
