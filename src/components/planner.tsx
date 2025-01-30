@@ -182,6 +182,7 @@ const Planner = () => {
   }
 
   const submitZipCode = async (zipCode: string) => {
+    setClimateData(undefined);
     try {
       const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
       setClimateData(JSON.parse(result.data!));

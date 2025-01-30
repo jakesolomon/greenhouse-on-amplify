@@ -2,7 +2,7 @@ import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import { useEffect, useState } from "react";
 
 import {
-  IconInfoCircle
+  IconHelpCircle
 } from '@tabler/icons-react';
 import {
   Container,
@@ -289,7 +289,7 @@ const GanttChart = (props: GanttChartProps)=> {
         <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           {/*Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.*/}
           {/*Colors indicate what plot of land a crop is grown in, where each plot represent a sub-division of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed. Lighter regions indicate growing time, while darker regions indicate harvests.*/}
-          Colors indicate {tooltip("what plot of land a crop is grown in.")}<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.
+          Colors indicate {tooltip("what plot of land a crop is grown in.")}<IconHelpCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
         {
           noSuccessionPlanting &&
