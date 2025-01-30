@@ -10,7 +10,8 @@ import {
   Card,
   LoadingOverlay,
   Skeleton,
-  HoverCard, Loader
+  HoverCard,
+  Loader
 } from "@mantine/core";
 import "gantt-task-react/dist/index.css";
 
@@ -43,8 +44,6 @@ interface GanttChartProps {
 const GanttChart = (props: GanttChartProps)=> {
 
   const { plantingSchedule = skeletonPlantingData, loading, showLoadingTimeWarning } = props;
-
-  const noSuccessionPlanting = plantingSchedule?.every((p) => p.length === 1);
 
   const { width } = useViewportSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
@@ -204,7 +203,6 @@ const GanttChart = (props: GanttChartProps)=> {
   });
 
   const handleMouseOverLegendItem = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    console.log(e.currentTarget.id);
     setHighlightedPlot(e.currentTarget.id)
   }
 
@@ -288,21 +286,16 @@ const GanttChart = (props: GanttChartProps)=> {
           TaskListTable={GanttChartListTable}
           TaskListHeader={GanttChartListHeader}
         />
-        <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
+        <Text size="sm" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           {/*Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.*/}
           {/*Colors indicate what plot of land a crop is grown in, where each plot represent a sub-division of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed. Lighter regions indicate growing time, while darker regions indicate harvests.*/}
           Colors indicate what plot of land a crop is grown in {tooltip("(what are plots?)")}. Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
-        {
-          noSuccessionPlanting &&
-          <Text size="sm" mb="xs" c="pink" style={isSmallScreen ? undefined : {textAlign: "right"}}>
-            Looks like we couldn't plant anything in succession. You may not have selected enough crops, or crops with enough variation in growing climate.
-          </Text>
-        }
         <Flex
           gap="sm"
           justify={isSmallScreen ? "flex-start" : "flex-end"}
           wrap="wrap"
+          my="xs"
         >
           {legend}
         </Flex>

@@ -9,7 +9,7 @@ import {
   Center,
   Image,
   useMantineTheme,
-  Anchor
+  Anchor, Alert
 } from '@mantine/core';
 import {useViewportSize} from "@mantine/hooks";
 
@@ -24,6 +24,9 @@ import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
 import {useEffect, useState} from "react";
 import Logo from "../assets/full-logo-text-color.svg";
+import {IconInfoCircle} from "@tabler/icons-react";
+
+import "./plan-overview.css";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -39,6 +42,36 @@ const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants, startPlanOver } = props;
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
+  const noSuccessionPlanting =
+    !plantingScheduleLoading && plantingSchedule?.every((p) => p.length === 1);
+
+  const [ showNoSuccessionPlantingAlert, setShowNoSuccessionPlantingAlert ] = useState<boolean>(false)
+
+  // noSuccessionPlanting will be false on first render, since plantingSchedule is not sent yet.
+  // Checks for updates and then setShowNoSuccessionPlantingAlert.
+  useEffect(() => {
+    if (plantingSchedule.length > 0) {
+      setShowNoSuccessionPlantingAlert(noSuccessionPlanting);
+    }
+  }, [plantingSchedule, noSuccessionPlanting]);
+
+  const plantingCounts = plantingSchedule.reduce((acc, row) => {
+    return row.reduce((innerAcc, planting) => {
+      innerAcc[planting.name] = (innerAcc[planting.name] || 0) + 1;
+      return innerAcc;
+    }, acc);
+  }, {} as Record<string, number>);
+  const plantingScheduleIsRepetitive = Object.values(plantingCounts).some(count => count >= 4);
+
+  const [ showRepetitivePlantingsAlert, setShowRepetitivePlantingsAlert ] = useState<boolean>(false)
+
+  // plantingScheduleIsRepetitive will be false on first render, since plantingSchedule is not sent yet.
+  // Checks for updates and then setShowRepetitivePlantingsAlert.
+  useEffect(() => {
+    if (plantingSchedule.length > 0) {
+      setShowRepetitivePlantingsAlert(plantingScheduleIsRepetitive);
+    }
+  }, [plantingSchedule, plantingScheduleIsRepetitive]);
 
   // Scroll to top on first render
   useEffect(() => {
@@ -103,6 +136,8 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Skeleton height={10} mt={6} width="70%" radius="xl" mb="sm" />
     </>
 
+  const infoIcon = <IconInfoCircle />;
+
   const replaceCompanionPlantsWithLinks = (advice: string, plantsWithLinks: {displayName: string, storeHandle: string}[]) => {
     // Create a map for faster lookup of storeHandles by plant name
     const plantMap: Record<string, string> = plantsWithLinks.reduce((map, plant) => {
@@ -160,6 +195,36 @@ const PlanOverview = (props: DataDisplayProps) => {
         loading={plantingScheduleLoading || fakeLoading}
         showLoadingTimeWarning={showLoadingTimeWarning}
       />
+      {
+        showNoSuccessionPlantingAlert &&
+        <Alert
+          variant="light"
+          color="yellow"
+          withCloseButton
+          closeButtonLabel="Close alert."
+          onClose={() => setShowNoSuccessionPlantingAlert(false)}
+          title="It looks like we couldn't plant anything in succession."
+          icon={isSmallScreen ? undefined : infoIcon}
+          my="md"
+        >
+          <Text size="sm">This may be because you haven’t selected enough crops or ones with different growing seasons. If your garden is empty in spring or fall, try adding cool-weather crops like lettuce, kale, cabbage, or radishes to make better use of your space. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
+        </Alert>
+      }
+      {
+        showRepetitivePlantingsAlert &&
+        <Alert
+          variant="light"
+          color="yellow"
+          withCloseButton
+          closeButtonLabel="Close alert."
+          onClose={() => setShowRepetitivePlantingsAlert(false)}
+          title="It looks like the same crops are being planted repeatedly."
+          icon={isSmallScreen ? undefined : infoIcon}
+          my="md"
+        >
+          <Text size="sm">This may be because there aren’t enough crops with different growing seasons in your selection. If you notice lots of plantings of the same cool-weather crop (like lettuce, kale, cabbage, or radishes), try adding other cool-weather crops for more variety. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
+        </Alert>
+      }
       <Accordion mt="md" transitionDuration={350}>
         <Accordion.Item value="crops">
           <Accordion.Control icon="🥦">Crops</Accordion.Control>
