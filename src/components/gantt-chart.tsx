@@ -2,9 +2,6 @@ import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import { useEffect, useState } from "react";
 
 import {
-  IconHelpCircle
-} from '@tabler/icons-react';
-import {
   Container,
   useMantineTheme,
   Badge,
@@ -71,7 +68,10 @@ const GanttChart = (props: GanttChartProps)=> {
   const loadingTimeWarning = <Text size="sm" c="dimmed">This sometimes takes a few seconds<Loader color={theme.colors.gray[5]} size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></Text>
 
   // const tooltipText = `"Plots" represent individual spaces within your gardening area. Each plot groups crops that can be planted in the same area at different times. Once one crop is harvested, another from the same plot can be planted in its place.`
-  const tooltipText = "Plots represent sub-divisions of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed."
+  const tooltipText1 = "Plots represent sections of your garden space. " +
+    "For example, if you have three garden beds and your plan includes six plots, each plot would take up half of a bed."
+  const tooltipText2 = "Each plot groups crops that can be planted in the same area at different times, " +
+    "so once one crop is harvested, another from the same plot can be planted in its place."
 
   const tooltip = (text: string) => (
     <HoverCard width={400} shadow="md" closeDelay={20}>
@@ -80,7 +80,9 @@ const GanttChart = (props: GanttChartProps)=> {
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Text size="sm">
-          {tooltipText}
+          {tooltipText1}
+          <br/><br/>
+          {tooltipText2}
         </Text>
       </HoverCard.Dropdown>
     </HoverCard>
@@ -191,10 +193,10 @@ const GanttChart = (props: GanttChartProps)=> {
               ? 95 * durationBeforeHarvest / fullDuration * shorteningFactorFromNYECutoff
               : 95 * durationBeforeHarvest / fullDuration,
         styles: {
-          backgroundColor: plotToColor[plotIndex][isHighlighted ? 5 : 9],
-          backgroundSelectedColor: plotToColor[plotIndex][isHighlighted ? 5 : 9],
-          progressColor: plotToColor[plotIndex][isHighlighted ? 5 : 7],
-          progressSelectedColor: plotToColor[plotIndex][isHighlighted ? 5 : 7],
+          backgroundColor: plotToColor[plotIndex][isHighlighted ? 6 : 9],
+          backgroundSelectedColor: plotToColor[plotIndex][isHighlighted ? 6 : 9],
+          progressColor: plotToColor[plotIndex][isHighlighted ? 4 : 7],
+          progressSelectedColor: plotToColor[plotIndex][isHighlighted ? 4 : 7],
         },
         id: `${plotIndex}, ${plantingIndex}`
       });
@@ -289,7 +291,7 @@ const GanttChart = (props: GanttChartProps)=> {
         <Text size="sm" mb={noSuccessionPlanting ? 0 : "xs"} c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           {/*Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.*/}
           {/*Colors indicate what plot of land a crop is grown in, where each plot represent a sub-division of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed. Lighter regions indicate growing time, while darker regions indicate harvests.*/}
-          Colors indicate {tooltip("what plot of land a crop is grown in.")}<IconHelpCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.
+          Colors indicate what plot of land a crop is grown in {tooltip("(what are plots?)")}. Lighter regions indicate growing time, while darker regions indicate harvests.
         </Text>
         {
           noSuccessionPlanting &&
