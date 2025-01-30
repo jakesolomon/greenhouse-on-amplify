@@ -40,6 +40,11 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
 
+  // Scroll to top on first render
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [ showLoadingTimeWarning, setShowLoadingTimeWarning ] = useState<boolean>(false);
   // const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
   const [ fakeLoading, setIsFakeLoading ] = useState<boolean>((): boolean => {
