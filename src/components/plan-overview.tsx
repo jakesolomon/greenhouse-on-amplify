@@ -40,8 +40,26 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
 
-  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
+  // Scroll to top on first render
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [ showLoadingTimeWarning, setShowLoadingTimeWarning ] = useState<boolean>(false);
+  // const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
+  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>((): boolean => {
+    const saved = localStorage.getItem("fakeLoading");
+    const initialValue = true;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("fakeLoading", JSON.stringify(fakeLoading));
+  }, [fakeLoading]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -52,7 +70,7 @@ const PlanOverview = (props: DataDisplayProps) => {
   useEffect(() => {
     setTimeout(() => {
       setShowLoadingTimeWarning(true)
-    }, 6500);
+    }, 5500);
   }, []);
 
   const { width } = useViewportSize();
@@ -95,8 +113,6 @@ const PlanOverview = (props: DataDisplayProps) => {
     // Generate a regex to match all plant names
     const plantNames = plantsWithLinks.map(plant => plant.displayName);
     const regex = new RegExp(`\\b(${plantNames.map(name => `${name}s?`).join('|')})\\b`, 'i');
-    console.log("plantNames: ", plantNames)
-    console.log("regex: ", regex)
 
     // Track which plants have already been linked
     const linkedPlants = new Set<string>();
@@ -104,10 +120,8 @@ const PlanOverview = (props: DataDisplayProps) => {
     // Replace plant names with React links
     return advice.split(regex).map((chunk, index) => {
       const normalizedChunk = chunk.toLowerCase();
-      console.log("normalizedChunk: ", normalizedChunk);
       // Check for uppercase, lowercase, and remove last letter from each (in case plural).
       if ((plantMap[chunk] || plantMap[normalizedChunk]) && !linkedPlants.has(normalizedChunk)) {
-        console.log('plantMap[chunk]: ', plantMap[chunk])
         linkedPlants.add(normalizedChunk); // Mark this plant as linked
         return (
           <a key={index} href={`https://trueleafmarket.com/products/${plantMap[normalizedChunk]}`} target="_blank" rel="noopener noreferrer">
@@ -116,7 +130,6 @@ const PlanOverview = (props: DataDisplayProps) => {
         );
       }
       if ((plantMap[chunk.slice(0, chunk.length -1)] || plantMap[normalizedChunk.slice(0, normalizedChunk.length -1)]) && !linkedPlants.has(normalizedChunk)) {
-        console.log('plantMap[chunk]: ', plantMap[chunk])
         linkedPlants.add(normalizedChunk); // Mark this plant as linked
         return (
           <a key={index} href={`https://trueleafmarket.com/products/${plantMap[normalizedChunk.slice(0, normalizedChunk.length -1)]}`} target="_blank" rel="noopener noreferrer">
@@ -177,7 +190,7 @@ const PlanOverview = (props: DataDisplayProps) => {
           <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
           <Accordion.Panel>
             <List>
-              <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting certain crops together, companion planting boosts your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
+              <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
               {
                 companionPlantingAdvice && companionPlants && !fakeLoading
                   ? companionPlantingAdvice.map((advice, index) =>

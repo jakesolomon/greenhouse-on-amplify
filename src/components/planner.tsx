@@ -7,7 +7,7 @@ import { Schema } from "../../amplify/data/resource.ts";
 
 import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
-import { ClimateDataOutput, Crop, Planting, SeedVariety } from "../types.ts";
+import {ClimateDataOutput, Crop, GrowingDateRange, Planting, SeedVariety} from "../types.ts";
 import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
 import { generateOptimalPlantingSchedule } from "../helpers/schedule-helpers.tsx"
 import FakeQuizQuestion from "./quiz/fake-quiz-question.tsx";
@@ -40,26 +40,136 @@ const Planner = () => {
   //   console.error("Invalid API response structure");
   // }
 
-  const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
+  // const [ climateData, setClimateData ] = useState<ClimateDataOutput>();
+  const [ climateData, setClimateData ] = useState<ClimateDataOutput | undefined>((): ClimateDataOutput | undefined => {
+    const saved = localStorage.getItem("climateData");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
 
-  const [ cropData, setCropData ] = useState<Crop[]>();
+  // const [ cropData, setCropData ] = useState<Crop[]>();
   const [ loadingCropData, setIsLoadingCropData ] = useState<boolean>(false);
+  const [ cropData, setCropData ] = useState<Crop[] | undefined>((): Crop[] | undefined => {
+    const saved = localStorage.getItem("cropData");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      const parsed: Crop[] = JSON.parse(saved)
+      // Reformated after losing dates to json.stringify
+      return parsed.map((crop: Crop) => {
+        const formattedGrowingDateRanges: GrowingDateRange[] = crop.optimalGrowingDateRanges.map((growingDateRange: GrowingDateRange) => ({
+          transplantingDate: new Date(growingDateRange.transplantingDate),
+          harvestStartDate: new Date(growingDateRange.harvestStartDate),
+          harvestEndDate: new Date(growingDateRange.harvestEndDate),
+        }))
+        return {
+          ...crop,
+          optimalGrowingDateRanges: formattedGrowingDateRanges
+        }
+      })
+    } else {
+      return initialValue;
+    }
+  });
 
-  const [ plantingSchedule, setPlantingSchedule ] = useState<Planting[][]>([]);
+  // const [ plantingSchedule, setPlantingSchedule ] = useState<Planting[][]>([]);
+  const [ plantingSchedule, setPlantingSchedule ] = useState((): Planting[][] => {
+    const saved = localStorage.getItem("plantingSchedule");
+    const initialValue: Planting[][] = [];
+    if (!!saved && saved !== "undefined") {
+      const parsed: Planting[][] = JSON.parse(saved)
+      // Reformated after losing dates to json.stringify
+      return parsed.map((plot: Planting[]) => {
+        return plot.map((planting: Planting) => ({
+          name: planting.name,
+          transplantingDate: new Date(planting.transplantingDate),
+          harvestStartDate: new Date(planting.harvestStartDate),
+          harvestEndDate: new Date(planting.harvestEndDate),
+        }))
+      })
+    } else {
+      return initialValue;
+    }
+  });
 
-  const [ scheduleSummary, setScheduleSummary ] = useState<string>();
+  // const [ scheduleSummary, setScheduleSummary ] = useState<string>();
   const [ loadingScheduleSummary, setLoadingScheduleSummary ] = useState<'true' | 'false' | 'failed'>('false');
+  const [ scheduleSummary, setScheduleSummary ] = useState<string | undefined>((): string | undefined => {
+    const saved = localStorage.getItem("scheduleSummary");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
 
-  const [ companionPlantingAdvice , setCompanionPlantingAdvice ] = useState<string[]>();
+  // const [ companionPlantingAdvice , setCompanionPlantingAdvice ] = useState<string[]>();
   const [ loadingCompanionPlantingAdvice , setLoadingCompanionPlantingAdvice ] = useState<'true' | 'false' | 'failed'>('false');
+  const [ companionPlantingAdvice, setCompanionPlantingAdvice ] = useState<string[] | undefined>((): string[] | undefined => {
+    const saved = localStorage.getItem("companionPlantingAdvice");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
 
-  const [ companionPlants , setCompanionPlants ] = useState<{storeHandle: string, displayName: string}[]>();
+  // const [ companionPlants , setCompanionPlants ] = useState<{storeHandle: string, displayName: string}[]>();
+  const [ companionPlants, setCompanionPlants ] = useState<{storeHandle: string, displayName: string}[] | undefined>((): {
+    storeHandle: string;
+    displayName: string
+  }[] | undefined => {
+    const saved = localStorage.getItem("companionPlants");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
 
   const [ fatalError, setFatalError ] = useState<string>();
 
-  const [ proceedToPlan, setProceedToPlan ] = useState<boolean>(false);
+  // const [ proceedToPlan, setProceedToPlan ] = useState<boolean>(false);
+  const [ proceedToPlan, setProceedToPlan ] = useState((): boolean => {
+    const saved = localStorage.getItem("proceedToPlan");
+    const initialValue = false;
+    if (!!saved && saved !== "undefined") {
+      return JSON.parse(saved)
+    } else {
+      return initialValue;
+    }
+  });
 
   const amplifyClient = generateClient<Schema>()
+
+  // Anytime useState is called to change the value of one of the following states, local storage updates as well.
+  useEffect(() => {
+    localStorage.setItem("climateData", JSON.stringify(climateData));
+  }, [climateData]);
+  useEffect(() => {
+    localStorage.setItem("cropData", JSON.stringify(cropData));
+  }, [cropData]);
+  useEffect(() => {
+    localStorage.setItem("plantingSchedule", JSON.stringify(plantingSchedule));
+  }, [plantingSchedule]);
+  useEffect(() => {
+    localStorage.setItem("scheduleSummary", JSON.stringify(scheduleSummary));
+  }, [scheduleSummary]);
+  useEffect(() => {
+    localStorage.setItem("companionPlantingAdvice", JSON.stringify(companionPlantingAdvice));
+  }, [companionPlantingAdvice]);
+  useEffect(() => {
+    localStorage.setItem("companionPlants", JSON.stringify(companionPlants));
+  }, [companionPlants]);
+  useEffect(() => {
+    localStorage.setItem("proceedToPlan", JSON.stringify(proceedToPlan));
+  }, [proceedToPlan]);
 
   const startPlanOver = () => {
     setClimateData(undefined)
@@ -72,6 +182,7 @@ const Planner = () => {
   }
 
   const submitZipCode = async (zipCode: string) => {
+    setClimateData(undefined);
     try {
       const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
       setClimateData(JSON.parse(result.data!));
@@ -273,7 +384,7 @@ const Planner = () => {
 
       companionPlantingAdvice.forEach(text => {
         Object.values(availableCompanionPlants).forEach(plant => {
-          const regex = new RegExp(`\\b${plant.displayName}\\b`, 'i'); // Word-boundary regex for case-insensitive matching
+          const regex = new RegExp(`\\b${plant.displayName}s?\\b`, 'i'); // Word-boundary regex for case-insensitive matching
           if (regex.test(text)) {
             foundPlants.push(plant);
           }
