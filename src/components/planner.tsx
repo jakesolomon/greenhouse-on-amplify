@@ -9,7 +9,7 @@ import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
 import {ClimateDataOutput, Crop, GrowingDateRange, Planting, SeedVariety} from "../types.ts";
 import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
-import { generateOptimalPlantingSchedule } from "../helpers/schedule-helpers.tsx"
+import { generateOptimalPlantingSchedule } from "../helpers/schedule-helpers.ts"
 import FakeQuizQuestion from "./quiz/fake-quiz-question.tsx";
 import { availableCompanionPlants } from "./available-companion-plants.ts"
 

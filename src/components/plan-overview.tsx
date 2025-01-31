@@ -61,7 +61,7 @@ const PlanOverview = (props: DataDisplayProps) => {
       return innerAcc;
     }, acc);
   }, {} as Record<string, number>);
-  const plantingScheduleIsRepetitive = Object.values(plantingCounts).some(count => count >= 4);
+  const plantingScheduleIsRepetitive = Object.values(plantingCounts).some(count => count > plantingSchedule.length*3/5);
 
   const [ showRepetitivePlantingsAlert, setShowRepetitivePlantingsAlert ] = useState<boolean>(false)
 

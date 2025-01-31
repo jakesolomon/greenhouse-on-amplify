@@ -1,4 +1,4 @@
-import { Crop, Planting } from "../types.ts";
+import {Crop, GrowingDateRange, Planting} from "../types.ts";
 
 const getDaysBetween = (start: Date, end: Date): number => {
   const timeBetween = end.getTime() - start.getTime();
@@ -7,8 +7,8 @@ const getDaysBetween = (start: Date, end: Date): number => {
 
 const plantingsAreInConflict = (planting1: Planting, planting2: Planting): boolean =>
   !(
-    new Date (planting1.harvestEndDate) <= new Date (planting2.transplantingDate) ||
-    new Date (planting2.harvestEndDate) <= new Date (planting1.transplantingDate)
+    planting1.harvestEndDate <= planting2.transplantingDate ||
+    planting2.harvestEndDate <= planting1.transplantingDate
   )
 
 const getPlantings = (crop: Crop): Planting[] => {
@@ -21,10 +21,10 @@ const getPlantings = (crop: Crop): Planting[] => {
 }
 
 const daysOfPlantingOverlap = (newPlanting: Planting, existingPlanting: Planting): number => {
-  const newPlantingStart = new Date(newPlanting.transplantingDate)
-  const newPlantingEnd = new Date(newPlanting.harvestEndDate)
-  const existingPlantingStart = new Date(existingPlanting.transplantingDate)
-  const existingPlantingEnd = new Date(existingPlanting.harvestEndDate)
+  const newPlantingStart = newPlanting.transplantingDate
+  const newPlantingEnd = newPlanting.harvestEndDate
+  const existingPlantingStart = existingPlanting.transplantingDate
+  const existingPlantingEnd = existingPlanting.harvestEndDate
   let timeBetween;
 
   if (newPlantingEnd > existingPlantingStart) {
@@ -46,9 +46,6 @@ const fudgePlanting = (planting: Planting, plot: Planting[]): Planting | undefin
   let fudgeRangeIsAcceptable = false;
   let fudgedPlanting: Planting;
   let fudgedPlantingConflictsWithPlot = false;
-  const unfudgedTransplantingDate = new Date(planting.transplantingDate)
-  const unfudgedHarvestStartDate = new Date(planting.harvestStartDate)
-  const unfudgedHarvestEndDate = new Date(planting.harvestEndDate)
 
   // Can't use plot.forEach here because it doesn't support early exit (the `return fudgedPlanting` would only break the loop but not return the value from the overall function).
   for (const existingPlanting of plot) {
@@ -57,15 +54,14 @@ const fudgePlanting = (planting: Planting, plot: Planting[]): Planting | undefin
       fudgeRangeIsAcceptable = Math.abs(fudgeDays) < 10
     }
     if (fudgeDays && fudgeRangeIsAcceptable) {
-      // console.log('fudgeRangeIsAcceptable. fudgeDays: ', fudgeDays)
       // create fudgedPlanting
-      const fudgedTransplantingDate = new Date(unfudgedTransplantingDate);
-      const fudgedHarvestStartDate = new Date(unfudgedHarvestStartDate);
-      const fudgedHarvestEndDate = new Date(unfudgedHarvestEndDate);
+      const fudgedTransplantingDate = new Date(planting.transplantingDate);
+      const fudgedHarvestStartDate = new Date(planting.harvestStartDate);
+      const fudgedHarvestEndDate = new Date(planting.harvestEndDate);
 
-      fudgedTransplantingDate.setDate(unfudgedTransplantingDate.getDate() + fudgeDays);
-      fudgedHarvestStartDate.setDate(unfudgedHarvestStartDate.getDate() + fudgeDays);
-      fudgedHarvestEndDate.setDate(unfudgedHarvestEndDate.getDate() + fudgeDays);
+      fudgedTransplantingDate.setDate(fudgedTransplantingDate.getDate() + fudgeDays);
+      fudgedHarvestStartDate.setDate(fudgedHarvestStartDate.getDate() + fudgeDays);
+      fudgedHarvestEndDate.setDate(fudgedHarvestEndDate.getDate() + fudgeDays);
 
       fudgedPlanting = {
         name: planting.name,
@@ -119,8 +115,7 @@ const addPlanting = (
   }
   if (remainingCrops[0]) {
     remainingCrops.forEach((_crop, index) => {
-      // deep clone remaining crops and remove crop
-      const newlyRemainingCrops = JSON.parse(JSON.stringify(remainingCrops))
+      const newlyRemainingCrops = deepCloneCrops(remainingCrops)
       newlyRemainingCrops.splice(index, 1)
       addCrop(_crop, currentPlantingSchedule, newlyRemainingCrops, optimalPlantingSchedule, allCrops)
     })
@@ -131,7 +126,6 @@ const addPlanting = (
 
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
-      // console.log("I better see this exactly once (per bucket)")
     }
     const hasMorePlantingsAndIsEquallyEfficient = (
       currentPlantingSchedule.length === optimalPlantingSchedule.length &&
@@ -142,7 +136,7 @@ const addPlanting = (
       hasMorePlantingsAndIsEquallyEfficient ||
       isMoreEfficient
     ) {
-      // console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
+      // Remove all contents and replace with contents of current planting schedule
       optimalPlantingSchedule.splice(0, optimalPlantingSchedule.length);
       optimalPlantingSchedule.push(...currentPlantingSchedule)
     }
@@ -169,8 +163,7 @@ const addPlantingToNewPlot = (
 
   if (remainingCrops[0]) {
     remainingCrops.forEach((crop, index) => {
-      // deep clone remaining crops and remove crop
-      const newlyRemainingCrops = JSON.parse(JSON.stringify(remainingCrops))
+      const newlyRemainingCrops = deepCloneCrops(remainingCrops)
       newlyRemainingCrops.splice(index, 1)
       addCrop(crop, currentPlantingSchedule, newlyRemainingCrops, optimalPlantingSchedule, allCrops)
     })
@@ -178,7 +171,6 @@ const addPlantingToNewPlot = (
     currentPlantingSchedule = tryAddingExtraPlantings(currentPlantingSchedule, allCrops)
     if (isFirstSchedule) {
       optimalPlantingSchedule.push(...currentPlantingSchedule)
-      // console.log("I better see this exactly once")
     }
     const hasMorePlantingsAndIsEquallyEfficient = (
       currentPlantingSchedule.length === optimalPlantingSchedule.length &&
@@ -190,7 +182,7 @@ const addPlantingToNewPlot = (
       hasMorePlantingsAndIsEquallyEfficient ||
       isMoreEfficient
     ) {
-      // console.log("FOund one") // Remove all contents and replace with contents of current planting schedule
+      // Remove all contents and replace with contents of current planting schedule
       optimalPlantingSchedule.splice(0, optimalPlantingSchedule.length);
       optimalPlantingSchedule.push(...currentPlantingSchedule)
       console.log(optimalPlantingSchedule)
@@ -239,7 +231,7 @@ const tryAddingExtraPlantings = (
           plantedThisCrop = true;
         } else {
           // Deep copy planting
-          fudgedPlanting = fudgePlanting(JSON.parse(JSON.stringify(planting)), plot)
+          fudgedPlanting = fudgePlanting(deepClonePlanting(planting), plot)
           if (fudgedPlanting && !plantedThisCrop) {
             currentPlantingSchedule[plotIndex].push(fudgedPlanting) // add fudged planting to schedule
             haveAddedCrops = true;
@@ -279,17 +271,17 @@ const addCrop = (
       let fudgedPlanting;
       if (conflicts) {
         // Deep copy planting
-        fudgedPlanting = fudgePlanting(JSON.parse(JSON.stringify(planting)), plot)
+        fudgedPlanting = fudgePlanting(deepClonePlanting(planting), plot)
       }
       if (!conflicts || fudgedPlanting) {
         noSuitableTimeRangeFound = false;
         // Deep clone currentPlantingSchedule
-        addPlanting(crop, plantingIndex, JSON.parse(JSON.stringify(currentPlantingSchedule)), plotIndex, remainingCrops, optimalPlantingSchedule, allCrops, fudgedPlanting ? fudgedPlanting : undefined)
+        addPlanting(crop, plantingIndex, deepClonePlantingSchedule(currentPlantingSchedule), plotIndex, remainingCrops, optimalPlantingSchedule, allCrops, fudgedPlanting ? fudgedPlanting : undefined)
       }
     })
     if (noSuitableTimeRangeFound) {
       // Deep clone currentPlantingSchedule
-      addPlantingToNewPlot(crop, plantingIndex, JSON.parse(JSON.stringify(currentPlantingSchedule)), remainingCrops, optimalPlantingSchedule, allCrops)
+      addPlantingToNewPlot(crop, plantingIndex, deepClonePlantingSchedule(currentPlantingSchedule), remainingCrops, optimalPlantingSchedule, allCrops)
     }
   })
 }
@@ -342,14 +334,42 @@ const removeRedundantPlots = (_plantingSchedule: Planting[][], numberOfCrops: nu
   if (removedPlot) { removeRedundantPlots(_plantingSchedule, numberOfCrops) }
 }
 
-// const startRecursionBranch = (cropData: Crop[], optimalPlantingSchedule) => {
-//   cropData.forEach((crop, index) => {
-//     // Deep clone cropData. This method turns dates into strings, so we have to convert them back before creating plantings from them.
-//     const newlyRemainingCrops = JSON.parse(JSON.stringify(cropData))
-//     newlyRemainingCrops.splice(index, 1)
-//     addCrop(crop, [], newlyRemainingCrops, optimalPlantingSchedule, cropData)
-//   })
-// }
+const deepCloneCrops = (crops: Crop[]) => {
+  const parsed = JSON.parse(JSON.stringify(crops))
+  return parsed.map((crop: Crop) => {
+    const formattedGrowingDateRanges: GrowingDateRange[] = crop.optimalGrowingDateRanges.map(growingDateRange => ({
+      transplantingDate: new Date(growingDateRange.transplantingDate),
+      harvestStartDate: new Date(growingDateRange.harvestStartDate),
+      harvestEndDate: new Date(growingDateRange.harvestEndDate)
+    }))
+    return {
+      ...crop,
+      optimalGrowingDateRanges: formattedGrowingDateRanges,
+    }
+  })
+}
+
+const deepClonePlanting = (planting: Planting) => {
+  const parsed: Planting = JSON.parse(JSON.stringify(planting))
+  return {
+    name: parsed.name,
+    transplantingDate: new Date(parsed.transplantingDate),
+    harvestStartDate: new Date(parsed.harvestStartDate),
+    harvestEndDate: new Date(parsed.harvestEndDate),
+  }
+}
+
+const deepClonePlantingSchedule = (plantingSchedule: Planting[][])=> {
+  const parsed = JSON.parse(JSON.stringify(plantingSchedule))
+  return parsed.map((plot: Planting[]) =>
+    plot.map((planting: Planting) => ({
+      name: planting.name,
+      transplantingDate: new Date(planting.transplantingDate),
+      harvestStartDate: new Date(planting.harvestStartDate),
+      harvestEndDate: new Date(planting.harvestEndDate),
+    }))
+  )
+}
 
 export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] => {
   console.log("begin generateAllPossiblePlantingSchedules")
@@ -360,49 +380,33 @@ export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] 
   // Each time a "decision" is made (a crop is selected to add next, or a timing is chosen for that crop) we "branch" again by creating new schedules for each possibility.
   // Send the original plantingSchedules object through all branches, so that at their end, the complete schedule is added to plantingSchedules.
 
+  // Brief study shows that the first recursion branch with one planting rarely (if ever) gets beat out.
+  // So, to cut corners and improve performance (increasing max bucket size from 6 to 7) we just stick to one first crop.
+
   if (cropData.length < 8) {
-    console.log("going oldschoolmode with cropData lenght ", cropData.length)
-    cropData.forEach((crop, index) => {
-      // Deep clone cropData. This method turns dates into strings, so we have to convert them back before creating plantings from them.
-      const newlyRemainingCrops = JSON.parse(JSON.stringify(cropData))
-      newlyRemainingCrops.splice(index, 1)
-      addCrop(crop, [], newlyRemainingCrops, optimalPlantingSchedule, cropData)
-    })
+    const newlyRemainingCrops = deepCloneCrops(cropData)
+    newlyRemainingCrops.splice(0, 1)
+    addCrop(cropData[0], [], newlyRemainingCrops, optimalPlantingSchedule, cropData)
   } else {
-    // if we go newschoolmode, still send all cropData to addCrop since that's for the extra plantings
+    // if we use buckets, still send all cropData to addCrop since that's for the extra plantings
     const [bucket1, bucket2] = distributeFlexibleAndInflexibleCrops(cropData)
     console.log("going newschoolmode with cropData buckets of ", bucket1, ", ", bucket2)
-    bucket1.forEach((crop, index) => {
-      // Deep clone cropData. This method turns dates into strings, so we have to convert them back before creating plantings from them.
-      const newlyRemainingCrops = JSON.parse(JSON.stringify(bucket1))
-      newlyRemainingCrops.splice(index, 1)
-      addCrop(crop, [], newlyRemainingCrops, optimalPlantingSchedule, cropData)
-    })
-    bucket2.forEach((crop, index) => {
-      // Deep clone cropData. This method turns dates into strings, so we have to convert them back before creating plantings from them.
-      const newlyRemainingCrops = JSON.parse(JSON.stringify(bucket2))
-      newlyRemainingCrops.splice(index, 1)
-      addCrop(crop, [], newlyRemainingCrops, optimalPlantingSchedule2, cropData)
-    })
-    optimalPlantingSchedule.push(...optimalPlantingSchedule2)
-    console.log("before removing dupes: ", optimalPlantingSchedule)
-    removeRedundantPlots(optimalPlantingSchedule, cropData.length)
-    console.log("after removing dupes: ", optimalPlantingSchedule)
-  }
 
-  // Dates got turned into strings during JSON deep cloning. Convert them back to dates.
-  const formattedPlantingSchedule = optimalPlantingSchedule.map(plot =>
-    plot.map((planting: Planting) => ({
-        name: planting.name,
-        transplantingDate: new Date(planting.transplantingDate),
-        harvestStartDate: new Date(planting.harvestStartDate),
-        harvestEndDate: new Date(planting.harvestEndDate),
-    }))
-  )
+    const newlyRemainingBucket1 = deepCloneCrops(bucket1)
+    newlyRemainingBucket1.splice(0, 1)
+    addCrop(bucket1[0], [], newlyRemainingBucket1, optimalPlantingSchedule, cropData)
+
+    const newlyRemainingBucket2 = deepCloneCrops(bucket2)
+    newlyRemainingBucket2.splice(0, 1)
+    addCrop(bucket2[0], [], newlyRemainingBucket2, optimalPlantingSchedule2, cropData)
+
+    optimalPlantingSchedule.push(...optimalPlantingSchedule2)
+    removeRedundantPlots(optimalPlantingSchedule, cropData.length)
+  }
 
   console.log("end generateAllPossiblePlantingSchedules")
   // Sort by planting date
-  return formattedPlantingSchedule.map((plot: Planting[]) =>
+  return optimalPlantingSchedule.map((plot: Planting[]) =>
     plot.sort((a: Planting, b: Planting) => (a.transplantingDate < b.transplantingDate) ? -1 : 1))
 }
 
