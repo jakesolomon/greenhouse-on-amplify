@@ -9,6 +9,7 @@ import {
 import { useField } from "@mantine/form";
 
 import { goals } from "./input-types.ts";
+import {useEffect} from "react";
 
 interface FakeQuizQuestionProps {
   proceed: () => void
@@ -17,6 +18,11 @@ interface FakeQuizQuestionProps {
 function FakeQuizQuestion(props: FakeQuizQuestionProps) {
 
   const { proceed } = props;
+
+  // Scroll to top on first render
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const renderChips = goals.map(goal =>
     // See https://mantine.dev/form/use-form/#values for info on handling list values

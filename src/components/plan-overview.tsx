@@ -41,6 +41,11 @@ interface DataDisplayProps {
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants, startPlanOver } = props;
 
+  // Scroll to top on first render
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const plantingScheduleLoading = plantingSchedule.length === 0;
   const noSuccessionPlanting =
     !plantingScheduleLoading && plantingSchedule?.every((p) => p.length === 1);
@@ -61,7 +66,7 @@ const PlanOverview = (props: DataDisplayProps) => {
       return innerAcc;
     }, acc);
   }, {} as Record<string, number>);
-  const plantingScheduleIsRepetitive = Object.values(plantingCounts).some(count => count > plantingSchedule.length*3/5);
+  const plantingScheduleIsRepetitive = Object.values(plantingCounts).some(count => count > 3 && count > plantingSchedule.length*3/5);
 
   const [ showRepetitivePlantingsAlert, setShowRepetitivePlantingsAlert ] = useState<boolean>(false)
 
@@ -72,11 +77,6 @@ const PlanOverview = (props: DataDisplayProps) => {
       setShowRepetitivePlantingsAlert(plantingScheduleIsRepetitive);
     }
   }, [plantingSchedule, plantingScheduleIsRepetitive]);
-
-  // Scroll to top on first render
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const [ showLoadingTimeWarning, setShowLoadingTimeWarning ] = useState<boolean>(false);
   // const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Container,
@@ -8,8 +8,9 @@ import {
   useMantineTheme,
   Card,
   ThemeIcon,
-  Timeline, Accordion, AppShell, Center, Image
+  Timeline, Accordion, AppShell, Center, Image, Modal, Group
 } from "@mantine/core";
+import { useDisclosure } from '@mantine/hooks';
 import {
   IconSun,
   IconChartBar,
@@ -22,6 +23,9 @@ import Logo from "../assets/full-logo-text-color.svg";
 const LandingPage = () => {
 
   const theme = useMantineTheme();
+
+  const [opened, { open, close }] = useDisclosure(false);
+  const navigate = useNavigate(); // React Router navigation
 
   const [ hoveredTimelineElement, setHoveredTimelineElement ] = useState<number>()
 
@@ -50,8 +54,41 @@ const LandingPage = () => {
     }
   ];
 
+  const handleGetStartedClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const existingPlan = localStorage.getItem("scheduleSummary");
+
+    if (existingPlan !== "undefined" && existingPlan !== null) {
+      event.preventDefault(); // Prevent default navigation
+      open(); // Show modal
+    }
+  };
+
+  const viewExistingPlan = () => {
+    close();
+    navigate("/planner"); // Navigate to existing plan
+  };
+
+  const startNewPlan = () => {
+    localStorage.removeItem("climateData");
+    localStorage.removeItem("cropData");
+    localStorage.removeItem("plantingSchedule");
+    localStorage.removeItem("scheduleSummary");
+    localStorage.removeItem("companionPlantingAdvice");
+    localStorage.removeItem("companionPlants");
+    localStorage.removeItem("proceedToPlan");
+    close();
+    navigate("/planner"); // Navigate to existing plan
+  };
+
   return(
     <>
+      <Modal opened={opened} onClose={close} title={<b>Continue or Start Over?</b>} centered>
+        <Text>You already have a saved garden plan. Would you like to open it or start a new one?</Text>
+        <Group justify="right" mt="md">
+          <Button onClick={viewExistingPlan} variant="light">View My Plan</Button>
+          <Button onClick={startNewPlan} variant="filled">Create New Plan</Button>
+        </Group>
+      </Modal>
       <Container p={0} m={0} w="100vw" fluid style={{position: "absolute", top: 0, right: 0, background: "#F7F4ED"}}>
         <Container size="xl">
           {/* Hero Section */}
@@ -81,7 +118,7 @@ const LandingPage = () => {
                 {/*Get a personalized month-by-month planting schedule tailored to your garden, resources, and goals.*/}
                 {/*Start your gardening journey with confidence and ease.*/}
               </Text>
-              <Button component={Link} to="/planner" mt="lg" size="lg" color={theme.colors.green[7]} radius="md">
+              <Button component={Link} to="/planner" onClick={handleGetStartedClick} mt="lg" size="lg" color={theme.colors.green[7]} radius="md">
                 Get Started Now
               </Button>
             </Grid.Col>

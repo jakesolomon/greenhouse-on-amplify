@@ -4,8 +4,8 @@ import {
   Container,
   Group,
   TextInput,
-  Flex,
-  InputError
+  InputError,
+  Center
 } from '@mantine/core';
 import { useForm, useField } from "@mantine/form";
 
@@ -64,8 +64,8 @@ function Quiz(props: QuizProps) {
   }
 
   return (
-    <Container size="xl" pt="xl" h="30vh">
-      <Flex align="center">
+    <Container size="xl" pb="200" pt="xl" px="0" h="30vh">
+      <Center>
         <form onSubmit={form.onSubmit((values) => getAllCropData(values.crops, climateData!))}>
           {
             (formPage === 1) &&
@@ -86,8 +86,7 @@ function Quiz(props: QuizProps) {
               hardinessZone={hardinessZone}
             />
           }
-          <Group justify="flex-start" my
-            ="md">
+          <Group justify="flex-start" mt="md" mb="xl">
             {
               isFirstPage &&
               <Button
@@ -110,7 +109,7 @@ function Quiz(props: QuizProps) {
             { form.isDirty() && form.errors['crops'] && <InputError>{form.errors['crops']}</InputError> }
           </Group>
         </form>
-      </Flex>
+      </Center>
     </Container>
   );
 }
