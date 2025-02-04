@@ -20,6 +20,7 @@ import LogoText from './assets/logo-text.svg'
 import './App.css'
 import Planner from "./components/planner.tsx";
 import LandingPage from "./components/landing-page.tsx";
+import SalesPage from "./components/sales-page.tsx";
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/planner" element={<Planner />} />
+                <Route path="/buy" element={<SalesPage />} />
               </Routes>
           </AppShell.Main>
         </AppShell>

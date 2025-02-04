@@ -8,7 +8,7 @@ import {
   useMantineTheme,
   Card,
   ThemeIcon,
-  Timeline, Accordion, AppShell, Center, Image, Modal, Group
+  Timeline, Accordion, AppShell, Center, Image, Modal, Group, BackgroundImage
 } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -19,6 +19,7 @@ import {
 import useWindowSize from "../helpers/useWindowSize.ts";
 import { useState } from "react";
 import Logo from "../assets/full-logo-text-color.svg";
+import Booklet from "../assets/Booklet Mockup large lowres.png";
 
 const LandingPage = () => {
 
@@ -32,6 +33,7 @@ const LandingPage = () => {
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.xl
+  console.log(isSmallScreen)
 
   const faqData = [
     {
@@ -90,41 +92,61 @@ const LandingPage = () => {
         </Group>
       </Modal>
       <Container p={0} m={0} w="100vw" fluid style={{position: "absolute", top: 0, right: 0, background: "#F7F4ED"}}>
-        <Container size="xl">
-          {/* Hero Section */}
-          <Grid
-            align="center"
-            justify="center"
-            gutter="xl"
-            m="lg"
-            h={isSmallScreen ? "85vh" : "90vh"}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'left',
-            }}
-          >
-            <Grid.Col>
-              {/*<Title order={1}>Your AI-Powered Vegetable Garden Planner</Title>*/}
-              {/*<Title order={1}>Your Vegetable Garden Plan, In Seconds</Title>*/}
-              <Title order={1} style={{fontSize: isSmallScreen ? "2.3rem" : "3.8rem"}} >Your Vegetable Garden Plan, {<br/>}In Under A Minute</Title>
-              <Text size="lg" mt="md">
-                {/*Tailored planting schedules for your goals and space—made effortless with AI.*/}
-                Personalized plans for a thriving vegetable garden—made effortless with AI.
-                {/*Plan, plant, and harvest with ease using a personalized schedule, generated for you in seconds.*/}
-                {/* ^^ this is a good one for lower down. Sounds great but too many words for subtitle.*/}
-                {/*Take a short quiz to get your plan, tailored to your resources and goals.*/}
-                {/*Get a personalized month-by-month planting schedule tailored to your garden, resources, and goals.*/}
-                {/*Start your gardening journey with confidence and ease.*/}
-              </Text>
-              <Button component={Link} to="/planner" onClick={handleGetStartedClick} mt="lg" size="lg" color={theme.colors.green[7]} radius="md">
-                Get Started Now
-              </Button>
-            </Grid.Col>
-          </Grid>
-        </Container>
+        {/* set small screen to 83vh to show booklet in mobile view*/}
+        <BackgroundImage
+          src={isSmallScreen ? "undefined" : Booklet}
+          style={{backgroundPosition: "right"}}
+          h={isSmallScreen ? "85vh" : "90vh"}
+        >
+          <Container size="xl">
+            {/* Hero Section */}
+            {/* set small screen to 100vh to show booklet in mobile view*/}
+            <Grid
+              align="center"
+              justify="center"
+              gutter="xl"
+              m="lg"
+              h={isSmallScreen ? "85vh" : "90vh"}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'left',
+              }}
+            >
+              <Grid.Col mb={0} pb={0}>
+                {/*<Title order={1}>Your AI-Powered Vegetable Garden Planner</Title>*/}
+                {/*<Title order={1}>Your Vegetable Garden Plan, In Seconds</Title>*/}
+                <Title order={1} w={isSmallScreen ? undefined : "60%"} style={{fontSize: isSmallScreen ? "2.3rem" : "3.8rem"}} >Your Vegetable Garden Plan, {isSmallScreen && <br/>}In Under A Minute</Title>
+                <Text size="lg" mt="md">
+                  {/*Tailored planting schedules for your goals and space—made effortless with AI.*/}
+                  Personalized plans for a thriving vegetable garden—made effortless with AI.
+                  {/*Plan, plant, and harvest with ease using a personalized schedule, generated for you in seconds.*/}
+                  {/* ^^ this is a good one for lower down. Sounds great but too many words for subtitle.*/}
+                  {/*Take a short quiz to get your plan, tailored to your resources and goals.*/}
+                  {/*Get a personalized month-by-month planting schedule tailored to your garden, resources, and goals.*/}
+                  {/*Start your gardening journey with confidence and ease.*/}
+                </Text>
+                <Button component={Link} to="/planner" onClick={handleGetStartedClick} mt="lg" size="lg" color={theme.colors.green[7]} radius="md">
+                  Get Started Now
+                </Button>
+              </Grid.Col>
+              {/* Uncomment to show booklet in mobile view*/}
+              {/*{*/}
+              {/*  isSmallScreen &&*/}
+              {/*  <Image*/}
+              {/*    src={BookletCroppedNoEdgeShadows}*/}
+              {/*    w="100vw"*/}
+              {/*    height={310}*/}
+              {/*    alt="Print Booklet"*/}
+              {/*  />*/}
+              {/*}*/}
+            </Grid>
+          </Container>
+        </BackgroundImage>
       </Container>
+
+      {/*Spaces out the content below the Hero, which is absolute*/}
       <Container h={isSmallScreen ? "85vh" : "90vh"} m={0} p={0} />
 
       {/* Features */}
