@@ -9,7 +9,7 @@ import {
   Center,
   Image,
   useMantineTheme,
-  Anchor, Alert
+  Anchor, Alert, Button, Affix, Flex
 } from '@mantine/core';
 import {useViewportSize} from "@mantine/hooks";
 
@@ -27,6 +27,7 @@ import Logo from "../assets/full-logo-text-color.svg";
 import {IconInfoCircle} from "@tabler/icons-react";
 
 import "./plan-overview.css";
+import {Link} from "react-router-dom";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -284,10 +285,27 @@ const PlanOverview = (props: DataDisplayProps) => {
       <Container my="md" display="flex">
         <Text size="sm" c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
       </Container>
+
+      <Affix w="100vw">
+        <Container px={isSmallScreen ? "30" : "0"}>
+          <Flex justify="flex-end">
+            <Button component={Link} to="/buy" mb="lg" mx={0} loading={!summary} size="md"
+              style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
+            >
+              Download your Full Plan
+            </Button>
+          </Flex>
+        </Container>
+      </Affix>
+
       <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
         <Center py="md">
           <Image src={Logo} className="footer-logo" alt="logo" />
         </Center>
+        {
+          isSmallScreen && // add extra room for affixed button
+          <Container h={50}></Container>
+        }
       </AppShell.Footer>
     </Container>
   );

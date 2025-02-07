@@ -13,10 +13,16 @@ import useWindowSize from "../helpers/useWindowSize.ts";
 import Logo from "../assets/full-logo-text-color.svg";
 import BookletCropped from "../assets/Booklet Mockup cropped lowres.png";
 import Booklet from "../assets/Booklet Mockup large lowres.png";
+import {useEffect} from "react";
 
 const SalesPage = () => {
 
   const theme = useMantineTheme();
+
+  // Scroll to top on first render
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
@@ -58,7 +64,7 @@ const SalesPage = () => {
           <ListItem>Instantly emailed as a PDF</ListItem>
           <ListItem>Print at home or use digitally</ListItem>
         </List>
-        <Button>Buy me</Button>
+        <Button disabled>Coming Soon</Button>
       </Card>
     </>
   )
