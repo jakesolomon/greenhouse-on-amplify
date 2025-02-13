@@ -14,6 +14,7 @@ import Logo from "../assets/full-logo-text-color.svg";
 import BookletCropped from "../assets/Booklet Mockup cropped lowres.png";
 import Booklet from "../assets/Booklet Mockup large lowres.png";
 import {useEffect} from "react";
+import { Link } from "react-router-dom";
 
 const SalesPage = () => {
 
@@ -64,7 +65,7 @@ const SalesPage = () => {
           <ListItem>Instantly emailed as a PDF</ListItem>
           <ListItem>Print at home or use digitally</ListItem>
         </List>
-        <Button disabled>Coming Soon</Button>
+        <Button component={Link} to="/checkout">Buy Now</Button>
       </Card>
     </>
   )

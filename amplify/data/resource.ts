@@ -6,6 +6,8 @@ import { getCropDataFromTrueLeafDescription } from "../functions/getCropDataFrom
 import { getClimateData } from "../functions/getClimateData/resource"
 import { getScheduleSummary } from "../functions/getScheduleSummary/resource"
 import { getPlantingScheduleData } from "../functions/getPlantingScheduleData/resource"
+import { createCheckoutSession } from "../functions/createCheckoutSession/resource"
+import { handleStripePurchase } from "../functions/handleStripePurchase/resource";
 
 const schema = a.schema({
   getCropData: a
@@ -85,6 +87,29 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(getPlantingScheduleData))
+    .authorization(allow => [
+      allow.publicApiKey(),
+    ]),
+
+  createCheckoutSession: a
+    .query()
+    .returns(a.string())
+    .arguments({
+      origin: a.string()
+    })
+    .handler(a.handler.function(createCheckoutSession))
+    .authorization(allow => [
+      allow.publicApiKey(),
+    ]),
+
+  handleStripePurchase: a
+    .query()
+    .arguments({
+      sessionId: a.string(),
+      fileData: a.string()
+    })
+    .returns(a.string())
+    .handler(a.handler.function(handleStripePurchase))
     .authorization(allow => [
       allow.publicApiKey(),
     ]),

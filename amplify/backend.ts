@@ -8,6 +8,8 @@ import { getCropDataFromTrueLeafDescription } from './functions/getCropDataFromT
 import { getClimateData } from './functions/getClimateData/resource';
 import { getScheduleSummary } from './functions/getScheduleSummary/resource';
 import { getPlantingScheduleData } from './functions/getPlantingScheduleData/resource';
+import { createCheckoutSession } from './functions/createCheckoutSession/resource';
+import { handleStripePurchase } from './functions/handleStripePurchase/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -21,5 +23,7 @@ defineBackend({
   getCropDataFromTrueLeafDescription,
   getClimateData,
   getScheduleSummary,
-  getPlantingScheduleData
+  getPlantingScheduleData,
+  createCheckoutSession,
+  handleStripePurchase
 });
