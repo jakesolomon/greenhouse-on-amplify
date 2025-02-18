@@ -179,6 +179,7 @@ const Planner = () => {
     setCompanionPlantingAdvice(undefined)
     setCompanionPlants(undefined)
     setProceedToPlan(false)
+    localStorage.setItem("capturedImage", "");
   }
 
   const submitZipCode = async (zipCode: string) => {

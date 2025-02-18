@@ -1,3 +1,8 @@
+export const introExtras = {
+  "pruning": "Pruning is particularly beneficial for the 'Tomato - Large Red Cherry' as it enhances airflow, which helps prevent diseases and encourages healthier growth. When the tomato plants have reached about 12 to 18 inches in height, begin by removing any small suckers that appear in the leaf axils (the joints on the main stem). This will direct the plant's energy towards producing larger fruits. Additionally, remove any yellow or dead leaves from the bottom of the plant once it is established and as the plant continues to grow. This practice also facilitates efficient nutrient distribution and allows sunlight to reach deeper into the plant's structure.",
+  "support_structures": "Support structures are crucial for 'Tomato - Large Red Cherry' plants. As tomatoes grow, they often become top-heavy and require support to keep the plant upright and the fruits off the ground, preventing rot and promoting better air circulation. Install tomato cages or stakes shortly after transplanting the seedlings into the garden, as this minimizes root disturbance. Use soft ties or twine to gently secure the main stem to the support, ensuring you check regularly and adjust ties to avoid cutting into the stem as it grows. This practice will also make it easier to prune and harvest the plants, as well as reduce the risk of disease."
+}
+
 export const summaries = {
   "January": null,
   "February": null,
@@ -102,7 +107,7 @@ export const kaleJSONLocationTagged =
       "***indoors***As seedlings grow, continue monitoring their light exposure and water needs. Ensure soil remains moist but not waterlogged to prevent root rot.",
       "***indoors***Commence the hardening off process around August 31. Begin by placing seedlings outdoors in a sheltered, shady area for a few hours each day, gradually increasing their exposure each day over the week leading up to transplant.",
       "Transplant kale seedlings into the garden around September 7, after hardening off is complete. Choose a day that is overcast or in the late afternoon to minimize transplant shock. Space the plants about 12-18 inches apart to accommodate their mature size.",
-      "Water the newly transplanted kale thoroughly to ensure that the roots are well-settled and can access necessary nutrients from the soil."
+      "Water the newly transplanted kale thoroughly to ensure that the roots are well-settled and can access necessary nutrients from the soil settled and can access necessary nutrients from the soil."
     ],
     "October": [
       "Keep an eye on the weather as the first fall frost date approaches. Kale is frost-tolerant, but you can cover plants with row covers or cloches if a particularly hard frost is expected.",

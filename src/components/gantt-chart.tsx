@@ -1,5 +1,6 @@
 import { Gantt, Task, ViewMode } from 'gantt-task-react';
 import { useEffect, useState } from "react";
+import html2canvas from 'html2canvas';
 
 import {
   Container,
@@ -202,6 +203,19 @@ const GanttChart = (props: GanttChartProps)=> {
     })
   });
 
+  useEffect(() => {
+    const saveImage = async () => {
+      const element = document.getElementById('gantt-chart');
+      const canvas = await html2canvas(element!);
+      const dataUrl = canvas.toDataURL('image/png');
+      localStorage.setItem("capturedImage", dataUrl);
+    }
+
+    if (!loading && plantingSchedule !== skeletonPlantingData) {
+      setTimeout(saveImage, 3000); // 3000 milliseconds = 3 seconds
+    }
+  }, [plantingSchedule, loading])
+
   const handleMouseOverLegendItem = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setHighlightedPlot(e.currentTarget.id)
   }
@@ -272,8 +286,44 @@ const GanttChart = (props: GanttChartProps)=> {
 
   return (
     <Container pos="relative" className="gantt-chart" px={0} w={trueWidth}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ backgroundOpacity: 0.4 }} loaderProps={{ color: theme.colors.gray[4], children: showLoadingTimeWarning ? loadingTimeWarning : undefined }}/>
-      <Skeleton visible={loading}>
+
+      {/*Render copy of gantt chart off screen to screenshot for full plan*/}
+      <div
+        id="gantt-chart"
+        style={{
+          position: "absolute",
+          top: "-9999px", // Move it off-screen
+          left: "-9999px",
+          width: "1200px", // Adjust as needed
+          // height: "400px",
+        }}
+      >
+        <Gantt
+          TooltipContent={ToolTip}
+          preStepsCount={getEarliestPlantingMonth()}
+          tasks={chartItems}
+          barFill={95}
+          viewMode={ViewMode.Month}
+          rowHeight={28}
+          columnWidth={1200 / 12}
+          TaskListTable={GanttChartListTable}
+          TaskListHeader={GanttChartListHeader}
+        />
+        <Flex
+          gap="sm"
+          justify={isSmallScreen ? "flex-start" : "flex-end"}
+          wrap="wrap"
+          my="xs"
+        >
+          {legend}
+        </Flex>
+      </div>
+
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{backgroundOpacity: 0.4}} loaderProps={{
+        color: theme.colors.gray[4],
+        children: showLoadingTimeWarning ? loadingTimeWarning : undefined
+      }}/>
+      <Skeleton visible={loading} style={{backgroundColor: "#fff"}}>
         <Gantt
           TooltipContent={ToolTip}
           preStepsCount={getEarliestPlantingMonth()}
@@ -282,14 +332,16 @@ const GanttChart = (props: GanttChartProps)=> {
           barFill={95}
           viewMode={ViewMode.Month}
           rowHeight={28}
-          columnWidth={trueWidth/12}
+          columnWidth={trueWidth / 12}
           TaskListTable={GanttChartListTable}
           TaskListHeader={GanttChartListHeader}
         />
         <Text size="sm" c="dimmed" style={isSmallScreen ? undefined : {textAlign: "right"}}>
           {/*Colors indicate {tooltip("what plot of land a crop is grown in")}.<IconInfoCircle size="1rem" /> Lighter regions indicate growing time, while darker regions indicate harvests.*/}
           {/*Colors indicate what plot of land a crop is grown in, where each plot represent a sub-division of your gardening space. For example, if you have three garden beds, and your plan uses six plots, each plot represents one half of a garden bed. Lighter regions indicate growing time, while darker regions indicate harvests.*/}
-          Colors indicate what plot of land a crop is grown in {tooltip("(what are plots?)")}. Lighter regions indicate growing time, while darker regions indicate harvests.
+          Colors indicate what plot of land a crop is grown in {tooltip("(what are plots?)")}. Lighter regions
+          indicate
+          growing time, while darker regions indicate harvests.
         </Text>
         <Flex
           gap="sm"

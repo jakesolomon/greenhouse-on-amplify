@@ -105,8 +105,8 @@ const schema = a.schema({
   handleStripePurchase: a
     .query()
     .arguments({
-      sessionId: a.string(),
-      fileData: a.string()
+      sessionId: a.string().required(),
+      fileData: a.string().required()
     })
     .returns(a.string())
     .handler(a.handler.function(handleStripePurchase))
