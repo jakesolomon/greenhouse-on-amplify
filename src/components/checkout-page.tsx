@@ -65,23 +65,26 @@ const Checkout = () => {
   // const scheduleSummary: string = localStorage.getItem("scheduleSummary") ? JSON.parse(localStorage.getItem("scheduleSummary")!) : null;
   const climateData = localStorage.getItem("climateData");
   const companionPlantingAdvice = localStorage.getItem("companionPlantingAdvice");
-  // const fullPlanIntroExtras = localStorage.getItem("fullPlanIntroExtras") ? JSON.parse(localStorage.getItem("fullPlanIntroExtras")!) : null;
-  // const fullPlanTasks = localStorage.getItem("fullPlanTasks") ? JSON.parse(localStorage.getItem("fullPlanTasks")!) : null;
-  // const fullPlanSummaries = localStorage.getItem("fullPlanSummaries") ? JSON.parse(localStorage.getItem("fullPlanSummaries")!) : null;
 
   useEffect(() => {
     if (
+      !crops ||
       !cropsEssential ||
       !scheduleSummary ||
       !plantingSchedule ||
       !gantt ||
       !climateData ||
       !companionPlantingAdvice
-      // !!fullPlanIntroExtras ||
-      // !!fullPlanTasks ||
-      // !!fullPlanSummaries
     ) {
-      console.log("Some data is missing.")
+      console.error("Some data is missing.\n\n" +
+        `crops: ${crops ? "present" : "not present"} + \n\n` +
+        `cropsEssential: ${cropsEssential ? "present" : "not present"} + \n\n` +
+        `scheduleSummary: ${scheduleSummary ? "present" : "not present"} + \n\n` +
+        `plantingSchedule: ${plantingSchedule ? "present" : "not present"} + \n\n` +
+        `gantt: ${gantt ? "present" : "not present"} + \n\n` +
+        `climateData: ${climateData ? "present" : "not present"} + \n\n` +
+        `companionPlantingAdvice: ${companionPlantingAdvice ? "present" : "not present"}`
+      )
 
       console.log("cropsEssential: ", cropsEssential);
       console.log("scheduleSummary: ", scheduleSummary);
@@ -110,9 +113,9 @@ const Checkout = () => {
     localStorage.removeItem("companionPlants");
     localStorage.removeItem("proceedToPlan");
     localStorage.removeItem("capturedImage");
-    // localStorage.removeItem("fullPlanIntroExtras");
-    // localStorage.removeItem("fullPlanTasks");
-    // localStorage.removeItem("fullPlanSummaries");
+    localStorage.removeItem("fullPlanIntroExtras");
+    localStorage.removeItem("fullPlanTasks");
+    localStorage.removeItem("fullPlanSummaries");
     close();
     navigate("/planner"); // Navigate to existing plan
   };
@@ -125,6 +128,7 @@ const Checkout = () => {
     setIsComplete(true);
     setIsGeneratingPlan(true);
 
+    // TODO no failsafe if full plan content API requests fail
     const [fullPlanIntroExtras, fullPlanTasks] = await Promise.all([
       amplifyClient.queries.getFullPlanIntroExtras({
         crops: JSON.stringify(cropsEssential)
@@ -137,33 +141,14 @@ const Checkout = () => {
     ]);
 
     const fullPlanIntroExtrasParsed = JSON.parse(fullPlanIntroExtras.data!);
-    console.log("fullPlanIntroExtrasParsed: ", fullPlanIntroExtrasParsed)
     const fullPlanTasksParsed = JSON.parse(fullPlanTasks.data!);
-    console.log("fullPlanTasksParsed: ", fullPlanTasksParsed)
 
-    // const fullPlanIntroExtras = await amplifyClient.queries.getFullPlanIntroExtras({
-    //   crops: JSON.stringify(cropsEssential)
-    // })
-    // const fullPlanIntroExtrasParsed = JSON.parse(fullPlanIntroExtras.data!)
-    // console.log("fullPlanIntroExtrasParsed: ", fullPlanIntroExtrasParsed)
-    //
-    // // TODO !!
-    // const fullPlanTasks = await amplifyClient.queries.getFullPlanTasks({
-    //   crops: JSON.stringify(cropsEssential),
-    //   plantingSchedule: plantingSchedule!,
-    //   climateData: climateData!
-    // })
-    // const fullPlanTasksParsed = JSON.parse(fullPlanTasks.data!)
-    // console.log("fullPlanTasksParsed: ", fullPlanTasksParsed)
-
-    // TODO !!
     const fullPlanSummaries = await amplifyClient.queries.getFullPlanSummaries({
       tasks: fullPlanTasks.data!,
       climateData: climateData!,
       companionPlantingAdvice: companionPlantingAdvice!
     })
     const fullPlanSummariesParsed = JSON.parse(fullPlanSummaries.data!)
-    console.log("fullPlanSummariesParsed: ", fullPlanSummariesParsed)
 
     const blob = await pdf(
       <FullPlan
@@ -201,7 +186,7 @@ const Checkout = () => {
     return amplifyClient.queries.createCheckoutSession({origin: origin})
       .then((result) => JSON.parse(result.data!))
       .then((data) => {
-        console.log(data)
+        if (!data.sessionId) setFatalError("Could not initialize checkout.")
         sessionIdRef.current = data.sessionId;
         return data.clientSecret
       });
