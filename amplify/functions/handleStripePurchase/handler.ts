@@ -1,7 +1,7 @@
 import { env } from '$amplify/env/handleStripePurchase';
 import {Logger} from "@aws-lambda-powertools/logger";
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
-import {S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {S3Client, PutObjectCommand, GetObjectCommand, PutObjectCommandInput } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Stripe from 'stripe';
 
@@ -25,21 +25,26 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
 
   const session = await stripe.checkout.sessions.retrieve(sessionId)
   logger.info(session.customer_details!.email!)
+  // remove "." and after from email to avoid file type issues
   const customerEmail = session.customer_details!.email;
-  const fileName = `GrowingGuidePlan-${customerEmail}-${sessionId}.pdf`
 
   if (!customerEmail) {
     logger.error(`Could not get customer email for session ${sessionId}`)
     return JSON.stringify({responseCode: 400})
   }
 
+  const customerIdentifier = customerEmail.split(".")[0];
+  const fileName = `GrowingGuidePlan-${customerIdentifier}-${sessionId}.pdf`
+
   try {
-    const putObjectInput = {
+    const putObjectInput: PutObjectCommandInput = {
       "Body": buffer,
       "Bucket": "aws-growing-guide-plan-v1",
       "Key": fileName,
       "IfNoneMatch": "*",
-      "GrantRead": ""
+      "GrantRead": "",
+      "ContentType": "application/pdf",
+      "ContentDisposition": "inline",
     };
     const putObjectCommand = new PutObjectCommand(putObjectInput);
     // If fulfillment has already occurred, the key will already exist and this will throw error:
@@ -56,7 +61,7 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
     // const getObjectCommand = new GetObjectCommand(geObjectInput);
     // const clientUrl = await getSignedUrl(s3Client, getObjectCommand, {expiresIn: 3600});
     const clientUrl =
-      `https://aws-growing-guide-plan-v1.s3.us-east-1.amazonaws.com/${fileName}.pdf`
+      `https://aws-growing-guide-plan-v1.s3.us-east-1.amazonaws.com/${fileName}`
 
     const sesInput = {
       "Destination": {

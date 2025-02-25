@@ -2,6 +2,47 @@
 
 import { SelectableCropType } from './helpers/crop-types.ts'
 
+export interface FullPlanSummaries {
+  January: string,
+  February: string,
+  March: string,
+  April: string,
+  May: string,
+  June: string,
+  July: string,
+  August: string,
+  September: string,
+  October: string,
+  November: string,
+  December: string,
+}
+
+export interface FullPlanTaskList {
+  plot: number,
+  crop: string,
+  tasks: FullPlanTasksPerCrop
+}
+
+export interface FullPlanTasksPerCrop {
+  January: string[],
+  February: string[],
+  March: string[],
+  April: string[],
+  May: string[],
+  June: string[],
+  July: string[],
+  August: string[],
+  September: string[],
+  October: string[],
+  November: string[],
+  December: string[],
+}
+
+export interface IntroExtras {
+  pruning: string,
+  supportStructures: string
+}
+
 export interface SeedVariety extends SelectableCropType {
   trueSeedTitle?: string;
   descriptionHtml?: string;
@@ -63,6 +104,12 @@ export interface Planting extends GrowingDateRange {
   name: string,
   // doNotFudgeSooner: boolean,
   // doNotFudgeLater: boolean
+}
+
+export interface CropDataForFullPlanRequests {
+  name: string;
+  variety: string;
+  directSow: boolean;
 }
 
 export interface Crop {

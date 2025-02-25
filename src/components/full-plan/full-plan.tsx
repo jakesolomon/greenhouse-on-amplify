@@ -1,12 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-  introExtras,
-  kaleJSONLocationTagged,
-  radishJSONLocationTagged,
-  summaries,
-  tomatoJSONLocationTagged
-} from "./full-plan-mock-data.ts";
-import { Document, Page, Text as PDFText, pdf, View, Image as PDFImage } from '@react-pdf/renderer';
+import React from 'react';
+import { Document, Page, Text as PDFText, View, Image as PDFImage } from '@react-pdf/renderer';
 
 import {
   gettingStartedP1,
@@ -31,7 +24,7 @@ import overviewExample from '../../assets/overview-example.png'
 import layoutExample from '../../assets/layout-example.png'
 
 import { styles } from './full-plan-styles.ts'
-import {Crop} from "../../types.ts";
+import { Crop, IntroExtras, FullPlanSummaries, FullPlanTaskList } from "../../types.ts";
 
 if (!React.useId) {
   let idCounter = 0;
@@ -41,56 +34,28 @@ if (!React.useId) {
   };
 }
 
-const getImageBase64 = () => {
-  return localStorage.getItem("capturedImage") || null;
-};
+interface FullPlanProps {
+  introExtras: IntroExtras,
+  allTasks: FullPlanTaskList[],
+  summaries: FullPlanSummaries,
+  scheduleSummary: string,
+  crops: Crop[],
+  gantt: string
+}
 
+const FullPlan = (props: FullPlanProps) => {
 
-const FullPlan = () => {
-
-  type Month =
-    "January" |
-    "February" |
-    "March" |
-    "April" |
-    "May" |
-    "June" |
-    "July" |
-    "August" |
-    "September" |
-    "October" |
-    "November" |
-    "December"
-
-  const months: Month[] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ]
+  const { introExtras, allTasks, summaries, scheduleSummary, crops, gantt } = props
 
   // A custom component that splits text into two columns based on word count.
   const TwoColumnText = (text: string) => {
     // Split the text into words for the two-column split
     const words = text.split(/\s+/).filter(Boolean);
-    // const totalWords = words.length;
-    // const halfWords = Math.floor(totalWords / 2);
 
     const totalCharacters = text.length
     const halfCharacters = Math.floor(totalCharacters / 2);
 
     // Split words into two groups
-    // const column1Words = words.slice(0, halfWords);
-    // const column2Words = words.slice(halfWords);
-
     const column1Words: string[] = []
     const column2Words: string[] = []
 
@@ -127,139 +92,111 @@ const FullPlan = () => {
     );
   };
 
-  const seedlingTaskPrefix = '***indoors***';
+  const formatTasksForPDF = (
+    annotatedTasks: FullPlanTaskList[]
+  ) => {
+    const formatted: Record<string, Record<string, Record<string, string[]>>> = {};
 
-  const monthSectionsFromJson = months.map((m: Month, index: number) => {
-    if (
-      radishJSONLocationTagged[m]?.length === 0 &&
-      tomatoJSONLocationTagged[m]?.length === 0 &&
-      kaleJSONLocationTagged[m]?.length === 0
-    ) return null
+    for (const { plot, crop, tasks: taskByMonth } of annotatedTasks) {
+      for (const [month, taskList] of Object.entries(taskByMonth)) {
+        if (taskList.length === 0) continue; // Skip months with no tasks
 
-    // Manually remove margin bottom from the last item, as it can cause page breaks. If no content follows before the next manual `break`, you get an empty page.
-    const getItems = (data: string[]) =>
-      data!
-        .filter(e => !e.startsWith(seedlingTaskPrefix))
-        .map((item, index) =>
-          <PDFText
-            key={index.toString()}
-            style={index + 1 === data.filter(e => !e.startsWith(seedlingTaskPrefix)).length ? {...styles.text, marginBottom: 0, paddingBottom: 0} : styles.text}
-          >
-            {item}
+        if (!formatted[month]) {
+          formatted[month] = {};
+        }
+
+        const locationKeys = taskList.map((task: string) =>
+          task.startsWith('***indoors***') ? 'Seedling Station' : `Plot ${plot}`
+        );
+
+        for (const [index, task] of taskList.entries()) {
+          const cleanTask = task.replace('***indoors***', '').trim();
+          const targetLocation = locationKeys[index];
+
+          if (!formatted[month][targetLocation]) {
+            formatted[month][targetLocation] = {};
+          }
+
+          if (!formatted[month][targetLocation][crop]) {
+            formatted[month][targetLocation][crop] = [];
+          }
+
+          formatted[month][targetLocation][crop].push(cleanTask);
+        }
+      }
+    }
+
+    return Object.entries(formatted).map(([month, locations]) => {
+      const sortedLocations = Object.keys(locations).sort((a, b) =>
+        a === "Seedling Station" ? -1 : b === "Seedling Station" ? 1 : 0
+      );
+
+      return (
+        <View break key={month}>
+          <PDFText style={{ ...styles.chapterHeader, marginBottom: 36 }}>
+            {month}
           </PDFText>
-        )
+          {/* @ts-expect-error summaries indexed by month */}
+          {TwoColumnText(summaries[month])}
+          {sortedLocations.map((location, locationIndex) => {
+            const crops = Object.entries(locations[location]);
 
-    const getSeedlingItems = (data: string[]) =>
-      data!
-        .filter(e => e.startsWith(seedlingTaskPrefix))
-        .map((item, index) =>
-          <PDFText
-            key={index.toString() + "-seedling"}
-            style={index + 1 === data.filter(e => e.startsWith(seedlingTaskPrefix)).length ? {...styles.text, marginBottom: 0, paddingBottom: 0} : styles.text}
-          >
-            {item.slice(seedlingTaskPrefix.length)}
-          </PDFText>
-        )
+            return (
+              <View key={location}>
+                {/* Insert a page break *only* if the location header would be left alone at the bottom */}
+                {locationIndex > 0 && <PDFText break style={{ opacity: 0, height: 1 }}> </PDFText>}
 
-    const renderSubSection = (title: string, items: JSX.Element[]) => (
-      <View>
-        <PDFText key={index} style={{...styles.subHeader, marginTop: 12}}>{title}</PDFText>
-        <View wrap>
-          {items}
+                <PDFText style={{ ...styles.subHeader, marginTop: 12, marginBottom: 0 }}>
+                  {location.toUpperCase()}
+                </PDFText>
+
+                {crops.map(([crop, tasks], cropIndex) => {
+                  return (
+                    <View key={crop}>
+                      {/* Insert a break *only* if this crop would be alone at the bottom */}
+                      {cropIndex > 0 && <PDFText break style={{ opacity: 0, height: 1 }}> </PDFText>}
+
+                      <PDFText style={{ ...styles.subHeader, marginTop: 6 }}>{crop}</PDFText>
+
+                      <View>
+                        {tasks.map((task, index) => (
+                          <PDFText
+                            key={index.toString()}
+                            style={
+                              index + 1 === tasks.length
+                                ? { ...styles.text, marginBottom: 0, paddingBottom: 0 }
+                                : styles.text
+                            }
+                          >
+                            {task}
+                          </PDFText>
+                        ))}
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
         </View>
-      </View>
-    )
-
-    const summary = summaries[m]
-
-    const radishItems = getItems(radishJSONLocationTagged[m])
-    const radishSeedlingItems = getSeedlingItems(radishJSONLocationTagged[m])
-
-    const tomatoItems = getItems(tomatoJSONLocationTagged[m])
-    const tomatoSeedlingItems = getSeedlingItems(tomatoJSONLocationTagged[m])
-
-    const kaleItems = getItems(kaleJSONLocationTagged[m])
-    const kaleSeedlingItems = getSeedlingItems(kaleJSONLocationTagged[m])
-
-    const thereAreSeedlingItems = (
-      radishSeedlingItems.length !== 0 ||
-      tomatoSeedlingItems.length !== 0 ||
-      kaleSeedlingItems.length !== 0
-    )
-
-    const thereAreNonSeedlingItems = (
-      radishItems.length !== 0 ||
-      tomatoItems.length !== 0 ||
-      kaleItems.length !== 0
-    )
-
-    return(
-      <View break key={index.toString()} >
-        <PDFText style={{...styles.chapterHeader, marginBottom: 36}}>{m}</PDFText>
-        {TwoColumnText(summary!)}
-        <View style={thereAreNonSeedlingItems ? {marginBottom: 12} : undefined}>
-          {
-            thereAreSeedlingItems &&
-            <>
-              <PDFText style={{...styles.subHeader, marginTop: 6, marginBottom: 0}}>SEEDLING STATION</PDFText>
-            </>
-          }
-          {
-            radishSeedlingItems.length !== 0 &&
-            renderSubSection("Radishes", radishSeedlingItems)
-          }
-          {
-            tomatoSeedlingItems.length !== 0 &&
-            renderSubSection("Tomatoes", tomatoSeedlingItems)
-          }
-          {
-            kaleSeedlingItems.length !== 0 &&
-            renderSubSection("Kale", kaleSeedlingItems)
-          }
-        </View>
-        <View style={thereAreSeedlingItems ? {marginTop: 6} : undefined}>
-          {
-            thereAreNonSeedlingItems &&
-            <>
-              <PDFText style={{...styles.subHeader, marginTop: 0, marginBottom: 0}}>PLOT 1</PDFText>
-            </>
-          }
-          {
-            radishItems.length !== 0 &&
-            renderSubSection("Radishes", radishItems)
-          }
-          {
-            tomatoItems.length !== 0 &&
-            renderSubSection("Tomatoes", tomatoItems)
-          }
-          {
-            kaleItems.length !== 0 &&
-            renderSubSection("Kale", kaleItems)
-          }
-        </View>
-      </View>
-    )
-  }).filter(e => e !== null)
-
-  const scheduleSummary: string = JSON.parse(localStorage.getItem("scheduleSummary") || "");
-
-  const [url, setUrl] = useState("");
-
-  const generatePdf = async () => {
-    const blob = await pdf(
-      <MyDocument/>
-    ).toBlob();
-    const pdfUrl = URL.createObjectURL(blob);
-    setUrl(pdfUrl);
+      );
+    });
   };
 
-  useEffect(() => {
-    generatePdf();
-  }, []);
+  // Uncomment for viewing in-browser
+  // const [url, setUrl] = useState("");
+  //
+  // const generatePdf = async () => {
+  //   const blob = await pdf(
+  //     <MyDocument/>
+  //   ).toBlob();
+  //   const pdfUrl = URL.createObjectURL(blob);
+  //   setUrl(pdfUrl);
+  // };
+  // useEffect(() => {
+  //   generatePdf();
+  // }, []);
 
-  const ganttImageSrc = getImageBase64();
-
-  const crops = JSON.parse(localStorage.getItem("cropData") || `[{"name":"Crops not found","variety":"","shortDescription":""}]`);
   const CropList = crops.map((crop: Crop, index: number) => (
     <View key={index} wrap={false}>
       <PDFText style={styles.subHeader}>
@@ -272,11 +209,9 @@ const FullPlan = () => {
   ))
 
   const pruningAdvice = introExtras["pruning"]
-  const supportStructuresAdvice = introExtras["support_structures"]
+  const supportStructuresAdvice = introExtras["supportStructures"]
 
-
-
-  const MyDocument = () => (
+  return (
     <Document pageLayout="twoPageLeft">
       <Page style={styles.body}>
 
@@ -303,10 +238,10 @@ const FullPlan = () => {
           <PDFText style={styles.subHeader}>Garden Layout</PDFText>
           {TwoColumnText([gardenLayoutP1, gardenLayoutP2].join('NEWLINE'))}
           {
-            ganttImageSrc
+            gantt
             ? <PDFImage
                 style={styles.image}
-                src={ganttImageSrc}
+                src={gantt}
               />
             : "No image found"
           }
@@ -322,14 +257,10 @@ const FullPlan = () => {
         <View break style={styles.flexContainer}>
           <PDFText style={styles.subHeader}>Garden Layout Example</PDFText>
           {TwoColumnText([gardenLayoutExampleP1, gardenLayoutExampleP2].join('NEWLINE'))}
-          {
-            ganttImageSrc
-              ? <PDFImage
-                style={styles.image}
-                src={overviewExample}
-              />
-              : "No image found"
-          }
+          <PDFImage
+            style={styles.image}
+            src={overviewExample}
+          />
           <View style={styles.remainingSpace}>
             <PDFImage
               // style={styles.imageOverflow}
@@ -385,7 +316,8 @@ const FullPlan = () => {
         }
 
         {/*Monthly Planner*/}
-        {monthSectionsFromJson}
+        {/*{monthSectionsFromJson}*/}
+        {formatTasksForPDF(allTasks)}
 
         {/*Page number*/}
         <PDFText style={styles.pageNumber} render={({pageNumber, totalPages}) => (
@@ -395,11 +327,12 @@ const FullPlan = () => {
     </Document>
   );
 
-  return url
-    ? <>
-      <iframe src={url} style={{width: '100%', height: '95vh'}} title="PDF Preview"/>
-    </>
-    : null;
+  // Uncomment for viewing in-browser
+  // return url
+  //   ? <>
+  //     <iframe src={url} style={{width: '100%', height: '95vh'}} title="PDF Preview"/>
+  //   </>
+  //   : null;
 }
 
 export default FullPlan

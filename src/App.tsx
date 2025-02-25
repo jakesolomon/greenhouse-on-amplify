@@ -21,7 +21,6 @@ import './App.css'
 import Planner from "./components/planner.tsx";
 import LandingPage from "./components/landing-page.tsx";
 import SalesPage from "./components/sales-page.tsx";
-import FullPlan from "./components/full-plan/full-plan.tsx"
 import Checkout from "./components/checkout-page.tsx";
 import Purchase from "./components/purchase-page.tsx";
 import Contact from "./components/contact.tsx";
@@ -55,7 +54,6 @@ function App() {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/purchase" element={<Purchase />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/full-plan" element={<FullPlan />} />
               </Routes>
           </AppShell.Main>
         </AppShell>

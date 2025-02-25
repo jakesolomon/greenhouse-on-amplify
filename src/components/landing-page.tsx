@@ -78,6 +78,10 @@ const LandingPage = () => {
     localStorage.removeItem("companionPlantingAdvice");
     localStorage.removeItem("companionPlants");
     localStorage.removeItem("proceedToPlan");
+    localStorage.removeItem("capturedImage");
+    localStorage.removeItem("fullPlanIntroExtras");
+    localStorage.removeItem("fullPlanTasks");
+    localStorage.removeItem("fullPlanSummaries");
     close();
     navigate("/planner"); // Navigate to existing plan
   };

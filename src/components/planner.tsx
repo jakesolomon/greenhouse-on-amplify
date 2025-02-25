@@ -148,7 +148,7 @@ const Planner = () => {
 
   const amplifyClient = generateClient<Schema>()
 
-  // Anytime useState is called to change the value of one of the following states, local storage updates as well.
+  // Anytime useState is called to change the value of one of the Plan Overview states, local storage updates as well.
   useEffect(() => {
     localStorage.setItem("climateData", JSON.stringify(climateData));
   }, [climateData]);
@@ -179,7 +179,10 @@ const Planner = () => {
     setCompanionPlantingAdvice(undefined)
     setCompanionPlants(undefined)
     setProceedToPlan(false)
-    localStorage.setItem("capturedImage", "");
+    localStorage.removeItem("capturedImage");
+    localStorage.removeItem("fullPlanIntroExtras");
+    localStorage.removeItem("fullPlanTasks");
+    localStorage.removeItem("fullPlanSummaries");
   }
 
   const submitZipCode = async (zipCode: string) => {

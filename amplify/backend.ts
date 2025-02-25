@@ -6,6 +6,10 @@ import { getCompanionPlants } from './functions/getCompanionPlants/resource';
 import { getTrueLeafSeedData } from './functions/getTrueLeafSeedData/resource';
 import { getCropDataFromTrueLeafDescription } from './functions/getCropDataFromTrueLeafDescription/resource';
 import { getClimateData } from './functions/getClimateData/resource';
+import { getFullPlanContent } from './functions/getFullPlanContent/resource';
+import { getFullPlanIntroExtras } from './functions/getFullPlanIntroExtras/resource';
+import { getFullPlanTasks } from './functions/getFullPlanTasks/resource';
+import { getFullPlanSummaries } from './functions/getFullPlanSummaries/resource';
 import { getScheduleSummary } from './functions/getScheduleSummary/resource';
 import { getPlantingScheduleData } from './functions/getPlantingScheduleData/resource';
 import { createCheckoutSession } from './functions/createCheckoutSession/resource';
@@ -22,6 +26,10 @@ defineBackend({
   getTrueLeafSeedData,
   getCropDataFromTrueLeafDescription,
   getClimateData,
+  getFullPlanContent,
+  getFullPlanIntroExtras,
+  getFullPlanTasks,
+  getFullPlanSummaries,
   getScheduleSummary,
   getPlantingScheduleData,
   createCheckoutSession,
