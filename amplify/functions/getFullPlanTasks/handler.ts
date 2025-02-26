@@ -52,7 +52,7 @@ const callLLM = async (
   responseFormatName: string
 ) => {
   return openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4o-mini",
     messages: [
       {role: "system", content: systemPrompt},
       {role: "user", content: userPrompt}
@@ -73,6 +73,7 @@ export const handler: Schema["getFullPlanTasks"]["functionHandler"]  = async (ev
       directSow: cropsParsed.find(crop => crop.name === planting.name)!.directSow
     }))
   })
+  const startTime = performance.now();
   const taskPromises = appendedPlantingSchedule.flatMap((plot, plotIndex) => {
     return plot.map(async (planting, plantingIndex) => {
 
@@ -94,6 +95,9 @@ export const handler: Schema["getFullPlanTasks"]["functionHandler"]  = async (ev
   });
 
   const allTasks = await Promise.all(taskPromises)
+  const endTime = performance.now();
+  const duration = endTime - startTime;
+  logger.info(`API calls to getFullPlanTasks took ${duration} milliseconds.`);
 
   return JSON.stringify(allTasks)
 };
@@ -112,46 +116,86 @@ const tasksSystemPrompt =
   "- Append any tasks that take place before the crop has been transplanted outdoors with ***indoors*** at the beginning of the string to indicate that the plant is in seedling stage. For example: \"***indoors*** Start tomato seeds indoors approximately 6-8 weeks before the outdoor planting date ...\"\n" +
   "\n" +
   "***Example Output***\n" +
-  "{\n" +
-  "    \"January\": [],\n" +
-  "    \"February\": [],\n" +
-  "    \"March\": [\n" +
-  "      \"***indoors***Start tomato seeds indoors approximately 6-8 weeks before the outdoor planting date (around March 15). Use seed-starting trays filled with seed starting mix, which is lighter and drains better than regular potting soil. Sow seeds 1/4 inch deep.\",\n" +
-  "      \"***indoors***Provide a consistent temperature of around 70°F-75°F for germination. If your home is cooler, consider using a seedling heat mat under the trays to speed up germination. Without adequate warmth, seeds may germinate slowly or not at all.\",\n" +
-  "      \"***indoors***Place the seedlings under grow lights or in a south-facing window where they will receive at least 12-16 hours of light daily. If you're using natural light, be aware that insufficient light can cause leggy seedlings (tall, weak stems), so grow lights are advisable. If unable to use grow lights, try to rotate the seedlings to get even sunlight access throughout the day.\",\n" +
-  "      \"***indoors***Monitor for signs of damping off (a fungal disease that can kill seedlings). Symptoms include a sudden toppling of seedlings. To prevent this, ensure good airflow around your seedlings by using a small fan to keep air circulating around the plants.\"\n" +
-  "],\n" +
-  "    \"April\": [\n" +
-  "      \"***indoors***As it gets warmer, ensure that indoor tomato seedlings are kept in pots that are watered thoroughly but do not allow them to become waterlogged. Watch for signs of overwatering such as yellow leaves. If leaves are dropping and the soil is wet, reduce watering frequency.\",\n" +
-  "      \"***indoors***Harden off tomato seedlings by gradually exposing them to outdoor conditions over a week before transplanting. Start with a few hours of indirect sunlight on a mild day and increase their outdoor time progressively.\",\n" +
-  "      \"Prepare garden beds where tomatoes will be transplanted by clearing old plants and weeds, then enrich the soil with compost to improve nutrients.\"\n" +
-  "    ],\n" +
-  "    \"May\": [\n" +
-  "      \"Approximate outdoor transplant date is May 25; check the weather forecast, and ensure there is no risk of late frost before planting outside.\",\n" +
-  "      \"***indoors***Harden off the seedlings for 1-2 weeks before transplanting. Gradually introduce them to outdoor conditions by placing them outside for a few hours each day, increasing the duration daily.\",\n" +
-  "      \"Transplant tomato seedlings outdoors around May 19 after hardening off is complete and your outdoor soil temperature consistently reaches about 60°F. Space the seedlings about 24-36 inches apart to allow space for growth. Bury the stems of the seedlings deep in the soil to encourage robust root development.\",\n" +
-  "      \"Monitor newly transplanted tomato plants for transplant shock (droopy leaves, stunted growth). Water them well after transplanting and continue regular watering to help them adjust.\"\n" +
-  "    ],\n" +
-  "    \"June\": [\n" +
-  "      \"Continue to water plants consistently, providing about 1-2 inches of water per week.\",\n" +
-  "      \"Apply mulch around the base of the plants to help retain moisture and suppress weeds.\",\n" +
-  "      \"Regularly inspect plants for pests such as hornworms or signs of disease. Use organic solutions like neem oil for pest control if needed.\"\n" +
-  "    ],\n" +
-  "    \"July\": [\n" +
-  "      \"Monitor for blossom end rot, which appears as black spots on the bottom of tomatoes; this is often due to inconsistent watering or calcium deficiency. Ensure consistent moisture levels and consider adding lime to your soil if calcium is low.\",\n" +
-  "      \"Continue watering and weeding, ensuring plants have enough nutrients.\"\n" +
-  "    ],\n" +
-  "    \"August\": [\n" +
-  "      \"Tomatoes should be producing fruit. Harvest ripe tomatoes regularly to encourage more fruit production.\",\n" +
-  "      \"Continue to monitor for pests and diseases, removing any affected leaves or fruit and treating as necessary.\"\n" +
-  "    ],\n" +
-  "    \"September\": [\n" +
-  "      \"Finish harvesting tomatoes by September 13 and begin removing the plants to make space for kale.\"\n" +
-  "    ],\n" +
-  "    \"October\": [],\n" +
-  "    \"November\": [],\n" +
-  "    \"December\": []\n" +
-  "  }\n"
+  "[\n" +
+  "  {\n" +
+  "    \"plot\": 1,\n" +
+  "    \"crop\": \"Broccoli\",\n" +
+  "    \"tasks\": {\n" +
+  "      \"January\": [],\n" +
+  "      \"February\": [],\n" +
+  "      \"March\": [\n" +
+  "        \"***indoors*** Start broccoli seeds indoors approximately 6-8 weeks before the outdoor transplanting date, which is around March 1. Use seed-starting trays and a seed starting mix to provide optimal conditions for germination. Sow seeds about 1/4 inch deep.\",\n" +
+  "        \"***indoors*** Maintain a consistent soil temperature of around 65°F-70°F to encourage germination. Using a seedling heat mat can help if room temperatures are too low.\",\n" +
+  "        \"***indoors*** Place the broccoli seedlings under grow lights or in a location with plenty of natural sunlight, aiming for 12-16 hours of light daily. Grow lights help prevent leggy seedlings, which are weak and spindly from insufficient light. If relying on windows, rotate trays to ensure even light distribution.\"\n" +
+  "      ],\n" +
+  "      \"April\": [\n" +
+  "        \"***indoors*** Continue to care for broccoli seedlings by maintaining consistent moisture without waterlogging. Watch for symptoms of damping off, such as sudden wilting of seedlings, and ensure good airflow with a small fan to prevent this fungal issue.\",\n" +
+  "        \"***indoors*** Begin hardening off the seedlings at the end of April, about 1-2 weeks before the transplanting date. Gradually introduce them to outdoor conditions, starting with a few hours of shade and slowly increasing sunlight exposure.\"\n" +
+  "      ],\n" +
+  "      \"May\": [\n" +
+  "        \"Transplant broccoli seedlings into the garden around May 1 after hardening off is complete, ensuring no risk of frost. Space them about 18-24 inches apart in rows 24-36 inches apart for optimal growth.\",\n" +
+  "        \"Water the newly transplanted seedlings thoroughly and monitor for signs of transplant shock, such as drooping or leaf discoloration. Consistent moisture helps the roots establish quickly.\",\n" +
+  "        \"Apply a layer of mulch around the base of the plants to help retain soil moisture and suppress weeds.\"\n" +
+  "      ],\n" +
+  "      \"June\": [\n" +
+  "        \"Continue providing consistent watering, especially during dry spells, to keep the soil evenly moist but not waterlogged.\",\n" +
+  "        \"Inspect broccoli plants regularly for pests such as cabbage worms or aphids. Handpick pests or use organic insecticidal soap if necessary.\",\n" +
+  "        \"Fertilize plants once in early June with a balanced fertilizer to support robust growth. This encourages large head development.\"\n" +
+  "      ],\n" +
+  "      \"July\": [\n" +
+  "        \"Begin harvesting broccoli heads once they reach a suitable size, starting around July 10. Use a sharp knife to cut the heads off, leaving a few inches of stem to encourage side shoots.\",\n" +
+  "        \"Continue harvesting broccoli heads until July 24. Regular harvesting encourages the plant to produce additional side shoots that can also be harvested.\",\n" +
+  "        \"Post-harvest, remove broccoli plants from the garden by July 24 to prepare the soil for the next planting cycle of cauliflower. Clear away plant debris and consider adding compost to enrich the soil for the next crop.\"\n" +
+  "      ],\n" +
+  "      \"August\": [],\n" +
+  "      \"September\": [],\n" +
+  "      \"October\": [],\n" +
+  "      \"November\": [],\n" +
+  "      \"December\": []\n" +
+  "    }\n" +
+  "  },\n" +
+  "  {\n" +
+  "    \"plot\": 1,\n" +
+  "    \"crop\": \"Cauliflower\",\n" +
+  "    \"tasks\": {\n" +
+  "      \"January\": [],\n" +
+  "      \"February\": [],\n" +
+  "      \"March\": [],\n" +
+  "      \"April\": [],\n" +
+  "      \"May\": [],\n" +
+  "      \"June\": [],\n" +
+  "      \"July\": [\n" +
+  "        \"***indoors***Start cauliflower seeds indoors approximately 6-8 weeks before the outdoor transplant date (around July 3). Use seed-starting trays or pots filled with a high-quality seed starting mix that promotes healthy root growth. Sow seeds about 1/4 inch deep.\",\n" +
+  "        \"***indoors***Maintain a consistent temperature of around 60°F-70°F for optimal germination. If your home is warmer, place the seed trays in a cooler area or use a fan to provide airflow and regulate temperature to prevent overheating.\",\n" +
+  "        \"***indoors***Provide seedlings with 14-16 hours of light per day using grow lights, as natural light tends to be insufficient indoors. Grow lights support strong stem and leaf growth; without them, seedlings might become leggy (tall and weak) in their search for more light.\",\n" +
+  "        \"***indoors***Use a small fan to ensure good air circulation around seedlings. This can help in strengthening the stems and preventing fungal diseases such as damping off—a condition causing seedlings to rot at the base, resulting in plant collapse.\"\n" +
+  "      ],\n" +
+  "      \"August\": [\n" +
+  "        \"***indoors***Continue to water seedlings regularly but allow the top layer of soil to dry slightly between waterings to prevent overwatering. Look for signs of healthy growth: strong stems and vibrant green leaves.\",\n" +
+  "        \"***indoors***Before transplanting outdoors, harden off your cauliflower seedlings for about a week. Gradually expose them to outdoor conditions, beginning with a few hours of indirect sunlight and increasing the duration each day. This process helps them adjust to outdoor temperatures and wind.\",\n" +
+  "        \"Transplant cauliflower seedlings outdoors around August 27. Choose a cloudy day or transplant in the early evening to prevent heat stress. Space the seedlings 18-24 inches apart to allow adequate room for growth.\",\n" +
+  "        \"After transplanting, water the seedlings thoroughly to help settle the soil around the roots and reduce transplant shock, which appears as droopy leaves and stunted growth.\"\n" +
+  "      ],\n" +
+  "      \"September\": [\n" +
+  "        \"Apply a layer of mulch around the base of the small cauliflower plants to help retain moisture in the soil and control weeds, which can compete for nutrients and water.\",\n" +
+  "        \"Monitor for pests such as cabbage loopers or aphids. These can be controlled with organic insecticides like neem oil or insecticidal soap. Regularly inspect leaves for holes or sticky residue.\",\n" +
+  "        \"Maintain consistent watering, providing about 1-1.5 inches per week. This supports healthy growth and prevents issues like head splitting or poor development.\"\n" +
+  "      ],\n" +
+  "      \"October\": [\n" +
+  "        \"Check cauliflowers regularly for signs of pests or diseases, removing any damaged leaves promptly to prevent spread.\",\n" +
+  "        \"Continue regular watering and weed control to maintain healthy plants. Ensure the soil is well-draining to prevent root rot, which can cause plants to die from excess water around the roots.\",\n" +
+  "        \"Apply a balanced fertilizer high in phosphorus and potassium to support the development of cauliflower heads.\"\n" +
+  "      ],\n" +
+  "      \"November\": [\n" +
+  "        \"Watch for cauliflower heads to mature between November 15 and November 22. Harvest when heads are compact, white, and firm before they begin to separate.\",\n" +
+  "        \"To harvest, cut the main stem with a sharp knife, leaving some leaves to protect the curd. If frost is expected, cover the plants to avoid damage.\",\n" +
+  "        \"Post-harvest, remove plant debris from the garden to maintain cleanliness and prepare soil for future planting.\"\n" +
+  "      ],\n" +
+  "      \"December\": []\n" +
+  "    }\n" +
+  "  },\n" +
+  "  {\n" +
+  "...\n\n"
 
 const tasksUserPrompt = (planting: AppendedPlanting, climateData: string, nextPlanting?: AppendedPlanting) =>
   `${

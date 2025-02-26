@@ -86,13 +86,6 @@ const Checkout = () => {
         `companionPlantingAdvice: ${companionPlantingAdvice ? "present" : "not present"}`
       )
 
-      console.log("cropsEssential: ", cropsEssential);
-      console.log("scheduleSummary: ", scheduleSummary);
-      console.log("plantingSchedule: ", plantingSchedule);
-      console.log("gantt: ", !!gantt);
-      console.log("climateData: ", climateData);
-      console.log("companionPlantingAdvice: ", companionPlantingAdvice);
-
       setFatalError("Your Plan Data is Missing")
     }
   }, [
