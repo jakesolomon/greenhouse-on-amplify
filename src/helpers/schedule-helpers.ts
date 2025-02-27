@@ -387,6 +387,7 @@ export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] 
     const newlyRemainingCrops = deepCloneCrops(cropData)
     newlyRemainingCrops.splice(0, 1)
     addCrop(cropData[0], [], newlyRemainingCrops, optimalPlantingSchedule, cropData)
+    removeRedundantPlots(optimalPlantingSchedule, cropData.length)
   } else {
     // if we use buckets, still send all cropData to addCrop since that's for the extra plantings
     const [bucket1, bucket2] = distributeFlexibleAndInflexibleCrops(cropData)
