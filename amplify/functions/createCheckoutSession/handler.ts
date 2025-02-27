@@ -12,10 +12,12 @@ export const handler: Schema["createCheckoutSession"]["functionHandler"]  = asyn
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: 'price_1Qr0ViKXcuXgnQQo784UYjm5',
+        price: 'price_1Qr0CvKXcuXgnQQoiJbMMb7V',
         quantity: 1,
       },
     ],
+    allow_promotion_codes: true,
+    payment_method_types: ['card'],
     mode: 'payment',
     ui_mode: 'embedded',
     return_url: `${origin}/purchase?session_id={CHECKOUT_SESSION_ID}`,
