@@ -15,9 +15,9 @@ Font.register({
 Font.register({
   family: 'Poppins',
   fonts: [
-    {src: 'fonts/Poppins-Regular.ttf'},
-    {src: 'fonts/Poppins-Bold.ttf', fontWeight: 700},
-    {src: 'fonts/Poppins-ExtraBold.ttf', fontWeight: 800},
+    {src: '/fonts/Poppins-Regular.ttf'},
+    {src: '/fonts/Poppins-Bold.ttf', fontWeight: 700},
+    {src: '/fonts/Poppins-ExtraBold.ttf', fontWeight: 800},
   ]
 })
 
