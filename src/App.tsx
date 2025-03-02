@@ -24,6 +24,7 @@ import SalesPage from "./components/sales-page.tsx";
 import Checkout from "./components/checkout-page.tsx";
 import Purchase from "./components/purchase-page.tsx";
 import ContactPage from "./components/contact-page.tsx";
+import NotFound from "./components/404-page.tsx";
 
 function App() {
 
@@ -54,6 +55,8 @@ function App() {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/purchase" element={<Purchase />} />
                 <Route path="/contact" element={<ContactPage />} />
+                {/*Not Found*/}
+                <Route path="*" element={<NotFound />} />
               </Routes>
           </AppShell.Main>
         </AppShell>
