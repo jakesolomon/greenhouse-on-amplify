@@ -12,6 +12,7 @@ import { handleStripePurchase } from "../functions/handleStripePurchase/resource
 import {getFullPlanIntroExtras} from "../functions/getFullPlanIntroExtras/resource";
 import {getFullPlanTasks} from "../functions/getFullPlanTasks/resource";
 import { getFullPlanSummaries } from "../functions/getFullPlanSummaries/resource";
+import { sendContactEmail } from "../functions/sendContactEmail/resource";
 
 const schema = a.schema({
   getCropData: a
@@ -165,6 +166,19 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(handleStripePurchase))
+    .authorization(allow => [
+      allow.publicApiKey(),
+    ]),
+
+  sendContactEmail: a
+    .query()
+    .arguments({
+      senderAddress: a.string().required(),
+      subject: a.string().required(),
+      senderMessage: a.string().required()
+    })
+    .returns(a.string())
+    .handler(a.handler.function(sendContactEmail))
     .authorization(allow => [
       allow.publicApiKey(),
     ]),

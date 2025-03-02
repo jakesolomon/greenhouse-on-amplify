@@ -23,7 +23,7 @@ import LandingPage from "./components/landing-page.tsx";
 import SalesPage from "./components/sales-page.tsx";
 import Checkout from "./components/checkout-page.tsx";
 import Purchase from "./components/purchase-page.tsx";
-import Contact from "./components/contact.tsx";
+import ContactPage from "./components/contact-page.tsx";
 
 function App() {
 
@@ -53,7 +53,7 @@ function App() {
                 <Route path="/buy" element={<SalesPage />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/purchase" element={<Purchase />} />
-                <Route path="/contact" element={<Contact />} />
+                <Route path="/contact" element={<ContactPage />} />
               </Routes>
           </AppShell.Main>
         </AppShell>
