@@ -60,6 +60,7 @@ const Header = (props: HeaderProps) => {
               {renderNavItem("Contact", "/contact")}
               {renderNavItem("FAQ", "/faq")}
               {renderNavItem("About", "/about")}
+              {renderNavItem("Learn", "/learn")}
               {
                 !plannerIsOpen &&
                 renderPlanButton()

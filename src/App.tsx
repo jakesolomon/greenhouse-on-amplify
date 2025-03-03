@@ -26,6 +26,9 @@ import NotFound from "./components/404-page.tsx";
 import NavBar from "./components/navbar.tsx";
 import FaqPage from "./components/faq-page.tsx";
 import AboutPage from "./components/about-page.tsx";
+import BlogPage from "./components/blog-page.tsx";
+import SuccessionPlantingBlog from "./components/blog-posts/succession-planting-blog.tsx";
+import CompanionPlantingBlog from "./components/blog-posts/companion-planting-blog.tsx";
 
 function App() {
 
@@ -63,6 +66,11 @@ function App() {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/about" element={<AboutPage />} />
+                <Route path="/learn" element={<BlogPage />} />
+
+                <Route path="succesion-planting" element={<SuccessionPlantingBlog />} />
+                <Route path="/learn/succesion-planting" element={<SuccessionPlantingBlog />} />
+                <Route path="/learn/companion-planting" element={<CompanionPlantingBlog />} />
                 {/*Not Found*/}
                 <Route path="*" element={<NotFound />} />
               </Routes>
