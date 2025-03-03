@@ -33,6 +33,7 @@ const NavBar = (props: NavBarProps) => {
         {renderNavItem("Home", "/")}
         {renderNavItem("Contact", "/contact")}
         {renderNavItem("FAQ", "/faq")}
+        {renderNavItem("About", "/about")}
       </Stack>
     </AppShell.Navbar>
   )

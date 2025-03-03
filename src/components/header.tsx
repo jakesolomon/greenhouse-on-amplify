@@ -40,6 +40,7 @@ const Header = (props: HeaderProps) => {
     <NavLink to='/planner'>
       <Button
         color={theme.colors.green[7]}
+        ml='xs'
       >
         Plan
       </Button>
@@ -58,6 +59,7 @@ const Header = (props: HeaderProps) => {
             <Group ml="xl" gap={0} visibleFrom="sm">
               {renderNavItem("Contact", "/contact")}
               {renderNavItem("FAQ", "/faq")}
+              {renderNavItem("About", "/about")}
               {
                 !plannerIsOpen &&
                 renderPlanButton()
