@@ -1,5 +1,6 @@
-import {Text, Container, Title, Stack, Box, Divider} from "@mantine/core";
+import {Text, Container, Title, Stack, Box, Divider, AppShell, Center, Image} from "@mantine/core";
 import {Link} from "react-router-dom";
+import Logo from "../assets/full-logo-text-color.svg";
 
 const BlogPage = () => {
 
@@ -7,7 +8,7 @@ const BlogPage = () => {
     <Container size='md'>
       <Title order={1} >Growing Insights</Title>
       <Divider my="md" w="0%"/>
-      <Stack gap='xs'>
+      <Stack gap='xs' mb='lg'>
         <Box>
           <Text size='xl'>Companion Planting: Symbiotic Relationships in Your Backyard</Text>
           <Text>When planning a garden, most people think about what they want to grow, but not necessarily what should grow together. That’s where companion planting comes in—a time-tested technique that groups plants in a way that improves growth, deters pests, and maximizes space. By understanding which plants make good neighbors (and which ones don’t), you can create a healthier, more productive garden with less effort.</Text>
@@ -22,6 +23,11 @@ const BlogPage = () => {
           <Text c="dimmed" fs="italic">March 1, 2024</Text>
         </Box>
       </Stack>
+      <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+        <Center py="md">
+          <Image src={Logo} className="footer-logo" alt="logo" />
+        </Center>
+      </AppShell.Footer>
     </Container>
   )
 

@@ -1,5 +1,6 @@
-import {Text, Container, Title, Stack, Box, Divider} from "@mantine/core";
+import {Text, Container, Title, Stack, Box, Divider, AppShell, Center, Image} from "@mantine/core";
 import {Link} from "react-router-dom";
+import Logo from "../../assets/full-logo-text-color.svg";
 
 const CompanionPlantingBlog = () => {
 
@@ -8,7 +9,7 @@ const CompanionPlantingBlog = () => {
       <Title order={2} >Companion Planting: Symbiotic Relationships in Your Backyard</Title>
       <Text c="dimmed" fs="italic">March 3, 2024</Text>
       <Divider my="xs" w="30%"/>
-      <Stack gap='md'>
+      <Stack gap='md' mb='lg'>
         <Box>
           <Text mb='sm'>Gardening is both an art and a science, requiring knowledge of plant biology and a keen eye for aesthetics. One practice that beautifully marries these aspects is companion planting. This age-old technique involves strategically placing different plants together to enhance growth, protect against pests, and improve crop yield. By understanding the principles of companion planting, gardeners can create a thriving ecosystem in their own backyards.</Text>
         </Box>
@@ -42,8 +43,14 @@ const CompanionPlantingBlog = () => {
           <Text mb='sm'>Embracing biodiversity is a cornerstone of companion planting. A garden with a variety of plants mimics natural ecosystems, leading to fewer pest problems and healthier plants. Pollinator-friendly plants attract beneficial insects like bees and butterflies, which are vital for fruit and vegetable production.</Text>
           <Text mb='sm'>Regular observation and adaptation are also key. Gardens are dynamic systems, and what works one season may need adjustment the next. Keeping a gardening journal can help track successful combinations and note any issues that arise.</Text>
         </Box>
+
+        <Link to={'/learn'}><Text c="dimmed" td="underline" >Back</Text></Link>
       </Stack>
-      <Link to={'/learn'}><Text c="dimmed" td="underline" >Back</Text></Link>
+      <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+        <Center py="md">
+          <Image src={Logo} className="footer-logo" alt="logo" />
+        </Center>
+      </AppShell.Footer>
     </Container>
   )
 
