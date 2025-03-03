@@ -69,7 +69,7 @@ function App() {
                 <Route path="/learn" element={<BlogPage />} />
 
                 <Route path="succesion-planting" element={<SuccessionPlantingBlog />} />
-                <Route path="/learn/succesion-planting" element={<SuccessionPlantingBlog />} />
+                <Route path="/learn/succession-planting" element={<SuccessionPlantingBlog />} />
                 <Route path="/learn/companion-planting" element={<CompanionPlantingBlog />} />
                 {/*Not Found*/}
                 <Route path="*" element={<NotFound />} />
