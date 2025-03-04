@@ -1,10 +1,27 @@
-import {Text, Container, Title, Stack, Box, Divider, AppShell, Center, Image, Grid} from "@mantine/core";
+import {
+  Text,
+  Container,
+  Title,
+  Stack,
+  Box,
+  Divider,
+  AppShell,
+  Center,
+  Image,
+  Grid,
+  useMantineTheme
+} from "@mantine/core";
 import {Link} from "react-router-dom";
 import Logo from "../assets/full-logo-text-color.svg";
 import SuccessionPlanting from "../assets/succession-planting.jpeg";
 import CompanionPlanting from "../assets/companion-planting.jpg";
+import {useViewportSize} from "@mantine/hooks";
 
 const BlogPage = () => {
+
+  const { width } = useViewportSize();
+  const theme = useMantineTheme();
+  const isSmallScreen = width.toString() < theme.breakpoints.xs
 
   return (
     <Container size='md'>
@@ -12,8 +29,14 @@ const BlogPage = () => {
       <Divider my="md" w="0%"/>
       <Stack gap='xs' mb='lg'>
 
-        <Grid>
-          <Grid.Col span={7}>
+        <Grid gutter='lg'>
+          {
+            !isSmallScreen &&
+            <Grid.Col span={{ base: 12, sm: 5 }}>
+              <Image src={CompanionPlanting} fit="cover" h="300" radius='sm'/>
+            </Grid.Col>
+          }
+          <Grid.Col span={{ base: 12, sm: 7 }}>
             <Box>
               <Text size='xl' style={{lineHeight: 1.2}} mb="xs">Companion Planting: Symbiotic Relationships in Your Backyard</Text>
               <Text c="dimmed" fs="italic" size='sm' mb='sm'>March 3, 2024</Text>
@@ -21,20 +44,23 @@ const BlogPage = () => {
               <Link to={'/learn/companion-planting'}><Text c="dimmed" td="underline">Read more</Text></Link>
             </Box>
           </Grid.Col>
-          <Grid.Col span={5}>
-            <Image src={CompanionPlanting} fit="cover" h="300" radius='sm'/>
-          </Grid.Col>
+          {
+            isSmallScreen &&
+            <Grid.Col span={{ base: 12, sm: 5 }}>
+              <Image src={CompanionPlanting} fit="cover" h="300" radius='sm'/>
+            </Grid.Col>
+          }
         </Grid>
 
         <Center>
           <Divider my="md" w="80%"/>
         </Center>
 
-        <Grid>
-          <Grid.Col span={5}>
+        <Grid gutter='lg'>
+          <Grid.Col span={{ base: 12, sm: 5 }}>
             <Image src={SuccessionPlanting} fit="cover" h="300" radius='sm'/>
           </Grid.Col>
-          <Grid.Col span={7}>
+          <Grid.Col span={{ base: 12, sm: 7 }}>
             <Box>
               <Text size='xl' style={{lineHeight: 1.2}} mb="xs">Succession Planting: How to Keep Your Garden Producing All Season Long</Text>
               <Text c="dimmed" fs="italic" size='sm' mb='sm'>March 1, 2024</Text>
