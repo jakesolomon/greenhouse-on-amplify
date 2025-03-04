@@ -1,5 +1,5 @@
 import {Container, Title, Text, Grid, Stack, Image} from "@mantine/core";
-import Jake from "../assets/Jake_edit3.jpg"
+import Jake from "../assets/jake_edit3.jpg"
 import Me from "../assets/me.jpg"
 
 const AboutPage = () => {
