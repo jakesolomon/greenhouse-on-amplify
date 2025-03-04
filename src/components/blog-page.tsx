@@ -63,7 +63,7 @@ const BlogPage = () => {
           <Grid.Col span={{ base: 12, sm: 7 }}>
             <Box>
               <Text size='xl' style={{lineHeight: 1.2}} mb="xs">Succession Planting: How to Keep Your Garden Producing All Season Long</Text>
-              <Text c="dimmed" fs="italic" size='sm' mb='sm'>March 1, 2024</Text>
+              <Text c="dimmed" fs="italic" size='sm' mb='sm'>March 3, 2024</Text>
               <Text mb='xs'>One of the biggest mistakes new gardeners make is planting everything all at once. While this might seem like a great way to fill your garden, it often leads to a feast-or-famine situation—too much harvest at one time, followed by a long stretch of nothing. Succession planting solves this problem by staggering your plantings so you can enjoy a continuous harvest throughout the season.</Text>
               <Link to={'/learn/succession-planting'}><Text c="dimmed" td="underline">Read more</Text></Link>
             </Box>

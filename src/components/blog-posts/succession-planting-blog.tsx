@@ -7,7 +7,7 @@ const SuccessionPlantingBlog = () => {
   return (
     <Container size='sm'>
       <Title order={2} >Succession Planting: How to Keep Your Garden Producing All Season Long</Title>
-      <Text c="dimmed" fs="italic">March 1, 2024</Text>
+      <Text c="dimmed" fs="italic">March 3, 2024</Text>
       <Divider my="xs" w="30%"/>
       <Stack gap='md' mb='lg'>
         <Box>
