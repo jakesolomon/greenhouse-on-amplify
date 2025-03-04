@@ -8,40 +8,31 @@ const CompanionPlantingBlog = () => {
     <Container size='sm'>
       <Title order={2} >Companion Planting: Symbiotic Relationships in Your Backyard</Title>
       <Text c="dimmed" fs="italic">March 3, 2024</Text>
-      <Divider my="xs" w="30%"/>
+      <Divider my="md" w="60%"/>
       <Stack gap='md' mb='lg'>
         <Box>
-          <Text mb='sm'>Gardening is both an art and a science, requiring knowledge of plant biology and a keen eye for aesthetics. One practice that beautifully marries these aspects is companion planting. This age-old technique involves strategically placing different plants together to enhance growth, protect against pests, and improve crop yield. By understanding the principles of companion planting, gardeners can create a thriving ecosystem in their own backyards.</Text>
+          <Text mb='sm'>Gardening is both art and science, and one practice that combines both is companion planting. This old technique involves placing different plants together to enhance growth, protect from pests and improve yield—without the use of any chemical treatments. By understanding companion planting, gardeners can create a thriving ecosystem in their own backyard.</Text>
+          <Text mb='sm'>At the core of companion planting is relationships. Just like humans need a supportive community, plants thrive with compatible neighbors. This method uses the natural preferences and traits of different plants to create a balanced and healthy garden. It’s not just about two species side by side; it’s about how they interact and influence each other’s growth.</Text>
         </Box>
 
         <Box>
-          <Text size='xl' mb='sm'>The Essence of Companion Planting</Text>
-          <Text mb='sm'>At its core, companion planting is about relationships. Just as humans benefit from supportive communities, plants flourish when they have compatible neighbors. This method leverages the natural preferences and traits of various plants to create a balanced and healthy garden environment. It’s not merely about planting two species side by side; it's about understanding how they interact and influence each other's growth.</Text>
+          <Text size='xl' mb='sm'>Benefits of Companion Planting</Text>
+          <Text mb='sm'>One of the main benefits of companion planting is pest control. Some plants emit scents or have properties that repel pests, reducing the need for chemical pesticides. For example marigolds repel nematodes and other pests, making them great companions for many vegetables.</Text>
+          <Text mb='sm'>Also, companion planting can improve soil fertility. Leguminous plants like beans and peas fix nitrogen in the soil, benefitting neighboring plants that need more nitrogen. This natural fertilization process means healthier plants and better yields without the need for synthetic fertilizers.</Text>
+          <Text mb='sm'>Another benefit is space efficiency. By pairing plants with different growth habits—deep rooted and shallow rooted species—gardeners can use the soil more and minimize competition for nutrients. This is especially useful in small gardens where space is limited.</Text>
+          <Text mb='sm'>One famous example is the “Three Sisters” method, an old Native American practice of planting corn, beans and squash together. Corn provides a natural trellis for the bean vines, beans fix nitrogen in the soil for the corn and squash, and squash spreads along the ground and suppresses weeds and retains soil moisture.</Text>
         </Box>
 
         <Box>
-          <Text size='xl' mb='sm'>Benefits of Embracing Companion Planting</Text>
-          <Text mb='sm'>One of the primary advantages of companion planting is pest control. Certain plants emit scents or possess properties that deter harmful insects, reducing the need for chemical pesticides. For instance, marigolds are known to repel nematodes and other pests, making them excellent companions for many vegetables.</Text>
-          <Text mb='sm'>Moreover, companion planting can enhance soil fertility. Leguminous plants like beans and peas fix nitrogen in the soil, benefiting neighboring plants that require more nitrogen. This natural fertilization process leads to healthier plants and better yields without the need for synthetic fertilizers.</Text>
-          <Text mb='sm'>Another benefit is the efficient use of space. By pairing plants with different growth habits—such as deep-rooted and shallow-rooted species—gardeners can maximize soil usage and minimize competition for nutrients. This approach is particularly useful in small gardens where space is at a premium.</Text>
+          <Text size='xl' mb='sm'>Tips for Successful Companion Planting</Text>
+          <Text mb='sm'>Knowing plant compatibility is key. Some plants when grown together can inhibit each other’s growth due to allelopathy—a biological process where one plant releases chemicals that can harm another. So researching and planning which plants are good neighbors is important.</Text>
+          <Text mb='sm'>Another tip is to consider the growth timing. Fast growing plants can provide shade for those that prefer cooler conditions, tall plants can offer support for climbing varieties. Rotating companion plants each season can also prevent soil depletion and reduce disease buildup.</Text>
         </Box>
 
         <Box>
-          <Text size='xl' mb='sm'>Strategies for Successful Companion Planting</Text>
-          <Text mb='sm'>Understanding plant compatibility is crucial. Some plants, when grown together, can inhibit each other's growth due to allelopathy—a biological phenomenon where one plant releases chemicals that can harm another. Therefore, researching and planning which plants make good neighbors is essential.</Text>
-          <Text mb='sm'>Another strategy is to consider the timing of plant growth. Fast-growing plants can provide shade for those that prefer cooler conditions, while tall plants can offer support for climbing varieties. Additionally, rotating companion plants each season can prevent soil depletion and reduce the risk of disease buildup.</Text>
-        </Box>
-
-        <Box>
-          <Text size='xl' mb='sm'>Examples of Effective Plant Partnerships</Text>
-          <Text mb='sm'>Tomatoes and basil are a classic example of companion planting. Basil is believed to improve the flavor of tomatoes and may repel insects like flies and hornworms. Similarly, planting carrots near onions can help deter carrot flies and onion flies due to the masking of scents.</Text>
-          <Text mb='sm'>Corn, beans, and squash represent the "Three Sisters" method, an ancient Native American practice. Corn provides a natural trellis for bean vines, beans fix nitrogen in the soil to nourish corn and squash, and squash spreads along the ground, suppressing weeds and retaining soil moisture.</Text>
-        </Box>
-
-        <Box>
-          <Text size='xl' mb='sm'>Creating a Thriving Garden Ecosystem</Text>
-          <Text mb='sm'>Embracing biodiversity is a cornerstone of companion planting. A garden with a variety of plants mimics natural ecosystems, leading to fewer pest problems and healthier plants. Pollinator-friendly plants attract beneficial insects like bees and butterflies, which are vital for fruit and vegetable production.</Text>
-          <Text mb='sm'>Regular observation and adaptation are also key. Gardens are dynamic systems, and what works one season may need adjustment the next. Keeping a gardening journal can help track successful combinations and note any issues that arise.</Text>
+          <Text size='xl' mb='sm'>Make Companion Planting Easy with The Growing Guide</Text>
+          <Text mb='sm'>While companion planting requires some planning, it is one of the most effective ways to keep a garden productive. That’s why we’ve included it as a feature in The Growing Guide—each guide comes with companion planting pairings suggested for each crop you select in your plan.</Text>
+          <Text mb='sm'>We’ve kept it simple and only recommend herbs and flowers that don’t take up much space, and avoid pairings that would require additions of whole new crops into your plan. But, for those who want to go above and beyond, we encourage you to look up pairings to crops you would enjoy growing, and build your Growing Guide plan accordingly.</Text>
         </Box>
 
         <Link to={'/learn'}><Text c="dimmed" td="underline" >Back</Text></Link>
