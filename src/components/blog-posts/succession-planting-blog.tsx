@@ -1,5 +1,5 @@
-import {Text, Container, Title, Stack, Box, Divider, AppShell, Center, Image} from "@mantine/core";
-import {Link} from "react-router-dom";
+import { Text, Container, Title, Stack, Box, Divider, AppShell, Center, Image } from "@mantine/core";
+import { Link } from "react-router-dom";
 import Logo from "../../assets/full-logo-text-color.svg";
 
 const SuccessionPlantingBlog = () => {
