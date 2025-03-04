@@ -8,7 +8,7 @@ import {
   useMantineTheme,
   Card,
   ThemeIcon,
-  Timeline, AppShell, Center, Image, Modal, Group, BackgroundImage
+  Timeline, AppShell, Image, Modal, Group, BackgroundImage, Stack, Flex, Anchor
 } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -253,9 +253,41 @@ const LandingPage = () => {
         </Text>
         <Faq />
         <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
-          <Center py="md">
-            <Image src={Logo} className="footer-logo" alt="logo" />
-          </Center>
+          {/*<Center py="md">*/}
+          <Container py='md'>
+            <Grid align='center'>
+              <Grid.Col span={{ base: 12, xs: 4 }}>
+                <Image src={Logo} className="footer-logo" alt="logo" fit="fill" h={140}/>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, xs: 2 }} />
+              <Grid.Col span={{ base: 12, xs: 3 }} >
+                <Flex justify="center">
+                  <Stack gap={4}>
+                    <Title order={4} c="dimmed">Learn</Title>
+                    {/*<Button className="termly-display-preferences"></Button>*/}
+                    {/*<Anchor size="sm" href="#" className="termly-display-preferences">Consent Preferences</Anchor>*/}
+                    <Anchor component={Link} to="/faq" size="sm" c="#333">FAQ</Anchor>
+                    <Anchor component={Link} to="/about" size="sm" c="#333">About</Anchor>
+                    <Anchor component={Link} to="/learn" size="sm" c="#333">Blog</Anchor>
+                    {/*<a href="#" className="termly-display-preferences">Consent Preferences</a>*/}
+                    {/*<a href="#" className="termly-display-preferences">Consent Preferences</a>*/}
+                    {/*<a href="#" className="termly-display-preferences">Consent Preferences</a>*/}
+                  </Stack>
+                </Flex>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, xs: 3 }} >
+                <Flex justify="center">
+                  <Stack gap={4}>
+                    <Title order={4} c="dimmed">Support</Title>
+                    <Anchor component={Link} to="/contact" size="sm" c="#333">Contact</Anchor>
+                    <Anchor component={Link} to="/privacy" size="sm" c="#333">Privacy Policy</Anchor>
+                    <Anchor component={Link} to="/cookies" size="sm" c="#333">Cookie Policy</Anchor>
+                  </Stack>
+                </Flex>
+              </Grid.Col>
+            </Grid>
+          </Container>
+          {/*</Center>*/}
         </AppShell.Footer>
       </Container>
     </>
