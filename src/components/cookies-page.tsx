@@ -1,4 +1,4 @@
-import { Container, Text, Anchor } from "@mantine/core";
+import { Container } from "@mantine/core";
 
 const CookiesPage = () => {
 
