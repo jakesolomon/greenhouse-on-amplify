@@ -2,40 +2,45 @@ import { Container, Text, Anchor } from "@mantine/core";
 
 const CookiesPage = () => {
 
+  const clickTermlyEmbeddedButton = () => {
+    const termlyElement = document.getElementById('termly-consent-preferences');
+    if (termlyElement) {
+      // Trigger a click event on the hidden Termly element
+      termlyElement.click();
+    } else {
+      console.error('Termly element not found');
+    }
+  }
+
   return (
     <Container size='md'>
-      <Text>To manage your cookie preferences, visit the <Anchor href="#" className="termly-display-preferences">Consent Preferences</Anchor> menu.</Text>
       <>
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "\n  [data-custom-class='body'], [data-custom-class='body'] * {\n          background: transparent !important;\n        }\n[data-custom-class='title'], [data-custom-class='title'] * {\n          font-family: Arial !important;\nfont-size: 26px !important;\ncolor: #000000 !important;\n        }\n[data-custom-class='subtitle'], [data-custom-class='subtitle'] * {\n          font-family: Arial !important;\ncolor: #595959 !important;\nfont-size: 14px !important;\n        }\n[data-custom-class='heading_1'], [data-custom-class='heading_1'] * {\n          font-family: Arial !important;\nfont-size: 19px !important;\ncolor: #000000 !important;\n        }\n[data-custom-class='heading_2'], [data-custom-class='heading_2'] * {\n          font-family: Arial !important;\nfont-size: 17px !important;\ncolor: #000000 !important;\n        }\n[data-custom-class='body_text'], [data-custom-class='body_text'] * {\n          color: #595959 !important;\nfont-size: 14px !important;\nfont-family: Arial !important;\n        }\n[data-custom-class='link'], [data-custom-class='link'] * {\n          color: #3030F1 !important;\nfont-size: 14px !important;\nfont-family: Arial !important;\nword-break: break-word !important;\n        }\n"
+              "\n  [ [ * {\n          background: transparent !important;\n        }\n[ [ * {\n          font-family: Arial !important;\nfont-size: 26px !important;\ncolor: #000000 !important;\n        }\n[ [ * {\n          font-family: Arial !important;\ncolor: #595959 !important;\nfont-size: 14px !important;\n        }\n[ [ * {\n          font-family: Arial !important;\nfont-size: 19px !important;\ncolor: #000000 !important;\n        }\n[ [ * {\n          font-family: Arial !important;\nfont-size: 17px !important;\ncolor: #000000 !important;\n        }\n[ [ * {\n          color: #595959 !important;\nfont-size: 14px !important;\nfont-family: Arial !important;\n        }\n[ [ * {\n          color: #3030F1 !important;\nfont-size: 14px !important;\nfont-family: Arial !important;\nword-break: break-word !important;\n        }\n"
           }}
         />
-        <span
-          style={{
-            display: "block",
-            margin: "0 auto 3.125rem",
-            width: "11.125rem",
-            height: "2.375rem",
-            background: "url(data:image/svg+xml"
-          }}
-        />
-        <div data-custom-class="body">
+        <div >
           <div>
             <strong>
-        <span style={{ fontSize: 26 }}>
-          <span data-custom-class="title">
+        <span>
+          <span >
             <h1>COOKIE POLICY</h1>
           </span>
         </span>
             </strong>
           </div>
           <div>
-      <span style={{ color: "rgb(127, 127, 127)" }}>
+            <text>To manage your cookie preferences, visit the <a href="#" className="termly-display-preferences"
+                                                                  onClick={clickTermlyEmbeddedButton}> Consent
+              Preferences </a> menu.
+            </text><br/><br/>
+
+            <span style={{color: "rgb(127, 127, 127)"}}>
         <strong>
-          <span style={{ fontSize: 15 }}>
-            <span data-custom-class="subtitle">
+          <span style={{fontSize: 15}}>
+            <span >
               Last updated March 04, 2025
             </span>
           </span>
@@ -43,18 +48,12 @@ const CookiesPage = () => {
       </span>
           </div>
           <div>
-            <br />
+            <br/>
           </div>
-          <div>
-            <br />
-          </div>
-          <div>
-            <br />
-          </div>
-          <div style={{ lineHeight: "1.5" }}>
-      <span style={{ color: "rgb(127, 127, 127)" }}>
-        <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <div style={{lineHeight: "1.5"}}>
+      <span style={{color: "rgb(127, 127, 127)"}}>
+        <span style={{color: "rgb(89, 89, 89)", fontSize: 15 }}>
+          <span >
             This Cookie Policy explains how{" "}
             Jacob Solomon ("
             <strong>Company</strong>," "<strong>we</strong>," "
@@ -64,12 +63,12 @@ const CookiesPage = () => {
           </span>
         </span>
         <span style={{ color: "rgb(0, 58, 250)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             
               <a
                 href="https://thegrowingguide.com"
                 target="_blank"
-                data-custom-class="link"
+
               >
                 https://thegrowingguide.com
               </a>
@@ -77,7 +76,7 @@ const CookiesPage = () => {
           </span>
         </span>
         <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             {" "}
             ("<strong>Website</strong>"). It explains what these technologies
             are and why we use them, as well as your rights to control our use
@@ -92,7 +91,7 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             In some cases we may use cookies to collect personal information, or
             that becomes personal information if we combine it with other
             information.
@@ -107,7 +106,7 @@ const CookiesPage = () => {
       <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(0, 0, 0)", fontSize: 15 }}>
           <strong>
-            <span data-custom-class="heading_1">
+            <span >
               <h2>What are cookies?</h2>
             </span>
           </strong>
@@ -117,7 +116,7 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             Cookies are small data files that are placed on your computer or
             mobile device when you visit a website. Cookies are widely used by
             website owners in order to make their websites work, or to work more
@@ -132,7 +131,7 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             Cookies set by the website owner (in this case,{" "}
             Jacob Solomon) are called
             "first-party cookies." Cookies set by parties other than the website
@@ -153,7 +152,7 @@ const CookiesPage = () => {
       <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(0, 0, 0)", fontSize: 15 }}>
           <strong>
-            <span data-custom-class="heading_1">
+            <span >
               <h2>Why do we use cookies?</h2>
             </span>
           </strong>
@@ -163,7 +162,7 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             We use first-
              and third-
             
@@ -191,7 +190,7 @@ const CookiesPage = () => {
             <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
               <span id="control" style={{ color: "rgb(0, 0, 0)" }}>
                 <strong>
-                  <span data-custom-class="heading_1">
+                  <span >
                     <h2>How can I control cookies?</h2>
                   </span>
                 </strong>
@@ -204,7 +203,7 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             You have the right to decide whether to accept or reject cookies.
             You can exercise your cookie rights by setting your preferences in
             the Cookie Consent Manager. The Cookie Consent Manager allows you to
@@ -221,7 +220,7 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             The Cookie Consent Manager can be found in the notification banner
             and on our Website. If you choose to reject cookies, you may still
             use our Website though your access to some functionality and areas
@@ -237,12 +236,12 @@ const CookiesPage = () => {
           <div style={{ lineHeight: "1.5" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             The specific types of first- and third-party cookies served through
             our Website and the purposes they perform are described in the table
             below (please note that the specific&nbsp;
           </span>
-          <span data-custom-class="body_text">
+          <span >
             cookies served may vary depending on the specific Online Properties
             you visit):
           </span>
@@ -251,7 +250,7 @@ const CookiesPage = () => {
           </div>
           <div style={{ lineHeight: "1.5" }}>
             <span style={{ fontSize: 15 }} />
-            <span data-custom-class="heading_2" style={{ color: "rgb(0, 0, 0)" }}>
+            <span  style={{ color: "rgb(0, 0, 0)" }}>
         <span style={{ fontSize: 15 }}>
           <strong>
             <u>
@@ -263,7 +262,7 @@ const CookiesPage = () => {
       </span>
             <span style={{ color: "rgb(127, 127, 127)" }}>
         <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-          <span data-custom-class="body_text">
+          <span >
             These cookies are strictly necessary to provide you with services
             available through our Website and to use some of its features, such
             as access to secure areas.
@@ -273,10 +272,10 @@ const CookiesPage = () => {
           </div>
           <div style={{ lineHeight: "1.5" }}>
             <p style={{ fontSize: 15, lineHeight: "1.5" }}>
-              <span data-custom-class="body_text" />
+              <span  />
             </p>
             <section
-              data-custom-class="body_text"
+
               style={{
                 width: "100%",
                 border: "1px solid rgb(230, 230, 230)",
@@ -370,12 +369,12 @@ const CookiesPage = () => {
                   <span style={{ color: "#8b93a7", wordBreak: "break-all" }}>
                     Stripe{" "}
                     <a
-                      data-custom-class="link"
+
                       href="https://stripe.com/en-nl/privacy"
                       style={{ color: "rgb(0, 58, 250)" }}
                       target="_blank"
                     >
-                      <span data-custom-class="link">
+                      <span >
                         View Service Privacy Policy
                       </span>
                     </a>
@@ -428,7 +427,7 @@ const CookiesPage = () => {
             </section>
             <p />
             <section
-              data-custom-class="body_text"
+
               style={{
                 width: "100%",
                 border: "1px solid rgb(230, 230, 230)",
@@ -522,12 +521,12 @@ const CookiesPage = () => {
                   <span style={{ color: "#8b93a7", wordBreak: "break-all" }}>
                     Stripe{" "}
                     <a
-                      data-custom-class="link"
+
                       href="https://stripe.com/en-nl/privacy"
                       style={{ color: "rgb(0, 58, 250)" }}
                       target="_blank"
                     >
-                      <span data-custom-class="link">
+                      <span >
                         View Service Privacy Policy
                       </span>
                     </a>
@@ -580,7 +579,7 @@ const CookiesPage = () => {
             </section>
             <p />
             <section
-              data-custom-class="body_text"
+
               style={{
                 width: "100%",
                 border: "1px solid rgb(230, 230, 230)",
@@ -674,12 +673,12 @@ const CookiesPage = () => {
                   <span style={{ color: "#8b93a7", wordBreak: "break-all" }}>
                     Stripe{" "}
                     <a
-                      data-custom-class="link"
+
                       href="https://stripe.com/privacy"
                       style={{ color: "rgb(0, 58, 250)" }}
                       target="_blank"
                     >
-                      <span data-custom-class="link">
+                      <span >
                         View Service Privacy Policy
                       </span>
                     </a>
@@ -739,7 +738,7 @@ const CookiesPage = () => {
     <span style={{ color: "rgb(127, 127, 127)" }}>
       <span style={{ color: "rgb(0, 0, 0)", fontSize: 15 }}>
         <strong>
-          <span data-custom-class="heading_1">
+          <span >
             <h2>How can I control cookies on my browser?</h2>
           </span>
         </strong>
@@ -747,7 +746,7 @@ const CookiesPage = () => {
     </span>
         </div>
         <div style={{ lineHeight: "1.5" }}>
-    <span data-custom-class="body_text">
+    <span >
       As the means by which you can refuse cookies through your web browser
       controls vary from browser to browser, you should visit your browser's
       help menu for more information. The following is information about how to
@@ -759,7 +758,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://support.google.com/chrome/answer/95647#zippy=%2Callow-or-block-cookies"
             rel="noopener noreferrer"
             target="_blank"
@@ -773,7 +772,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://support.microsoft.com/en-us/windows/delete-and-manage-cookies-168dab11-0753-043d-7c16-ede5947fc64d"
             rel="noopener noreferrer"
             target="_blank"
@@ -787,7 +786,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop?redirectslug=enable-and-disable-cookies-website-preferences&redirectlocale=en-US"
             rel="noopener noreferrer"
             target="_blank"
@@ -801,7 +800,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://support.apple.com/en-ie/guide/safari/sfri11471/mac"
             rel="noopener noreferrer"
             target="_blank"
@@ -815,7 +814,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://support.microsoft.com/en-us/windows/microsoft-edge-browsing-data-and-privacy-bb8174ba-9d73-dcf2-9b4a-c582b4e640dd"
             rel="noopener noreferrer"
             target="_blank"
@@ -829,7 +828,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://help.opera.com/en/latest/web-preferences/"
             rel="noopener noreferrer"
             target="_blank"
@@ -841,7 +840,7 @@ const CookiesPage = () => {
           </li>
         </ul>
         <div style={{ lineHeight: "1.5" }}>
-    <span data-custom-class="body_text">
+    <span >
       In addition, most advertising networks offer you a way to opt out of
       targeted advertising. If you would like to find out more information,
       please visit:
@@ -852,7 +851,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="http://www.aboutads.info/choices/"
             rel="noopener noreferrer"
             target="_blank"
@@ -866,7 +865,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="https://youradchoices.ca/"
             rel="noopener noreferrer"
             target="_blank"
@@ -882,7 +881,7 @@ const CookiesPage = () => {
             <div style={{ lineHeight: "1.5" }}>
         <span style={{ color: "rgb(0, 58, 250)" }}>
           <a
-            data-custom-class="link"
+
             href="http://www.youronlinechoices.com/"
             rel="noopener noreferrer"
             target="_blank"
@@ -902,7 +901,7 @@ const CookiesPage = () => {
     <span style={{ color: "rgb(127, 127, 127)" }}>
       <span style={{ color: "rgb(0, 0, 0)", fontSize: 15 }}>
         <strong>
-          <span data-custom-class="heading_1">
+          <span >
             <h2>What about other tracking technologies, like web beacons?</h2>
           </span>
         </strong>
@@ -912,11 +911,11 @@ const CookiesPage = () => {
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ color: "rgb(127, 127, 127)" }}>
       <span style={{ color: "rgb(89, 89, 89)", fontSize: 15 }}>
-        <span data-custom-class="body_text">
+        <span >
           Cookies are not the only way&nbsp;
         </span>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             to recognize or track visitors to a website. We may use other,
             similar technologies from time to time, like web beacons (sometimes
             called "tracking pixels" or "clear gifs"). These are tiny graphics
@@ -929,7 +928,7 @@ const CookiesPage = () => {
           </span>
           <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
             <span style={{ color: "rgb(89, 89, 89)" }}>
-              <span data-custom-class="body_text">
+              <span >
                 the traffic patterns of users from one page within a website to
                 another, to deliver or communicate with cookies, to understand
                 whether you have come to the website from an online
@@ -956,7 +955,7 @@ const CookiesPage = () => {
           <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
             <span style={{ color: "rgb(0, 0, 0)" }}>
               <strong>
-                <span data-custom-class="heading_1">
+                <span >
                   <h2>Do you use Flash cookies or Local Shared Objects?</h2>
                 </span>
               </strong>
@@ -968,7 +967,7 @@ const CookiesPage = () => {
         </div>
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-      <span data-custom-class="body_text">
+      <span >
         Websites may also use so-called "Flash Cookies" (also known as Local
         Shared Objects or "LSOs") to, among other things, collect and store
         information about your use of our services, fraud prevention, and for
@@ -981,16 +980,16 @@ const CookiesPage = () => {
         </div>
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-      <span data-custom-class="body_text">
+      <span >
         If you do not want Flash Cookies stored on your computer, you can adjust
         the settings of your Flash player to block Flash Cookies storage using
         the tools contained in the&nbsp;
       </span>
     </span>
-          <span data-custom-class="body_text">
+          <span >
       <span style={{ color: "rgb(0, 58, 250)" }}>
         <a
-          data-custom-class="link"
+
           href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager07.html"
           target="_BLANK"
         >
@@ -1002,7 +1001,7 @@ const CookiesPage = () => {
       </span>
       <span style={{ color: "rgb(0, 58, 250)" }}>
         <a
-          data-custom-class="link"
+
           href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager03.html"
           target="_BLANK"
         >
@@ -1011,9 +1010,9 @@ const CookiesPage = () => {
       </span>
     </span>
           <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-      <span data-custom-class="body_text">&nbsp;and&nbsp;</span>
+      <span >&nbsp;and&nbsp;</span>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-        <span data-custom-class="body_text">
+        <span >
           following the instructions (which may include instructions that
           explain, for example, how to delete existing Flash Cookies (referred
           to "information" on the Macromedia site), how to prevent Flash LSOs
@@ -1030,7 +1029,7 @@ const CookiesPage = () => {
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-        <span data-custom-class="body_text">
+        <span >
           Please note that setting the Flash Player to restrict or limit
           acceptance of Flash Cookies may reduce or impede the functionality of
           some Flash applications, including, potentially, Flash applications
@@ -1063,7 +1062,7 @@ const CookiesPage = () => {
               <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
                 <span style={{ fontSize: 15, color: "rgb(0, 0, 0)" }}>
                   <strong>
-                    <span data-custom-class="heading_1">
+                    <span >
                       <h2>Do you serve targeted advertising?</h2>
                     </span>
                   </strong>
@@ -1077,7 +1076,7 @@ const CookiesPage = () => {
         </div>
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-      <span data-custom-class="body_text">
+      <span >
         Third parties may serve cookies on your computer or mobile device to
         serve advertising through our Website. These companies may use
         information about your visits to this and other websites in order to
@@ -1111,7 +1110,7 @@ const CookiesPage = () => {
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
       <span style={{ fontSize: 15, color: "rgb(0, 0, 0)" }}>
         <strong>
-          <span data-custom-class="heading_1">
+          <span >
             <h2>How often will you update this Cookie Policy?</h2>
           </span>
         </strong>
@@ -1121,9 +1120,9 @@ const CookiesPage = () => {
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-        <span data-custom-class="body_text">We may update&nbsp;</span>
+        <span >We may update&nbsp;</span>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             this Cookie Policy from time to time in order to reflect, for
             example, changes to the cookies we use or for other operational,
             legal, or regulatory reasons. Please therefore revisit this Cookie
@@ -1141,7 +1140,7 @@ const CookiesPage = () => {
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             The date at the top of this Cookie Policy indicates when it was last
             updated.
           </span>
@@ -1157,7 +1156,7 @@ const CookiesPage = () => {
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         <span style={{ fontSize: 15, color: "rgb(0, 0, 0)" }}>
           <strong>
-            <span data-custom-class="heading_1">
+            <span >
               <h2>Where can I get further information?</h2>
             </span>
           </strong>
@@ -1169,7 +1168,7 @@ const CookiesPage = () => {
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-          <span data-custom-class="body_text">
+          <span >
             If you have any questions about our use of cookies or other
             technologies, please
              email us at{" "}
@@ -1182,14 +1181,14 @@ const CookiesPage = () => {
     </span>
         </div>
         <div style={{ lineHeight: "1.5" }}>
-    <span data-custom-class="body_text">
+    <span >
       <br />
     </span>
         </div>
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-        <span data-custom-class="body_text">
+        <span >
           Jacob Solomon
         </span>
       </span>
@@ -1201,7 +1200,7 @@ const CookiesPage = () => {
           
           <span style={{ fontSize: 15 }}>
       
-        <span data-custom-class="body_text">14 Tower Farm rd</span>
+        <span >14 Tower Farm rd</span>
       
     </span>
           
@@ -1210,7 +1209,7 @@ const CookiesPage = () => {
         </div>
         <div style={{ lineHeight: "1.5" }}>
     <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
-      <span data-custom-class="body_text">
+      <span >
         
       </span>
     </span>
@@ -1218,10 +1217,10 @@ const CookiesPage = () => {
         <div style={{ lineHeight: "1.5" }}>
           
           
-            <span data-custom-class="body_text">Billerica,</span>
+            <span >Billerica, </span>
           
           
-          <span data-custom-class="body_text">
+          <span >
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         
          MA
@@ -1237,14 +1236,14 @@ const CookiesPage = () => {
     </span>
         </div>
         <div style={{ lineHeight: "1.5" }}>
-    <span data-custom-class="body_text">
+    <span >
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         United States
         
         
       </span>
     </span>
-          <span data-custom-class="body_text">
+          <span >
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         
           
@@ -1253,14 +1252,14 @@ const CookiesPage = () => {
     </span>
         </div>
         <div style={{ lineHeight: "1.5" }}>
-    <span data-custom-class="body_text">
+    <span >
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         
           Phone: (+1)9782012285
         
       </span>
     </span>
-          <span data-custom-class="body_text">
+          <span >
       <span style={{ fontSize: 15, color: "rgb(89, 89, 89)" }}>
         
       </span>
