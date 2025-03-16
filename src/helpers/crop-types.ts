@@ -23,6 +23,59 @@ export interface SelectableCropType {
   plantingDates: (climateData: ClimateDataOutput, daysToMaturity: number) => Date[]
 }
 
+const daysUntilConsistentlyBelowTemp = (
+  yearData: ClimateDataOutput,
+  tempThreshold: number,
+  startDate: Date,
+  name: string
+) => {
+  const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const startMonthIndex = new Date(startDate).getMonth();
+  const startDayOfMonth = new Date(startDate).getDate();
+
+  let daysElapsed = 0;
+  let daysBelowThreshold = 0;
+  const monthData = yearData.temperatureData;
+
+  // Iterate through months, starting from the startDate
+  for (let i = startMonthIndex; i < monthData.length - 1; i++) {
+    const currentMonth = monthData[i];
+    const nextMonth = monthData[i + 1];
+    const currentHigh = currentMonth.temps.avgHigh;
+    const nextHigh = nextMonth.temps.avgHigh;
+
+    // Determine days left in the current month
+    const daysInCurrentMonth = i === startMonthIndex ? daysInMonth[i] - startDayOfMonth + 1 : daysInMonth[i];
+
+    // Interpolate daily temperature changes
+    const dailyHighChange = (nextHigh - currentHigh) / daysInCurrentMonth;
+
+    // Iterate through the days of the current month
+    for (let day = i === startMonthIndex ? startDayOfMonth : 1; day <= daysInMonth[i]; day++) {
+      const interpolatedHigh = currentHigh + dailyHighChange * (day - 1);
+
+      if (interpolatedHigh < tempThreshold) {
+        daysBelowThreshold++;
+      } else {
+        // Reset the counter if a day exceeds the threshold
+        daysBelowThreshold = 0;
+      }
+
+      // Return the total days elapsed if temperatures are below threshold for 7 consecutive days
+      if (daysBelowThreshold >= 7) {
+        return daysElapsed + day - (i === startMonthIndex ? startDayOfMonth : 1);
+      }
+    }
+
+    // Add the current month's days to the total elapsed days
+    daysElapsed += daysInCurrentMonth;
+  }
+
+  // If the loop finishes and temperatures are never below threshold for a week, return -1
+  console.error("Error finding duration of harvest for crop, ", name)
+  return -1;
+}
+
 const daysUntilSuboptimalTemperature = (
   yearData: ClimateDataOutput,
   optimalRange: {min?: number, max?: number},
@@ -134,7 +187,7 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   collectionHandle: "amaranth",
   //   idealHardinessZones: [5, 6, 7, 8, 9, 10, 11, 12, 13]
   // },
-  // "Bean (snap, bush)": {
+  // "`Bean `(snap, bush)": {
   //   displayName: "Bean (snap, bush)",
   //   collectionHandle: "bean-planting-seeds",
   //   subTypeParameters: [
@@ -155,14 +208,124 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   generalDataHandle: "Pole Bean",
   //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10, 11]
   // },
-  // "Bean (shell)": {
-  //   displayName: "Bean (shell)",
-  //   collectionHandle: "bean-planting-seeds",
-  //   subTypeParameters: [
-  //     {"name": "Shell","tags": ["Shell Bean"],"category":"Pod Type"}
-  //   ],
-  //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10, 11]
-  // },
+  "Bean (shell)": {
+    displayName: "Bean (shell)",
+    collectionHandle: "bean-planting-seeds",
+    subTypeParameters: [
+      {"name": "Shell","tags": ["Shell Bean"],"category":"Pod Type"}
+    ],
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: false,
+    daysToMaturity: 80,
+    directSow: true,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      const maxDuration = 28
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 45, max: 90}, harvestStartDate, 'Bean (shell)')
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+      //   NOTE this is a rough average between bush and pole beans. Number should be different when we differentiate.
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const firstPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      firstPlantingDate.setDate(firstPlantingDate.getDate() + 10)
+      const secondPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      secondPlantingDate.setDate(secondPlantingDate.getDate() + 31)
+      const thirdPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      thirdPlantingDate.setDate(thirdPlantingDate.getDate() + 52)
+      return [firstPlantingDate, secondPlantingDate, thirdPlantingDate]
+      // Chat says "If your season is long enough, you can plant again every 2-3 weeks until midsummer for staggered harvests."
+      // Adding multiple plantings for now, but this should be handled with more robust fudging logic.
+    }
+  },
+  "Green Bean": {
+    displayName: "Green Bean",
+    collectionHandle: "bean-planting-seeds",
+    subTypeParameters: [
+      {"name":"Snap","tags":["Snap Bean"],"category":"Pod Type"},
+    ],
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: false,
+    daysToMaturity: 55,
+    directSow: true,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      const maxDuration = 28
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50, max: 90}, harvestStartDate, 'Green Bean') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps.
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+      //   NOTE this is a rough average between bush and pole beans. Number should be different when we differentiate.
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const firstPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      firstPlantingDate.setDate(firstPlantingDate.getDate() + 10)
+      const secondPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      secondPlantingDate.setDate(secondPlantingDate.getDate() + 31)
+      const thirdPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      thirdPlantingDate.setDate(thirdPlantingDate.getDate() + 52)
+      return [firstPlantingDate, secondPlantingDate, thirdPlantingDate]
+      // Chat says "If your season is long enough, you can plant again every 2-3 weeks until midsummer for staggered harvests."
+      // Adding multiple plantings for now, but this should be handled with more robust fudging logic.
+    }
+  },
+  "Green Onion": {
+    displayName: "Green Onion",
+    collectionHandle: "onion-vegetable-seed",
+    subTypeParameters: [
+      {"name":"Bunching","tags":["Bunching Onion"],"category":"Growth Habit"}
+    ],
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10],
+    frostHardy: true,
+    daysToMaturity: 65,
+    directSow: true,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      // (Chat) Ideal Growing Temps: 55–75°F (13–24°C) Cold Tolerance: Can survive down to 20°F (-7°C) with mulch protection. In mild climates, they overwinter and resume growth in spring. Heat Tolerance: Can survive above 85°F (29°C) but may become tough, bitter, or bolt (flower).
+      const maxDuration = 200
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 30, max: 85}, harvestStartDate, 'Green Onion')
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const springPlantingDate1 = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate1.setDate(springPlantingDate1.getDate() - 35)
+      const springPlantingDate2 = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate2.setDate(springPlantingDate2.getDate() - 7)
+      const springPlantingDate3 = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate3.setDate(springPlantingDate3.getDate() + 21)
+      const springPlantingDate4 = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate4.setDate(springPlantingDate4.getDate() + 49)
+      const summerPlantingDate1 = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      summerPlantingDate1.setDate(summerPlantingDate1.getDate() - 84)
+      const summerPlantingDate2 = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      summerPlantingDate2.setDate(summerPlantingDate2.getDate() - 56)
+      return [springPlantingDate1, springPlantingDate2, springPlantingDate3, springPlantingDate4, summerPlantingDate1, summerPlantingDate2]
+      //   Chat says: Successive Plantings: Every 2–3 weeks until midsummer. For a Fall Harvest: Continue sowing every 2–3 weeks until about 8 weeks before the first fall frost.
+      //   Adding lots of plantings here, but we should just improve fudging logic.
+    }
+    //   This assumes growing from SEED (unlike bulb onions from above). Allow for more flexibility later.
+  },
   "Beet": {
     displayName: "Beet",
     collectionHandle: "beet-garden-seed",
@@ -197,12 +360,48 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       return [springPlantingDate, fallPlantingDate]
     }
   },
-  // "Brussels Sprouts": {
-  //   displayName: "Brussels Sprouts",
-  //   collectionHandle: "brussels-sprouts-planting-seed",
-  //   generalDataHandle: "Brussels Sprouts",
-  //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9]
-  // },
+  "Butternut Squash": {
+    displayName: "Butternut Squash",
+    collectionHandle: "butternut-winter-squash-seeds",
+    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: false,
+    daysToMaturity: 100,
+    directSow: true,
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const plantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      return [plantingDate]
+    }
+  },
+  "Brussels Sprouts": {
+    displayName: "Brussels Sprouts",
+    collectionHandle: "brussels-sprouts-planting-seed",
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9],
+    frostHardy: true,
+    daysToMaturity: 90,
+    directSow: false,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      // Chat: They are harvested sequentially from the bottom up over several weeks to months.
+      const maxDuration = 45
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 15, max: 75}, harvestStartDate, 'Brussels Sprouts')
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const springPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      const fallPlantingDate = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      fallPlantingDate.setDate(fallPlantingDate.getDate() - 91)
+      return [springPlantingDate, fallPlantingDate]
+    }
+  },
   // "Burdock": {
   //   displayName: "Burdock",
   //   collectionHandle: "burdock",
@@ -272,12 +471,34 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   generalDataHandle: "Celeriac",
   //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9]
   // },
-  // "Celery": {
-  //   displayName: "Celery",
-  //   collectionHandle: "celery-garden-seed",
-  //   generalDataHandle: "Celery",
-  //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11, 12]
-  // },
+  "Celery": {
+    displayName: "Celery",
+    collectionHandle: "celery-garden-seed",
+    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11, 12],
+    frostHardy: true,
+    daysToMaturity: 100,
+    directSow: false,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      // Chat: can be harvested for several weeks
+      const maxDuration = 21
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 30, max: 85}, harvestStartDate, 'Celery') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps.
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const springPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate.setDate(springPlantingDate.getDate() - 10)
+      return [springPlantingDate]
+    }
+  },
   "Chard": {
     displayName: "Chard",
     collectionHandle: "chard-growing-seed",
@@ -290,14 +511,15 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      // Chat: can be harvested continuously from the same planting over 3–4 months, depending on the growing conditions. If temps do not exceed extremes, assume 3.5 months harvest.
+      const maxDuration = 105
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
       const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 25, max: 90}, harvestStartDate, 'Chard') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps.
-      // Chat: can be harvested continuously from the same planting over 3–4 months, depending on the growing conditions. If temps do not exceed extremes, assume 3.5 months harvest.
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 105
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // Seed 2-3 weeks prior to last frost date, or 5-6 weeks before first frost.
@@ -325,21 +547,21 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
-
+      // Chat: can be harvested continuously from the same planting over 3–6 months, depending on the growing conditions. If temps do not exceed extremes, assume 4.5 months harvest.
+      const maxDuration = 135
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
       const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 20, max: 90}, harvestStartDate, 'Collard') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps.
-      // Chat: can be harvested continuously from the same planting over 3–6 months, depending on the growing conditions. If temps do not exceed extremes, assume 4.5 months harvest.
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 135
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
-      // Chat says: Transplant Outdoors around the last frost date, when seedlings are 4–6 weeks old (or 3 weeks before first frost -- calculated by recommendation to direct sow 6-8 weeks before last frost, but seedlings should get started 4-6 weeks before transplant, and account for 1 week lost due to transplanting.)
+      // Chat says: Transplant Outdoors around the last frost date, when seedlings are 4–6 weeks old (or 6-8 weeks before last frost)
       const springPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
       const fallPlantingDate = new Date(`${climateData.firstFallFrostDate}, 2025`)
-      fallPlantingDate.setDate(fallPlantingDate.getDate() - 21)
+      fallPlantingDate.setDate(fallPlantingDate.getDate() - 49)
       return [springPlantingDate, fallPlantingDate]
     }
   },
@@ -372,9 +594,14 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      const maxDuration = 75
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
-      return daysUntilSuboptimalTemperature(climateData, {min: 55}, harvestStartDate, 'Cucumber') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps.
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 55}, harvestStartDate, 'Cucumber') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps.
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // Best begun indoors 4-6 weeks prior to final spring frost. Chat says transplant 2 weeks after last frost date, when nighttime temps are consistently above 50deg.
@@ -400,14 +627,15 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      const maxDuration = 105
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
       const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 55, max: 100}, harvestStartDate, 'Eggplant')
       // Chat: can be harvested continuously from the same planting over 3–4 months, depending on the growing conditions. If temps do not exceed extremes, assume 3.5 months harvest.
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 105
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
     //   Best begun indoors 8-10 weeks prior to final spring frost. Chat says transplant 2 weeks after last frost date, when nighttime temps are consistently above 55deg.
@@ -432,11 +660,20 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   collectionHandle: "flowering-brassica",
   //   idealHardinessZones: [7, 8, 9, 10, 11]
   // },
-  // "Garlic Bulbs": {
-  //   displayName: "Garlic Bulbs",
-  //   collectionHandle: "garlic-bulbs",
-  //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9]
-  // },
+  "Garlic": {
+    displayName: "Garlic",
+    collectionHandle: "garlic-bulbs",
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9],
+    frostHardy: true,
+    daysToMaturity: 250,
+    directSow: true,
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const plantingDate = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      plantingDate.setDate(plantingDate.getDate() - 35)
+      return [plantingDate]
+    }
+  },
   // "Gourd": {
   //   displayName: "Gourd",
   //   collectionHandle: "gourd-planting-seed",
@@ -460,14 +697,15 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      const maxDuration = 135
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
       const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 25, max: 85}, harvestStartDate, 'Kale') // chat: production stops when temps are consistently below 60. 55 here because it's compared to avgLow temps. // TODO adjust min temp so it doesn't suggest thatt hings can be actually harvestd throughout the winter
       // Chat: can be harvested continuously from the same planting over 3–6 months, depending on the growing conditions. If temps do not exceed extremes, assume 4.5 months harvest.
-      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < 135) { // TODO this should be the norm for maxing out calculated harvests
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 135
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // Seed 2-3 weeks prior to last frost date, or 5-6 weeks before first frost.
@@ -489,12 +727,22 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   collectionHandle: "komatsuna",
   //   idealHardinessZones: [6, 7, 8, 9, 10]
   // },
-  // "Leek": {
-  //   displayName: "Leek",
-  //   collectionHandle: "leek",
-  //   generalDataHandle: "Leek",
-  //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9]
-  // },
+  "Leek": {
+    displayName: "Leek",
+    collectionHandle: "leek",
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9],
+    frostHardy: true,
+    daysToMaturity: 120,
+    directSow: false,
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const springPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate.setDate(springPlantingDate.getDate() - 21)
+      const fallPlantingDate = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      fallPlantingDate.setDate(fallPlantingDate.getDate() - 105)
+      return [springPlantingDate, fallPlantingDate]
+    }
+  },
   "Lettuce": {
     displayName: "Lettuce",
     collectionHandle: "lettuce-seed-for-planting",
@@ -545,18 +793,54 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   generalDataHandle: "Mustard",
   //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10]
   // },
-  // "Okra": {
-  //   displayName: "Okra",
-  //   collectionHandle: "okra-planting-seed",
-  //   generalDataHandle: "Okra",
-  //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11]
-  // },
-  // "Onion": {
-  //   displayName: "Onion",
-  //   collectionHandle: "onion-vegetable-seed",
-  //   generalDataHandle: "Onion",
-  //   idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10]
-  // },
+  "Okra": {
+    displayName: "Okra",
+    collectionHandle: "okra-planting-seed",
+    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: false,
+    daysToMaturity: 50,
+    directSow: false,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      // Harvest Period: Generally, okra can be harvested continuously for about 10–12 weeks.
+      const maxDuration = 77
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilConsistentlyBelowTemp(climateData, 65, harvestStartDate, 'Okra')
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const plantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      plantingDate.setDate(plantingDate.getDate() + 18)
+      const plantingDate2 = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      plantingDate2.setDate(plantingDate2.getDate() + 46)
+      return [plantingDate, plantingDate2]
+    }
+  },
+  "Onion": {
+    displayName: "Onion",
+    collectionHandle: "onion-vegetable-seed",
+    subTypeParameters: [
+      {"name":"Bulbing","tags":["Bulbing Onion","Short Day","Intermediate Day","Long Day"],"category":"Growth Habit"}
+    ],
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10],
+    frostHardy: true,
+    daysToMaturity: 75,
+    directSow: true,
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const plantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      plantingDate.setDate(plantingDate.getDate() - 21)
+      return [plantingDate]
+    }
+    //   This assumes growing from set (bulb), which is easier and faster. Allow for more flexibility later.
+  },
   // "Orach": {
   //   displayName: "Orach",
   //   collectionHandle: "orach-vegetable-seed",
@@ -590,13 +874,14 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       daysToMaturity: number
     ) => {
       // (Chat) shelling peas generally have a 2–3 week harvest window. Production slows once the weather becomes too hot (above 75–80°F / 24–27°C).
+      const maxDuration = 18
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
       const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 38, max: 80}, harvestStartDate, 'Shell Peas')
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 18
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // (chat) seed outdoors 4–6 weeks before your last frost date. Fall harvests are usually not as good.
@@ -621,13 +906,14 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       daysToMaturity: number
     ) => {
       // (Chat) snap peas generally have a 3–4 week harvest window.
+      const maxDuration = 25
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
       const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 28, max: 80}, harvestStartDate, 'Snap Peas')
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 25
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // (chat) seed outdoors 4–6 weeks before your last frost date. Fall harvests are usually not as good.
@@ -651,14 +937,15 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      const maxDuration = 75
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
-      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50, max: 95}, harvestStartDate, 'Pepper')
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50, max: 95}, harvestStartDate, 'Pepper (sweet)')
       // (chat) they can yield fruit for 2–3 months or longer, depending on the variety, climate, and growing conditions
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 75
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
     // (chat) Transplant peppers after the last frost date when both daytime and nighttime temperatures are consistently above 55–60°F (13–16°C). I'm estimating 3 weeks.
@@ -682,14 +969,15 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      const maxDuration = 85
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
-      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50, max: 95}, harvestStartDate, 'Pepper')
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50, max: 95}, harvestStartDate, 'Pepper (hot)')
       // (chat) they can yield longer than sweet peppers if climate allows.
-      if (daysUntilHarvestStops !== -1) {
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
         return daysUntilHarvestStops
       }
-      return 85
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // (chat) Transplant peppers after the last frost date when both daytime and nighttime temperatures are consistently above 55–60°F (13–16°C). I'm estimating 2.5 weeks for hots.
@@ -703,12 +991,41 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   collectionHandle: "shiso",
   //   idealHardinessZones: [7, 8, 9, 10, 11, 12]
   // },
-  // "Pumpkin": {
-  //   displayName: "Pumpkin",
-  //   collectionHandle: "garden-pumpkin-seed",
-  //   generalDataHandle: "Pumpkin",
-  //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11]
-  // },
+  "Potato": {
+    displayName: "Potato",
+    collectionHandle: "seed-potatoes",
+    idealHardinessZones: [3, 4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: false,
+    daysToMaturity: 105, // assuming mature potato. Young / New potatoes will be ready to harvest in 7-9 weeks
+    directSow: true,
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const springPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate.setDate(springPlantingDate.getDate() - 21)
+      const summerPlantingDate = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      summerPlantingDate.setDate(summerPlantingDate.getDate() - 84)
+      return [springPlantingDate, summerPlantingDate]
+    }
+  },
+  "Pumpkin": {
+    displayName: "Pumpkin",
+    collectionHandle: "garden-pumpkin-seed",
+    subTypeParameters: [
+      {"name":"Culinary","tags":["Culinary Pumpkin"],"category":"Purpose"}
+    ],
+    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: false,
+    daysToMaturity: 105,
+    directSow: false, // internet seems undecided on the best way. seedlings here are my preference to minimize garden usage.
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const springPlantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      springPlantingDate.setDate(springPlantingDate.getDate() + 14)
+      const summerPlantingDate = new Date(`${climateData.firstFallFrostDate}, 2025`)
+      summerPlantingDate.setDate(summerPlantingDate.getDate() - 105)
+      return [springPlantingDate, summerPlantingDate]
+    }
+  },
   // "Purslane": {
   //   displayName: "Purslane",
   //   collectionHandle: "purslane-seed-for-planting",
@@ -863,9 +1180,14 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       plantingDate: Date,
       daysToMaturity: number
     ) => {
+      const maxDuration = 135
       const harvestStartDate = new Date(plantingDate)
       harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
-      return daysUntilSuboptimalTemperature(climateData, {min: 50}, harvestStartDate, 'Tomato')
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50}, harvestStartDate, 'Tomato')
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
     },
     plantingDates: (climateData: ClimateDataOutput) => {
       // Seed 7 weeks prior to last frost date, transplant after risk of frost (1-2 weeks)
@@ -901,12 +1223,21 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
       return [springPlantingDate1, fallPlantingDate]
     }
   },
-  // "Watermelon": {
-  //   displayName: "Watermelon",
-  //   collectionHandle: "watermelon-garden-seed",
-  //   generalDataHandle: "Watermelon",
-  //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11, 12]
-  // },
+  "Watermelon": {
+    displayName: "Watermelon",
+    collectionHandle: "watermelon-garden-seed",
+    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11, 12],
+    frostHardy: false,
+    daysToMaturity: 90,
+    directSow: true,
+    harvestDuration: () => 7,
+    plantingDates: (climateData: ClimateDataOutput) => {
+      const plantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      plantingDate.setDate(plantingDate.getDate() + 14)
+      return [plantingDate]
+    }
+  //   Note for smarter variety selection: days to maturity varies a ton by variety / size at maturity
+  },
   // "Winter Squash": {
   //   displayName: "Winter Squash",
   //   collectionHandle: "squash-garden-seed",
@@ -916,10 +1247,32 @@ export const cropTypes: { [key: string]: SelectableCropType } = {
   //   generalDataHandle: "Winter Squash",
   //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11]
   // },
-  // "Zucchini": {
-  //   displayName: "Zucchini",
-  //   collectionHandle: "zucchini-vegetable-seed",
-  //   generalDataHandle: "Summer Squash",
-  //   idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11]
-  // }
+  "Zucchini": {
+    displayName: "Zucchini",
+    collectionHandle: "zucchini-vegetable-seed",
+    idealHardinessZones: [4, 5, 6, 7, 8, 9, 10, 11],
+    frostHardy: true,
+    daysToMaturity: 50,
+    directSow: true,
+    harvestDuration: (
+      climateData: ClimateDataOutput,
+      plantingDate: Date,
+      daysToMaturity: number
+    ) => {
+      const maxDuration = 105
+      const harvestStartDate = new Date(plantingDate)
+      harvestStartDate.setDate(harvestStartDate.getDate() + daysToMaturity)
+      const daysUntilHarvestStops = daysUntilSuboptimalTemperature(climateData, {min: 50}, harvestStartDate, 'Zucchini')
+      if (daysUntilHarvestStops !== -1 && daysUntilHarvestStops < maxDuration) {
+        return daysUntilHarvestStops
+      }
+      return maxDuration
+    },
+    plantingDates: (climateData: ClimateDataOutput) => {
+      // Transplant after risk of frost (1-2 weeks)
+      const plantingDate = new Date(`${climateData.lastSpringFrostDate}, 2025`)
+      plantingDate.setDate(plantingDate.getDate() + 10)
+      return [plantingDate]
+    }
+  }
 };
