@@ -286,35 +286,41 @@ const addCrop = (
   })
 }
 
-const distributeFlexibleAndInflexibleCrops = (crops: Crop[]): Crop[][] => {
-  // Separate items into flexible and non-flexible buckets
-  const flexibleCrops = crops.filter(crop => crop.optimalGrowingDateRanges.length > 1)
-  const inflexibleCrops = crops.filter(crop => crop.optimalGrowingDateRanges.length === 1)
+const distributeFlexibleAndInflexibleCrops = (crops: Crop[], numberOfBuckets: number): Crop[][] => {
+  // Separate crops into flexible and inflexible groups
+  const flexibleCrops = crops.filter(crop => crop.optimalGrowingDateRanges.length > 1);
+  const inflexibleCrops = crops.filter(crop => crop.optimalGrowingDateRanges.length === 1);
 
-  const totalNumberOfCrops = crops.length;
-  const bucketSize1 = Math.floor(totalNumberOfCrops / 2);
-  const bucketSize2 = totalNumberOfCrops - bucketSize1;
+  // Initialize empty buckets
+  const buckets: Crop[][] = Array.from({ length: numberOfBuckets }, () => []);
+  const maxBucketSize = 6
 
-  const bucket1: Crop[] = [];
-  const bucket2: Crop[] = [];
+  // Helper function to distribute crops with bucket size limits
+  const distributeCrops = (cropList: Crop[]) => {
+    let bucketIndex = 0;
 
-  // Helper function to distribute items into buckets
-  function distribute(source: Crop[], target1: Crop[], target2: Crop[], size1: number, size2: number) {
-    let i = 0;
-    while (i < source.length && (target1.length < size1 || target2.length < size2)) {
-      if (target1.length < size1) target1.push(source[i]);
-      else if (target2.length < size2) target2.push(source[i]);
-      i++;
+    for (const crop of cropList) {
+      // Find the next bucket that is not full
+      while (buckets[bucketIndex].length >= maxBucketSize) {
+        bucketIndex = (bucketIndex + 1) % numberOfBuckets;
+      }
+
+      // Add crop to the selected bucket
+      buckets[bucketIndex].push(crop);
+
+      // Move to the next bucket for the next crop
+      bucketIndex = (bucketIndex + 1) % numberOfBuckets;
     }
-  }
+  };
 
-  // Distribute flexible items
-  distribute(flexibleCrops, bucket1, bucket2, bucketSize1, bucketSize2);
-  // Distribute non-flexible items
-  distribute(inflexibleCrops, bucket1, bucket2, bucketSize1, bucketSize2);
+  // Distribute flexible and inflexible crops in an interleaved manner
+  distributeCrops(flexibleCrops);
+  distributeCrops(inflexibleCrops);
 
-  return [bucket1, bucket2];
-}
+  return buckets;
+};
+
+
 
 // Removes any plots that, if removed, we would still have all crops. Only does one plot at a time, and calls itself recursively to keep checking.
 const removeRedundantPlots = (_plantingSchedule: Planting[][], numberOfCrops: number) => {
@@ -372,9 +378,9 @@ const deepClonePlantingSchedule = (plantingSchedule: Planting[][])=> {
 }
 
 export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] => {
-  console.log("begin generateAllPossiblePlantingSchedules")
   const optimalPlantingSchedule: Planting[][] = []
   const optimalPlantingSchedule2: Planting[][] = []
+  const optimalPlantingSchedule3: Planting[][] = []
 
   // Begin "branching recursion", where we start making x number of schedules where x is the number of crops.
   // Each time a "decision" is made (a crop is selected to add next, or a timing is chosen for that crop) we "branch" again by creating new schedules for each possibility.
@@ -383,14 +389,15 @@ export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] 
   // Brief study shows that the first recursion branch with one planting rarely (if ever) gets beat out.
   // So, to cut corners and improve performance (increasing max bucket size from 6 to 7) we just stick to one first crop.
 
+  console.time("generateOptimalPlantingSchedule");
   if (cropData.length < 8) {
     const newlyRemainingCrops = deepCloneCrops(cropData)
     newlyRemainingCrops.splice(0, 1)
     addCrop(cropData[0], [], newlyRemainingCrops, optimalPlantingSchedule, cropData)
     removeRedundantPlots(optimalPlantingSchedule, cropData.length)
-  } else {
+  } else if (cropData.length < 13) {
     // if we use buckets, still send all cropData to addCrop since that's for the extra plantings
-    const [bucket1, bucket2] = distributeFlexibleAndInflexibleCrops(cropData)
+    const [bucket1, bucket2] = distributeFlexibleAndInflexibleCrops(cropData, 2)
     console.log("going newschoolmode with cropData buckets of ", bucket1, ", ", bucket2)
 
     const newlyRemainingBucket1 = deepCloneCrops(bucket1)
@@ -403,9 +410,28 @@ export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] 
 
     optimalPlantingSchedule.push(...optimalPlantingSchedule2)
     removeRedundantPlots(optimalPlantingSchedule, cropData.length)
-  }
+  } else if (cropData.length < 19) {
+    // if we use buckets, still send all cropData to addCrop since that's for the extra plantings
+    const [bucket1, bucket2, bucket3] = distributeFlexibleAndInflexibleCrops(cropData, 3)
+    console.log("going newschoolmode with cropData buckets of ", bucket1, ", ", bucket2, ", ", bucket3)
 
-  console.log("end generateAllPossiblePlantingSchedules")
+    const newlyRemainingBucket1 = deepCloneCrops(bucket1)
+    newlyRemainingBucket1.splice(0, 1)
+    addCrop(bucket1[0], [], newlyRemainingBucket1, optimalPlantingSchedule, cropData)
+
+    const newlyRemainingBucket2 = deepCloneCrops(bucket2)
+    newlyRemainingBucket2.splice(0, 1)
+    addCrop(bucket2[0], [], newlyRemainingBucket2, optimalPlantingSchedule2, cropData)
+
+    const newlyRemainingBucket3 = deepCloneCrops(bucket3)
+    newlyRemainingBucket3.splice(0, 1)
+    addCrop(bucket3[0], [], newlyRemainingBucket3, optimalPlantingSchedule3, cropData)
+
+    optimalPlantingSchedule.push(...optimalPlantingSchedule2, ...optimalPlantingSchedule3)
+    removeRedundantPlots(optimalPlantingSchedule, cropData.length)
+  }
+  console.timeEnd("generateOptimalPlantingSchedule"); // Output: myFunction: 2.345ms (example)
+
   // Sort by planting date
   return optimalPlantingSchedule.map((plot: Planting[]) =>
     plot.sort((a: Planting, b: Planting) => (a.transplantingDate < b.transplantingDate) ? -1 : 1))

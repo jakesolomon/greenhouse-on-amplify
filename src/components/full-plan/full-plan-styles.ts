@@ -74,6 +74,7 @@ export const styles = StyleSheet.create({
     maxHeight: 200
   },
   imageOverflow: {
+    flex: 1,
     width: "100%", // Full width
     height: "100%", // Ensures it fills the container
     objectFit: "cover", // Cover the full space without distortion
