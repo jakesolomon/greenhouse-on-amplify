@@ -218,7 +218,7 @@ const Checkout = () => {
     return (
       <Modal opened={true} withCloseButton={false} onClose={() => {}} title={<b>Generating your plan<Loader color={theme.black} type="dots" size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></b>} centered>
         {/*<Center mb="lg"><Loader size="lg"></Loader></Center>*/}
-        <Text>Do not close this window.</Text>
+        <Text id="generating-full-guide-alert">Do not close this window.</Text>
       </Modal>
     )
   }
