@@ -22,6 +22,7 @@ import {
 import grid from '../../assets/grid.png'
 import overviewExample from '../../assets/overview-example.png'
 import layoutExample from '../../assets/layout-example.png'
+import cover from '../../assets/booklet-cover.png'
 
 import { styles } from './full-plan-styles.ts'
 import { Crop, IntroExtras, FullPlanSummaries, FullPlanTaskList } from "../../types.ts";
@@ -213,6 +214,13 @@ const FullPlan = (props: FullPlanProps) => {
 
   return (
     <Document pageLayout="twoPageLeft">
+      Cover Page
+      <Page>
+        <PDFImage src={cover} />
+        {/*<PDFText style={styles.madeFor}>MADE FOR</PDFText>*/}
+        {/*<PDFText style={styles.userName}>JAKE SOLOMON</PDFText>*/}
+      </Page>
+
       <Page style={styles.body}>
 
         {/*Getting Started*/}

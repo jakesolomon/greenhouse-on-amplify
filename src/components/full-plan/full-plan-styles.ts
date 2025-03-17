@@ -24,6 +24,22 @@ Font.register({
 Font.registerHyphenationCallback(word => [word]);
 
 export const styles = StyleSheet.create({
+  madeFor: {
+    position: "absolute",
+    top: 681,
+    left: 80,
+    fontSize: 11,
+    fontFamily: "Poppins",
+    fontWeight: 400
+  },
+  userName: {
+    position: "absolute",
+    top: 681,
+    right: 80,
+    fontSize: 11,
+    fontFamily: "Poppins",
+    fontWeight: 400
+  },
   chapterHeader: {
     fontSize: 36,
     lineHeight: 1,
