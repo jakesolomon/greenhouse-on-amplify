@@ -11,7 +11,7 @@ const Faq = () => {
     // },
     {
       value: "vegetable-types",
-      question: "What types of vegetables does the app support?",
+      question: "What types of vegetables does The Growing Guide support?",
       answer:
         <Text>Your guide will focus on <em>annual</em> vegetables, herbs, and other common garden plants. (Annuals are ideal for one-season planning, as they grow, produce, and are harvested within a single year.) This allows us to create a one-year guide that takes your crops from planting to harvest.</Text>,
     },
@@ -37,7 +37,7 @@ const Faq = () => {
 
   return (
     <Accordion
-      variant="filled"
+      variant="contained"
       radius="md"
       transitionDuration={300}
       chevronPosition="right"

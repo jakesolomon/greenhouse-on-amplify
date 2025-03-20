@@ -6,8 +6,6 @@ import {
   Title,
   List,
   AppShell,
-  Center,
-  Image,
   useMantineTheme,
   Anchor, Alert, Button, Affix, Flex
 } from '@mantine/core';
@@ -23,11 +21,11 @@ import GanttChart from "./gantt-chart.tsx";
 import ClimateChart from "./climate-chart.tsx";
 import CropList from "./crop-list.tsx";
 import {useEffect, useState} from "react";
-import Logo from "../assets/full-logo-text-color.svg";
 import {IconInfoCircle} from "@tabler/icons-react";
 
 import "./plan-overview.css";
 import {Link} from "react-router-dom";
+import Footer from "./footer.tsx";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -178,136 +176,134 @@ const PlanOverview = (props: DataDisplayProps) => {
   }
 
   return (
-    <Container px={0}>
-      <Title mb="md">
-        Plan Overview
-      </Title>
-      <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
-        {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
-        Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
-      </Text>
-      {
-        summary && !fakeLoading
-          ? <Text size="md" mb="lg">{summary}</Text>
-          : <>{skeletonParagraph}<br/></>
-      }
-      <GanttChart
-        plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
-        loading={plantingScheduleLoading || fakeLoading}
-        showLoadingTimeWarning={showLoadingTimeWarning}
-      />
-      {
-        showNoSuccessionPlantingAlert &&
-        <Alert
-          variant="light"
-          color="yellow"
-          withCloseButton
-          closeButtonLabel="Close alert."
-          onClose={() => setShowNoSuccessionPlantingAlert(false)}
-          title="It looks like we couldn't plant anything in succession."
-          icon={isSmallScreen ? undefined : infoIcon}
-          my="md"
-        >
-          <Text size="sm">This may be because you haven’t selected enough crops or ones with different growing seasons. If your garden is empty in spring or fall, try adding cool-weather crops like lettuce, kale, cabbage, or radishes to make better use of your space. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
-        </Alert>
-      }
-      {
-        showRepetitivePlantingsAlert &&
-        <Alert
-          variant="light"
-          color="yellow"
-          withCloseButton
-          closeButtonLabel="Close alert."
-          onClose={() => setShowRepetitivePlantingsAlert(false)}
-          title="It looks like the same crops are being planted repeatedly."
-          icon={isSmallScreen ? undefined : infoIcon}
-          my="md"
-        >
-          <Text size="sm">This may be because there aren’t enough crops with different growing seasons in your selection. If you notice lots of plantings of the same cool-weather crop (like lettuce, kale, cabbage, or radishes), try adding other cool-weather crops for more variety. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
-        </Alert>
-      }
-      <Accordion mt="md" transitionDuration={350}>
-        <Accordion.Item value="crops">
-          <Accordion.Control icon="🥦">Crops</Accordion.Control>
-          <Accordion.Panel>
-            <CropList crops={crops}/>
-          </Accordion.Panel>
-        </Accordion.Item>
-        <Accordion.Item value="additionalAdvice">
-          <Accordion.Control icon="📝">Growing Tips</Accordion.Control>
-          <Accordion.Panel>
-            <List>
-              {
-                growingTips && !fakeLoading
-                ? growingTips.map((advice, index) =>
-                    <List.Item key={index}><b>{advice.name}:</b> {advice.content}</List.Item>)
-                : <>
-                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
-                  </>
-              }
-            </List>
-          </Accordion.Panel>
-        </Accordion.Item>
-        <Accordion.Item value="companionPlants">
-          <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
-          <Accordion.Panel>
-            <List>
-              <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
-              {
-                companionPlantingAdvice && companionPlants && !fakeLoading
-                  ? companionPlantingAdvice.map((advice, index) =>
-                    <List.Item key={index}><b>{advice.split("***")[0]}</b> {replaceCompanionPlantsWithLinks(advice.split("***")[1], companionPlants)}</List.Item>)
-                  : <>
-                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="75%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="70%" mb={14} radius="xl"/>
-                    <Skeleton height={10} width="80%" mb={14} radius="xl"/>
-                  </>
-              }
-            </List>
-          </Accordion.Panel>
-        </Accordion.Item>
+    <>
+      <Container px={0}>
+        <Title mb="md">
+          Plan Overview
+        </Title>
+        <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
+          {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
+          Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
+        </Text>
         {
-          climateData &&
-          <Accordion.Item value="climateData">
-            <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
+          summary && !fakeLoading
+            ? <Text size="md" mb="lg">{summary}</Text>
+            : <>{skeletonParagraph}<br/></>
+        }
+        <GanttChart
+          plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
+          loading={plantingScheduleLoading || fakeLoading}
+          showLoadingTimeWarning={showLoadingTimeWarning}
+        />
+        {
+          showNoSuccessionPlantingAlert &&
+          <Alert
+            variant="light"
+            color="yellow"
+            withCloseButton
+            closeButtonLabel="Close alert."
+            onClose={() => setShowNoSuccessionPlantingAlert(false)}
+            title="It looks like we couldn't plant anything in succession."
+            icon={isSmallScreen ? undefined : infoIcon}
+            my="md"
+          >
+            <Text size="sm">This may be because you haven’t selected enough crops or ones with different growing seasons. If your garden is empty in spring or fall, try adding cool-weather crops like lettuce, kale, cabbage, or radishes to make better use of your space. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
+          </Alert>
+        }
+        {
+          showRepetitivePlantingsAlert &&
+          <Alert
+            variant="light"
+            color="yellow"
+            withCloseButton
+            closeButtonLabel="Close alert."
+            onClose={() => setShowRepetitivePlantingsAlert(false)}
+            title="It looks like the same crops are being planted repeatedly."
+            icon={isSmallScreen ? undefined : infoIcon}
+            my="md"
+          >
+            <Text size="sm">This may be because there aren’t enough crops with different growing seasons in your selection. If you notice lots of plantings of the same cool-weather crop (like lettuce, kale, cabbage, or radishes), try adding other cool-weather crops for more variety. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
+          </Alert>
+        }
+        <Accordion mt="md" transitionDuration={350} variant="contained">
+          <Accordion.Item value="crops">
+            <Accordion.Control icon="🥦">Crops</Accordion.Control>
             <Accordion.Panel>
-              <ClimateChart data={climateData}/>
+              <CropList crops={crops}/>
             </Accordion.Panel>
           </Accordion.Item>
-        }
-      </Accordion>
-      <Container my="md" display="flex">
-        <Text size="sm" c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
+          <Accordion.Item value="additionalAdvice">
+            <Accordion.Control icon="📝">Growing Tips</Accordion.Control>
+            <Accordion.Panel>
+              <List>
+                {
+                  growingTips && !fakeLoading
+                  ? growingTips.map((advice, index) =>
+                      <List.Item key={index}><b>{advice.name}:</b> {advice.content}</List.Item>)
+                  : <>
+                      <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="75%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                    </>
+                }
+              </List>
+            </Accordion.Panel>
+          </Accordion.Item>
+          <Accordion.Item value="companionPlants">
+            <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
+            <Accordion.Panel>
+              <List>
+                <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
+                {
+                  companionPlantingAdvice && companionPlants && !fakeLoading
+                    ? companionPlantingAdvice.map((advice, index) =>
+                      <List.Item key={index}><b>{advice.split("***")[0]}</b> {replaceCompanionPlantsWithLinks(advice.split("***")[1], companionPlants)}</List.Item>)
+                    : <>
+                      <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="75%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="70%" mb={14} radius="xl"/>
+                      <Skeleton height={10} width="80%" mb={14} radius="xl"/>
+                    </>
+                }
+              </List>
+            </Accordion.Panel>
+          </Accordion.Item>
+          {
+            climateData &&
+            <Accordion.Item value="climateData">
+              <Accordion.Control icon="☀️">Climate Predictions</Accordion.Control>
+              <Accordion.Panel>
+                <ClimateChart data={climateData}/>
+              </Accordion.Panel>
+            </Accordion.Item>
+          }
+        </Accordion>
+        <Container my="md" display="flex">
+          <Text size="sm" c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
+        </Container>
+
+        <Affix w="100vw">
+          <Container px={isSmallScreen ? "30" : "0"}>
+            <Flex justify="flex-end">
+              <Button component={Link} to="/buy" mb="lg" mx={0} loading={!summary} size="md"
+                style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
+                color={theme.colors.green[7]}
+              >
+                Download your Full Plan
+              </Button>
+            </Flex>
+          </Container>
+        </Affix>
+
       </Container>
 
-      <Affix w="100vw">
-        <Container px={isSmallScreen ? "30" : "0"}>
-          <Flex justify="flex-end">
-            <Button component={Link} to="/buy" mb="lg" mx={0} loading={!summary} size="md"
-              style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
-            >
-              Download your Full Plan
-            </Button>
-          </Flex>
-        </Container>
-      </Affix>
-
       <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
-        <Center py="md">
-          <Image src={Logo} className="footer-logo" alt="logo" />
-        </Center>
-        {
-          isSmallScreen && // add extra room for affixed button
-          <Container h={50}></Container>
-        }
+        <Footer />
       </AppShell.Footer>
-    </Container>
+    </>
   );
 };
 

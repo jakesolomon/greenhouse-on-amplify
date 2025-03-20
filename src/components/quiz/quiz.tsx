@@ -5,7 +5,7 @@ import {
   Group,
   TextInput,
   InputError,
-  Center
+  Center, useMantineTheme
 } from '@mantine/core';
 import { useForm, useField } from "@mantine/form";
 
@@ -25,6 +25,8 @@ function Quiz(props: QuizProps) {
   const hardinessZone = climateData?.hardinessZone;
 
   const [ formPage, setFormPage ] = useState<number>(1);
+
+  const theme = useMantineTheme();
 
   const nextFormPage = () => {
     setFormPage(formPage + 1);
@@ -92,6 +94,7 @@ function Quiz(props: QuizProps) {
               <Button
                 onClick={proceedWithZipCode}
                 disabled={!enableProceedWithZipCode}
+                color={theme.colors.green[7]}
               >
                 Next
               </Button>
@@ -102,6 +105,7 @@ function Quiz(props: QuizProps) {
                 type="submit"
                 disabled={!enableContinue || !climateData}
                 loading={!climateData}
+                color={theme.colors.green[7]}
               >
                 Next
               </Button>

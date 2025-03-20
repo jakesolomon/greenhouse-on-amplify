@@ -48,3 +48,6 @@ export default tseslint.config({
   },
 })
 ```
+
+
+To deploy locally, run `npx ampx sandbox --stream-function-logs` to start the backend with streaming logs, and `npm run dev -- --host` to run frontend and allow local network connections via IP address.

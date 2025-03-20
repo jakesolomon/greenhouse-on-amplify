@@ -66,6 +66,7 @@ function TrueLeafCropsPage(props: CropsPageProps) {
           value={crop}
           disabled={disabled}
           checked={false}
+          color={theme.colors.green[7]}
         >
           {crop}
         </Chip>

@@ -50,13 +50,14 @@ const Header = (props: HeaderProps) => {
   return(
     <>
       <Container size='xl' h={60}>
-        <Group h="100%" px="md">
+        <Group h="100%">
           <Burger opened={navBarIsOpen} onClick={toggleNavBar} hiddenFrom="sm" size="sm" />
           <Group justify="space-between" style={{ flex: 1 }}>
             <Link to={'/'} >
-              <Image h={35} src={LogoText} className="header-logo" alt="logo" />
+              {/*<Image h={45} src={LogoTree} hiddenFrom="sm" className="header-logo" alt="logo" fit="contain" />*/}
+              <Image h={45} src={LogoText} className="header-logo" alt="logo" fit="contain" />
             </Link>
-            <Group ml="xl" gap={0} visibleFrom="sm">
+            <Group gap={0} visibleFrom="sm">
               {renderNavItem("Contact", "/contact")}
               {renderNavItem("FAQ", "/faq")}
               {renderNavItem("About", "/about")}

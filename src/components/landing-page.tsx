@@ -7,20 +7,18 @@ import {
   Text,
   useMantineTheme,
   Card,
-  ThemeIcon,
-  Timeline, AppShell, Image, Modal, Group, BackgroundImage, Stack, Flex, Anchor
+  Timeline, AppShell, Image, Modal, Group, BackgroundImage, Box, AspectRatio
 } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
-import {
-  IconSun,
-  IconChartBar,
-  IconLeaf,
-} from '@tabler/icons-react';
 import useWindowSize from "../helpers/useWindowSize.ts";
 import { useState } from "react";
-import Logo from "../assets/full-logo-text-color.svg";
-import Booklet from "../assets/Booklet Mockup large lowres.png";
+import KaleFrost from "../assets/kale-frost-lowres.png"
+import AnimeVideoDandelions from "../assets/landing-page-video.mov";
+import Garden3 from "../assets/garden-3-big.png";
+import Harvest from "../assets/harvest_lowres.png";
 import Faq from "./faq.tsx";
+import Footer from "./footer.tsx";
+import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 
 const LandingPage = () => {
 
@@ -70,93 +68,176 @@ const LandingPage = () => {
       <Modal opened={opened} onClose={close} title={<b>Continue or Start Over?</b>} centered>
         <Text>You already have a saved garden plan. Would you like to open it or start a new one?</Text>
         <Group justify="right" mt="md">
-          <Button onClick={viewExistingPlan} variant="light">View My Plan</Button>
-          <Button onClick={startNewPlan} variant="filled">Create New Plan</Button>
+          <Button onClick={viewExistingPlan} variant="light" color={theme.colors.green[7]}>View My Plan</Button>
+          <Button onClick={startNewPlan} variant="filled" color={theme.colors.green[7]}>Create New Plan</Button>
         </Group>
       </Modal>
       <Container p={0} m={0} w="100vw" fluid style={{position: "absolute", top: 0, right: 0, background: "#F7F4ED"}}>
         {/* set small screen to 83vh to show booklet in mobile view*/}
         <BackgroundImage
-          src={isSmallScreen ? "undefined" : Booklet}
-          style={{backgroundPosition: "right"}}
-          h={isSmallScreen ? "85vh" : "90vh"}
+          // src={isSmallScreen ? "undefined" : Anime}
+          src={"undefined"}
+          style={{backgroundPosition: "left", position: "relative", top: 40}}
+          h={isSmallScreen ? "75vh" : "90vh"}
         >
-          <Container size="xl">
-            {/* Hero Section */}
-            {/* set small screen to 100vh to show booklet in mobile view*/}
+
+          {/*/!* Video overlay *!/*/}
+          <Box
+            h={isSmallScreen ? "75vh" : "90vh"}
+            style={ isSmallScreen ?
+              {
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                zIndex: 0,
+              }
+              :
+              {
+                position: 'absolute',
+                left: "20vw",
+                top: 0,
+                width: "80vw",
+                zIndex: 0,
+              }
+            }
+          >
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              src={AnimeVideoDandelions}
+              style={{
+                position: 'relative',
+                top: 0,
+                left: 0,
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                zIndex: 0,
+              }}
+            />
+          </Box>
+
+          {/* Gradient or Color Overlay */}
+          <Box
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1,
+              background: isSmallScreen
+                ?
+                `rgba(160, 108, 70, 0.2)`
+                :
+                `linear-gradient(
+                  to right, 
+                  #F7F4ED 0%,
+                  rgba(247, 244, 237, 1) 35%,  
+                  rgba(247, 244, 237, 0.5) 55%, 
+                  transparent 65%
+                )`
+            }}
+          />
+
+          <Container size="xl" style={{position: 'relative', zIndex: 1}}>
             <Grid
               align="center"
               justify="center"
               gutter="xl"
               m="lg"
-              h={isSmallScreen ? "85vh" : "90vh"}
+              h={isSmallScreen ? "65vh" : "90vh"}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'left',
-              }}
-            >
-              <Grid.Col mb={0} pb={0}>
-                {/*<Title order={1}>Your AI-Powered Vegetable Garden Planner</Title>*/}
-                {/*<Title order={1}>Your Vegetable Garden Plan, In Seconds</Title>*/}
-                <Title order={1} w={isSmallScreen ? undefined : "60%"} style={{fontSize: isSmallScreen ? "2.3rem" : "3.8rem"}} >Your Vegetable Garden Plan, {isSmallScreen && <br/>}In Under A Minute</Title>
-                <Text size="lg" mt="md">
-                  {/*Tailored planting schedules for your goals and space—made effortless with AI.*/}
-                  Personalized plans for a thriving vegetable garden—made effortless with AI.
-                  {/*Plan, plant, and harvest with ease using a personalized schedule, generated for you in seconds.*/}
-                  {/* ^^ this is a good one for lower down. Sounds great but too many words for subtitle.*/}
-                  {/*Take a short quiz to get your plan, tailored to your resources and goals.*/}
-                  {/*Get a personalized month-by-month planting schedule tailored to your garden, resources, and goals.*/}
-                  {/*Start your gardening journey with confidence and ease.*/}
-                </Text>
-                <Button component={Link} to="/planner" onClick={handleGetStartedClick} mt="lg" size="lg" color={theme.colors.green[7]} radius="md">
-                  Get Started Now
-                </Button>
-              </Grid.Col>
-              {/* Uncomment to show booklet in mobile view*/}
-              {/*{*/}
-              {/*  isSmallScreen &&*/}
-              {/*  <Image*/}
-              {/*    src={BookletCroppedNoEdgeShadows}*/}
-              {/*    w="100vw"*/}
-              {/*    height={310}*/}
-              {/*    alt="Print Booklet"*/}
-              {/*  />*/}
-              {/*}*/}
-            </Grid>
-          </Container>
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'left',
+                }}
+              >
+                <Grid.Col mb={0} pb={0}>
+                  <Title
+                    order={1}
+                    w={isSmallScreen ? undefined : "50%"}
+                    style={{fontSize: isSmallScreen ? "2.3rem" : "3.3rem"}}
+                    c={isSmallScreen ? "white" : undefined}
+                  >
+                    Your Vegetable Garden Plan, {isSmallScreen && <br/>}
+                    In Under A Minute
+                  </Title>
+                  {/*<Text size="lg" mt="md" c={isSmallScreen ? "white" : undefined} >*/}
+                  {/*  Personalized plans for a thriving vegetable garden—made effortless with AI.*/}
+                  {/*</Text>*/}
+                  <Text
+                    // order={5}
+                    mt="md"
+                    w={isSmallScreen ? undefined : "50%"}
+                    c={isSmallScreen ? "white" : undefined}
+                    style={{fontSize: "1.3rem"}}
+                  >
+                    Personalized plans for a thriving vegetable garden—made effortless with AI.
+                  </Text>
+                  <Button
+                    component={Link}
+                    to="/planner"
+                    onClick={handleGetStartedClick}
+                    mt="lg"
+                    size="lg"
+                    color={theme.colors.green[7]}
+                    radius="md"
+                  >
+                    Get Started Now
+                  </Button>
+                </Grid.Col>
+              </Grid>
+            </Container>
         </BackgroundImage>
+
       </Container>
 
       {/*Spaces out the content below the Hero, which is absolute*/}
-      <Container h={isSmallScreen ? "85vh" : "90vh"} m={0} p={0} />
+      <Container h={isSmallScreen ? "70vh" : "90vh"} m={0} p={0}/>
 
       {/* Features */}
-      <Container size="lg" py="xl">
-        <Title ta="center" order={2} mb="md">
-          Why use Growing Guide?
+      <Container size="lg" py="xl" px={0}>
+        <Title order={2} mb="sm">
+        Why use The Growing Guide?
         </Title>
-        <Text ta="center" size="lg" mb="xl" c="dimmed">
-          Designed to make gardening simple and productive, our app provides personalized insights tailored to your needs.
+        <Text size="lg" mb="md" c="dimmed">
+          Designed to make gardening simple and productive, our planner provides personalized insights tailored to you.
         </Text>
         <Grid gutter="lg">
           <Grid.Col span={{ base: 12, md: 4}}>
-            <Card shadow="sm" padding="lg" radius="md">
-              <ThemeIcon size="xl" color="green">
-                <IconLeaf size={28} />
-              </ThemeIcon>
-              <Title order={4} mt="md">Custom Garden Plans</Title>
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              {/*<ThemeIcon size="xl" color="green">*/}
+              {/*  <IconLeaf size={28} />*/}
+              {/*</ThemeIcon>*/}
+              <Card.Section mb="sm">
+                <AspectRatio ratio={2}>
+                  <Image
+                    src={BookletMockupLeft}
+                    alt="Booklet in garden"
+                  />
+                </AspectRatio>
+              </Card.Section>
+              <Title order={4} mt="md">Tailored Garden Guide</Title>
               <Text mt="sm" c="dimmed">
-                Get a month-by-month planting schedule tailored to your garden size, location, and goals.
+                Get a month-by-month planting schedule, made to order for your unique garden plan.
               </Text>
             </Card>
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 4}}>
-            <Card shadow="sm" padding="lg" radius="md">
-              <ThemeIcon size="xl" color="yellow">
-                <IconSun size={28} />
-              </ThemeIcon>
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              {/*<ThemeIcon size="xl" color="yellow">*/}
+              {/*  <IconSun size={28} />*/}
+              {/*</ThemeIcon>*/}
+              <Card.Section mb="sm">
+                <AspectRatio ratio={2}>
+                  <Image
+                    src={KaleFrost}
+                    alt="Kale seedling with frost"
+                  />
+                </AspectRatio>
+              </Card.Section>
               <Title order={4} mt="md">Adapt to Your Climate</Title>
               <Text mt="sm" c="dimmed">
                 Incorporates local temperature conditions to provide tailored advice.
@@ -164,10 +245,18 @@ const LandingPage = () => {
             </Card>
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 4}}>
-            <Card shadow="sm" padding="lg" radius="md">
-              <ThemeIcon size="xl" color="blue">
-                <IconChartBar size={28} />
-              </ThemeIcon>
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              {/*<ThemeIcon size="xl" color="blue">*/}
+              {/*  <IconChartBar size={28} />*/}
+              {/*</ThemeIcon>*/}
+              <Card.Section mb="sm">
+                <AspectRatio ratio={2}>
+                  <Image
+                    src={Harvest}
+                    alt="Tomato seedling"
+                  />
+                </AspectRatio>
+              </Card.Section>
               <Title order={4} mt="md">Maximize Your Harvest</Title>
               <Text mt="sm" c="dimmed">
                 Optimize planting and harvesting schedules to increase your garden's productivity.
@@ -178,11 +267,24 @@ const LandingPage = () => {
       </Container>
 
       {/*How it works*/}
-      <Container size="sm" py="xl" my="xl">
-        <Title order={2} ta="center" mb="md">
-          Planting Made Simple
-        </Title>
-        <Text size="lg" ta="center" mb="xl" c="dimmed">
+      {/*<Container size="lg" my="md" >*/}
+      {/*  <BackgroundImage*/}
+      {/*    src={LittleTomato}*/}
+      {/*    style={{backgroundPosition: "bottom", position: "relative", top: 0}}*/}
+      {/*  >*/}
+      {/*    <Box h="40px"></Box>*/}
+      {/*    <Title order={2} ta="center" mb="md" c="white">*/}
+      {/*      Garden Planning Made Simple*/}
+      {/*    </Title>*/}
+      {/*    <Box h="200px"></Box>*/}
+      {/*  </BackgroundImage>*/}
+      {/*</Container>*/}
+
+      <Container size="sm" my="md" px={0}>
+        {/*<Title order={2} ta="center" mb="md">*/}
+        {/*  Planting Made Simple*/}
+        {/*</Title>*/}
+        <Text size="lg" mb="xl" c="dimmed">
           Transform your gardening experience with our step-by-step process. It's simple, quick, and tailored to you.
         </Text>
 
@@ -219,14 +321,14 @@ const LandingPage = () => {
             title="Step 3: Refine and Customize"
           >
             <Text c="dimmed" size="sm" mt="sm">
-              Adjust crop selections, explore companion planting, and add varieties to create a robust and personalized garden design.
+              Adjust crop selections, explore companion planting, and add variety to create a robust and personalized garden design.
             </Text>
           </Timeline.Item>
 
           {/* Step 4 */}
           <Timeline.Item
             onMouseEnter={() => setHoveredTimelineElement(3)}
-            title="Step 4: Your Month-by-Month Planner"
+            title="Step 4: Your Monthly Guide"
           >
             <Text c="dimmed" size="sm" mt="sm">
               Download a detailed monthly schedule with diagrams and tasks to keep your garden on track throughout the season.
@@ -244,52 +346,27 @@ const LandingPage = () => {
           </Timeline.Item>
         </Timeline>
       </Container>
-      <Container size="md" py="xl" px={0}>
-        <Title order={2} ta="center" mb="lg">
-          Frequently Asked Questions
-        </Title>
-        <Text size="lg" ta="center" mb="xl" c="dimmed">
-          Have questions? We’ve got answers.
-        </Text>
-        <Faq />
-        <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
-          {/*<Center py="md">*/}
-          <Container py='md'>
-            <Grid align='center'>
-              <Grid.Col span={{ base: 12, xs: 4 }}>
-                <Image src={Logo} className="footer-logo" alt="logo" fit="fill" h={140}/>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, xs: 2 }} />
-              <Grid.Col span={{ base: 12, xs: 3 }} >
-                <Flex justify="center">
-                  <Stack gap={4}>
-                    <Title order={4} c="dimmed">Learn</Title>
-                    {/*<Button className="termly-display-preferences"></Button>*/}
-                    {/*<Anchor size="sm" href="#" className="termly-display-preferences">Consent Preferences</Anchor>*/}
-                    <Anchor component={Link} to="/faq" size="sm" c="#333">FAQ</Anchor>
-                    <Anchor component={Link} to="/about" size="sm" c="#333">About</Anchor>
-                    <Anchor component={Link} to="/learn" size="sm" c="#333">Blog</Anchor>
-                    {/*<a href="#" className="termly-display-preferences">Consent Preferences</a>*/}
-                    {/*<a href="#" className="termly-display-preferences">Consent Preferences</a>*/}
-                    {/*<a href="#" className="termly-display-preferences">Consent Preferences</a>*/}
-                  </Stack>
-                </Flex>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, xs: 3 }} >
-                <Flex justify="center">
-                  <Stack gap={4}>
-                    <Title order={4} c="dimmed">Support</Title>
-                    <Anchor component={Link} to="/contact" size="sm" c="#333">Contact</Anchor>
-                    <Anchor component={Link} to="/privacy" size="sm" c="#333">Privacy Policy</Anchor>
-                    <Anchor component={Link} to="/cookies" size="sm" c="#333">Cookie Policy</Anchor>
-                  </Stack>
-                </Flex>
-              </Grid.Col>
-            </Grid>
-          </Container>
-          {/*</Center>*/}
-        </AppShell.Footer>
+
+      <Container size="md" pt="md" px={0}>
+        <BackgroundImage
+          src={Garden3}
+          style={{backgroundPosition: "bottom", position: "relative", top: 0}}
+        >
+          <Box h="100px"></Box>
+          <Title order={1} ta="center" mb="md" c="white">
+            Frequently Asked Questions
+          </Title>
+          <Box h="100px"></Box>
+        </BackgroundImage>
       </Container>
+
+      <Container size="md" py="xl" px={0}>
+        <Faq />
+      </Container>
+
+      <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+        <Footer />
+      </AppShell.Footer>
     </>
   )
 }

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useForm } from '@mantine/form';
-import { TextInput, Textarea, Button, Group, Notification } from '@mantine/core';
+import {TextInput, Textarea, Button, Group, Notification, useMantineTheme} from '@mantine/core';
 import { generateClient } from "aws-amplify/api";
 
 import { Schema } from "../../amplify/data/resource.ts";
 
 const ContactForm = () => {
   const [submissionState, setSubmissionState] = useState<'ready'|'sending'|'sent'|'error'>('ready');
+
+  const theme = useMantineTheme();
 
   const amplifyClient = generateClient<Schema>()
 
@@ -17,9 +19,15 @@ const ContactForm = () => {
       message: '',
     },
     validate: {
-      email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid email address'),
-      subject: (value) => (value.trim().length > 0 ? null : 'Subject is required'),
-      message: (value) => (value.trim().length > 0 ? null : 'Message is required'),
+      email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid email address.'),
+      subject: (value) => (
+        value.trim().length === 0 ? 'Subject is required.' :
+        value.trim().length > 500 ? `${value.trim().length} characters. Exceeds max of 500.` : null
+      ),
+      message: (value) => (
+        value.trim().length === 0 ? 'Message is required.' :
+          value.trim().length > 500 ? `${value.trim().length} characters. Exceeds max of 500.` : null
+      ),
     },
   });
 
@@ -44,7 +52,6 @@ const ContactForm = () => {
         <TextInput
           label="Email Address"
           placeholder="your.email@example.com"
-          withAsterisk
           disabled={submissionState !== 'ready'}
           {...form.getInputProps('email')}
         />
@@ -52,7 +59,6 @@ const ContactForm = () => {
           label="Subject"
           placeholder="Subject"
           mt="md"
-          withAsterisk
           disabled={submissionState !== 'ready'}
           {...form.getInputProps('subject')}
         />
@@ -60,13 +66,22 @@ const ContactForm = () => {
           label="Message"
           placeholder="Your message"
           mt="md"
-          withAsterisk
+          autosize
+          minRows={4}
+          maxRows={6}
           disabled={submissionState !== 'ready'}
           {...form.getInputProps('message')}
         />
         {(submissionState === "ready" || submissionState === "sending") && (
           <Group mt="md">
-            <Button type="submit" loading={submissionState === "sending"} onSubmit={(e) => e.preventDefault()}>Send Message</Button>
+            <Button
+              type="submit"
+              loading={submissionState === "sending"}
+              onSubmit={(e) => e.preventDefault()}
+              color={theme.colors.green[7]}
+            >
+              Send Message
+            </Button>
           </Group>
         )}
         {submissionState === "sent" && (
