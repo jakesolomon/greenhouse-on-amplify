@@ -13,7 +13,8 @@ import { useDisclosure } from '@mantine/hooks';
 import useWindowSize from "../helpers/useWindowSize.ts";
 import { useState } from "react";
 import KaleFrost from "../assets/kale-frost-lowres.png"
-import AnimeVideoDandelions from "../assets/landing-page-video.mov";
+import LandingPageVideo from "../assets/landing-page-video.mov";
+import LandingPageStill from '../assets/landing-page-video-still.png'
 import Garden3 from "../assets/garden-3-big.png";
 import Harvest from "../assets/harvest_lowres.png";
 import Faq from "./faq.tsx";
@@ -106,7 +107,8 @@ const LandingPage = () => {
               muted
               loop
               playsInline
-              src={AnimeVideoDandelions}
+              src={LandingPageVideo}
+              poster={LandingPageStill}
               style={{
                 position: 'relative',
                 top: 0,
