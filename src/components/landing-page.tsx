@@ -11,9 +11,10 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import useWindowSize from "../helpers/useWindowSize.ts";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import KaleFrost from "../assets/kale-frost-lowres.png"
 import LandingPageVideo from "../assets/landing-page-video.mov";
+import LandingPageVideoTiny from "../assets/landing-page-video-tiny.mov";
 import LandingPageStill from '../assets/landing-page-video-still.png'
 import Garden3 from "../assets/garden-3-big.png";
 import Harvest from "../assets/harvest_lowres.png";
@@ -22,6 +23,27 @@ import Footer from "./footer.tsx";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 
 const LandingPage = () => {
+
+  // Check if mobile device is running on low battery mode. Will suspend landing page video.
+  const [canAutoplay, setCanAutoplay] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAutoplay = async () => {
+      const video = document.createElement('video');
+      video.src = LandingPageVideoTiny;
+      video.muted = true;
+      video.playsInline = true;
+      try {
+        await video.play();
+        setCanAutoplay(true);
+        video.pause();
+      } catch (err) {
+        console.log("Will not autoplay video, error: ", err);
+        setCanAutoplay(false);
+      }
+    };
+    checkAutoplay();
+  }, []);
 
   const theme = useMantineTheme();
 
@@ -101,24 +123,45 @@ const LandingPage = () => {
               }
             }
           >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              src={LandingPageVideo}
-              poster={LandingPageStill}
-              style={{
-                position: 'relative',
-                top: 0,
-                left: 0,
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                zIndex: 0,
-              }}
-            />
+            {
+              canAutoplay === false || canAutoplay === null
+                ? (
+                  <img
+                    alt="Garden with planner"
+                    src={LandingPageStill}
+                    style={{
+                      position: 'relative',
+                      top: 0,
+                      left: 0,
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      zIndex: 0,
+                    }}
+                  />
+                )
+                : (
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    src={LandingPageVideo}
+                    poster={LandingPageStill}
+                    style={{
+                      position: 'relative',
+                      top: 0,
+                      left: 0,
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      zIndex: 0,
+                    }}
+                  />
+                )
+            }
           </Box>
 
           {/* Gradient or Color Overlay */}

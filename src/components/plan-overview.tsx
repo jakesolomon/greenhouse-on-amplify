@@ -7,9 +7,9 @@ import {
   List,
   AppShell,
   useMantineTheme,
-  Anchor, Alert, Button, Affix, Flex, Modal
+  Anchor, Alert, Button, Affix, Flex, Modal, Image, Box
 } from '@mantine/core';
-import { useViewportSize } from '@mantine/hooks';
+import {useDisclosure, useViewportSize} from '@mantine/hooks';
 
 import {
   ClimateDataOutput,
@@ -27,6 +27,7 @@ import "./plan-overview.css";
 import {Link} from "react-router-dom";
 import Footer from "./footer.tsx";
 import EmailOptInForm from "./email-opt-in-form.tsx";
+import LittleTomato from "../assets/little-tomato-plant-extended-shrunk.png"
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -40,6 +41,8 @@ interface DataDisplayProps {
 
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants, startPlanOver } = props;
+
+  const [opened, { open, close }] = useDisclosure(false);
 
   const [ userName, setUserName ] = useState<string | undefined>((): string | undefined => {
     const saved = localStorage.getItem("userName");
@@ -60,6 +63,14 @@ const PlanOverview = (props: DataDisplayProps) => {
       return initialValue;
     }
   });
+
+  useEffect(() => {
+    if (!userName || !userEmail) {
+      open()
+    } else {
+      close()
+    }
+  }, [userName, userEmail]);
 
   const setUserData = ( _userName: string, _userEmail: string ) => {
     setUserName(_userName)
@@ -190,17 +201,29 @@ const PlanOverview = (props: DataDisplayProps) => {
         closeOnEscape={false}
         closeOnClickOutside={false}
         zIndex={300}
-        opened={(!userName || !userEmail)}
+        opened={opened}
         onClose={() => {}}
         withCloseButton={false}
+        transitionProps={{enterDelay: 1000}}
         overlayProps={{
           backgroundOpacity: 0.55,
           blur: 3,
         }}
+        styles={{
+          body: {
+            padding: 0, // remove default body padding so the image sits flush
+          },
+        }}
       >
-        <Title order={3}>Almost there!</Title>
-        <Text mb='sm'>Just enter your name and email to view your free Plan Overview.</Text>
-        <EmailOptInForm setUserData={setUserData} />
+
+        <Image
+          src={LittleTomato}
+        ></Image>
+        <Box p='sm'>
+          <Title order={2}>Almost there!</Title>
+          <Text mb='sm'>Just enter your name and email to view your free Plan Overview.</Text>
+          <EmailOptInForm setUserData={setUserData} />
+        </Box>
       </Modal>
 
       <Container px={0}>
