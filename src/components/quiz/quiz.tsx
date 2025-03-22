@@ -107,7 +107,7 @@ function Quiz(props: QuizProps) {
                 loading={!climateData}
                 color={theme.colors.green[7]}
               >
-                Next
+                Generate Plan
               </Button>
             }
             { form.isDirty() && form.errors['crops'] && <InputError>{form.errors['crops']}</InputError> }

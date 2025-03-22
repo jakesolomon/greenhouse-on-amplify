@@ -9,11 +9,15 @@ import PlanOverview from "./plan-overview.tsx";
 import Quiz from "./quiz/quiz.tsx";
 import {ClimateDataOutput, Crop, GrowingDateRange, Planting, SeedVariety} from "../types.ts";
 import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
-import { generateOptimalPlantingSchedule } from "../helpers/schedule-helpers.ts"
-import FakeQuizQuestion from "./quiz/fake-quiz-question.tsx";
 import { availableCompanionPlants } from "./available-companion-plants.ts"
 
 const Planner = () => {
+
+  const worker = new Worker(new URL('../helpers/schedule-helpers.ts', import.meta.url));
+
+  useEffect(() => {
+    return () => worker.terminate();
+  }, []);
 
   // TODO: wrap these into a useApiRequestHelper()
 
@@ -135,17 +139,6 @@ const Planner = () => {
 
   const [ fatalError, setFatalError ] = useState<string>();
 
-  // const [ proceedToPlan, setProceedToPlan ] = useState<boolean>(false);
-  const [ proceedToPlan, setProceedToPlan ] = useState((): boolean => {
-    const saved = localStorage.getItem("proceedToPlan");
-    const initialValue = false;
-    if (!!saved && saved !== "undefined") {
-      return JSON.parse(saved)
-    } else {
-      return initialValue;
-    }
-  });
-
   const amplifyClient = generateClient<Schema>()
 
   // Anytime useState is called to change the value of one of the Plan Overview states, local storage updates as well.
@@ -167,9 +160,6 @@ const Planner = () => {
   useEffect(() => {
     localStorage.setItem("companionPlants", JSON.stringify(companionPlants));
   }, [companionPlants]);
-  useEffect(() => {
-    localStorage.setItem("proceedToPlan", JSON.stringify(proceedToPlan));
-  }, [proceedToPlan]);
 
   const startPlanOver = () => {
     setClimateData(undefined)
@@ -178,11 +168,12 @@ const Planner = () => {
     setScheduleSummary(undefined)
     setCompanionPlantingAdvice(undefined)
     setCompanionPlants(undefined)
-    setProceedToPlan(false)
     localStorage.removeItem("capturedImage");
     localStorage.removeItem("fullPlanIntroExtras");
     localStorage.removeItem("fullPlanTasks");
     localStorage.removeItem("fullPlanSummaries");
+    localStorage.removeItem("companionPlantingAdvice");
+    localStorage.removeItem("companionPlants");
   }
 
   const submitZipCode = async (zipCode: string) => {
@@ -324,11 +315,20 @@ const Planner = () => {
     console.log("Successful results (with data):", cropsWithData);
 
     setCropData(cropsWithData)
-    const optimalPlantingSchedule = generateOptimalPlantingSchedule(cropsWithData)
+    // Commented out to do this with worker
+    // const optimalPlantingSchedule = generateOptimalPlantingSchedule(cropsWithData)
+    worker.postMessage(cropsWithData);
+    // console.log(optimalPlantingSchedule)
+    // setPlantingSchedule(optimalPlantingSchedule)
+    // setIsLoadingCropData(false)
+  }
+
+  worker.onmessage = (event: MessageEvent<Planting[][]>) => {
+    const optimalPlantingSchedule = event.data;
     console.log(optimalPlantingSchedule)
     setPlantingSchedule(optimalPlantingSchedule)
     setIsLoadingCropData(false)
-  }
+  };
 
   // Request schedule summary when planting schedule returns
   useEffect(() => {
@@ -478,15 +478,13 @@ const Planner = () => {
   return(
     <>
       {
-        cropData === undefined && !loadingCropData &&
+        // Show quiz if we don't have crop data and we aren't loading it
+        (!cropData && !loadingCropData) &&
         <Quiz getAllCropData={getAllCropData} submitZipCode={submitZipCode} climateData={climateData}/>
       }
       {
-        !proceedToPlan && !(cropData === undefined && !loadingCropData) &&
-        <FakeQuizQuestion proceed={() => setProceedToPlan(true)} />
-      }
-      {
-        proceedToPlan && !(cropData === undefined && !loadingCropData) &&
+        // Show planner if we have crop data or we're loading it
+        (!!cropData || loadingCropData) &&
         <PlanOverview
           crops={cropData}
           plantingSchedule={plantingSchedule}

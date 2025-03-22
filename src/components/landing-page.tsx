@@ -55,7 +55,6 @@ const LandingPage = () => {
     localStorage.removeItem("scheduleSummary");
     localStorage.removeItem("companionPlantingAdvice");
     localStorage.removeItem("companionPlants");
-    localStorage.removeItem("proceedToPlan");
     localStorage.removeItem("capturedImage");
     localStorage.removeItem("fullPlanIntroExtras");
     localStorage.removeItem("fullPlanTasks");

@@ -319,7 +319,7 @@ const GanttChart = (props: GanttChartProps)=> {
         </Flex>
       </div>
 
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{backgroundOpacity: 0.4}} loaderProps={{
+      <LoadingOverlay visible={loading} zIndex={10} overlayProps={{backgroundOpacity: 0.4}} loaderProps={{
         color: theme.colors.gray[4],
         children: showLoadingTimeWarning ? loadingTimeWarning : undefined
       }}/>

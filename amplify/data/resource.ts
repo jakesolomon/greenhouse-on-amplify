@@ -13,6 +13,7 @@ import {getFullPlanIntroExtras} from "../functions/getFullPlanIntroExtras/resour
 import {getFullPlanTasks} from "../functions/getFullPlanTasks/resource";
 import { getFullPlanSummaries } from "../functions/getFullPlanSummaries/resource";
 import { sendContactEmail } from "../functions/sendContactEmail/resource";
+import { sendPrivySignup } from "../functions/sendPrivySignup/resource";
 
 const schema = a.schema({
   getCropData: a
@@ -179,6 +180,18 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(sendContactEmail))
+    .authorization(allow => [
+      allow.publicApiKey(),
+    ]),
+
+  sendPrivySignup: a
+    .query()
+    .arguments({
+      emailAddress: a.string().required(),
+      url: a.string().required()
+    })
+    .returns(a.string())
+    .handler(a.handler.function(sendPrivySignup))
     .authorization(allow => [
       allow.publicApiKey(),
     ]),

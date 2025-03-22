@@ -377,7 +377,7 @@ const deepClonePlantingSchedule = (plantingSchedule: Planting[][])=> {
   )
 }
 
-export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] => {
+const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] => {
   const optimalPlantingSchedule: Planting[][] = []
   const optimalPlantingSchedule2: Planting[][] = []
   const optimalPlantingSchedule3: Planting[][] = []
@@ -435,6 +435,12 @@ export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] 
   // Sort by planting date
   return optimalPlantingSchedule.map((plot: Planting[]) =>
     plot.sort((a: Planting, b: Planting) => (a.transplantingDate < b.transplantingDate) ? -1 : 1))
+}
+
+self.onmessage = function(event: MessageEvent<Crop[]>) {
+  const cropData = event.data;
+  const result = generateOptimalPlantingSchedule(cropData);
+  self.postMessage(result);
 }
 
 // *** Dumping ground for algorithm methods once used in Planner.tsx ***

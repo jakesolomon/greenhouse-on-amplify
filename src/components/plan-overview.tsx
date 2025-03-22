@@ -7,9 +7,9 @@ import {
   List,
   AppShell,
   useMantineTheme,
-  Anchor, Alert, Button, Affix, Flex
+  Anchor, Alert, Button, Affix, Flex, Modal
 } from '@mantine/core';
-import {useViewportSize} from "@mantine/hooks";
+import { useViewportSize } from '@mantine/hooks';
 
 import {
   ClimateDataOutput,
@@ -26,6 +26,7 @@ import {IconInfoCircle} from "@tabler/icons-react";
 import "./plan-overview.css";
 import {Link} from "react-router-dom";
 import Footer from "./footer.tsx";
+import EmailOptInForm from "./email-opt-in-form.tsx";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -39,6 +40,33 @@ interface DataDisplayProps {
 
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants, startPlanOver } = props;
+
+  const [ userName, setUserName ] = useState<string | undefined>((): string | undefined => {
+    const saved = localStorage.getItem("userName");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      return saved
+    } else {
+      return initialValue;
+    }
+  });
+
+  const [ userEmail, setUserEmail ] = useState<string | undefined>((): string | undefined => {
+    const saved = localStorage.getItem("userEmail");
+    const initialValue = undefined;
+    if (!!saved && saved !== "undefined") {
+      return saved
+    } else {
+      return initialValue;
+    }
+  });
+
+  const setUserData = ( _userName: string, _userEmail: string ) => {
+    setUserName(_userName)
+    localStorage.setItem("userName", _userName);
+    setUserEmail(_userEmail)
+    localStorage.setItem("userEmail", _userEmail);
+  }
 
   // Scroll to top on first render
   useEffect(() => {
@@ -78,31 +106,11 @@ const PlanOverview = (props: DataDisplayProps) => {
   }, [plantingSchedule, plantingScheduleIsRepetitive]);
 
   const [ showLoadingTimeWarning, setShowLoadingTimeWarning ] = useState<boolean>(false);
-  // const [ fakeLoading, setIsFakeLoading ] = useState<boolean>(true);
-  const [ fakeLoading, setIsFakeLoading ] = useState<boolean>((): boolean => {
-    const saved = localStorage.getItem("fakeLoading");
-    const initialValue = true;
-    if (!!saved && saved !== "undefined") {
-      return JSON.parse(saved)
-    } else {
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem("fakeLoading", JSON.stringify(fakeLoading));
-  }, [fakeLoading]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsFakeLoading(false)
-    }, 1700);
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
       setShowLoadingTimeWarning(true)
-    }, 5500);
+    }, 7000);
   }, []);
 
   const { width } = useViewportSize();
@@ -177,22 +185,40 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   return (
     <>
+      <Modal
+        centered
+        closeOnEscape={false}
+        closeOnClickOutside={false}
+        zIndex={300}
+        opened={(!userName || !userEmail)}
+        onClose={() => {}}
+        withCloseButton={false}
+        overlayProps={{
+          backgroundOpacity: 0.55,
+          blur: 3,
+        }}
+      >
+        <Title order={3}>Almost there!</Title>
+        <Text mb='sm'>Just enter your name and email to view your free Plan Overview.</Text>
+        <EmailOptInForm setUserData={setUserData} />
+      </Modal>
+
       <Container px={0}>
         <Title mb="md">
-          Plan Overview
+        Plan Overview
         </Title>
-        <Text size="md" mb={summary && !fakeLoading ? "sm" : "lg"}>
+        <Text size="md" mb={summary ? "sm" : "lg"}>
           {/*Your 2025 planting schedule is designed to optimize your garden's productivity by strategically timing the planting and harvesting of each crop. The diagram is color-coded to match specific areas in your garden, helping you keep track of where each crop belongs throughout the season. You’ll notice that some crops may be scheduled to follow others in the same areas—this is called <i>succession planting</i>, and it helps you maximize your space by rotating crops throughout the season.*/}
           Your 2025 planting schedule optimizes the productivity of your garden by timing when to plant and harvest each crop. The color-coded diagram shows where each crop belongs, and some crops are scheduled to follow others in the same areas—a method called <i>succession planting</i> that maximizes space by staggering planting times.
         </Text>
         {
-          summary && !fakeLoading
+          summary
             ? <Text size="md" mb="lg">{summary}</Text>
             : <>{skeletonParagraph}<br/></>
         }
         <GanttChart
           plantingSchedule={plantingScheduleLoading ? undefined : plantingSchedule}
-          loading={plantingScheduleLoading || fakeLoading}
+          loading={plantingScheduleLoading}
           showLoadingTimeWarning={showLoadingTimeWarning}
         />
         {
@@ -237,7 +263,7 @@ const PlanOverview = (props: DataDisplayProps) => {
             <Accordion.Panel>
               <List>
                 {
-                  growingTips && !fakeLoading
+                  growingTips
                   ? growingTips.map((advice, index) =>
                       <List.Item key={index}><b>{advice.name}:</b> {advice.content}</List.Item>)
                   : <>
@@ -257,7 +283,7 @@ const PlanOverview = (props: DataDisplayProps) => {
               <List>
                 <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
                 {
-                  companionPlantingAdvice && companionPlants && !fakeLoading
+                  companionPlantingAdvice && companionPlants
                     ? companionPlantingAdvice.map((advice, index) =>
                       <List.Item key={index}><b>{advice.split("***")[0]}</b> {replaceCompanionPlantsWithLinks(advice.split("***")[1], companionPlants)}</List.Item>)
                     : <>

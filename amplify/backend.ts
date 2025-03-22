@@ -15,6 +15,7 @@ import { getPlantingScheduleData } from './functions/getPlantingScheduleData/res
 import { createCheckoutSession } from './functions/createCheckoutSession/resource';
 import { handleStripePurchase } from './functions/handleStripePurchase/resource';
 import { sendContactEmail } from './functions/sendContactEmail/resource';
+import { sendPrivySignup } from './functions/sendPrivySignup/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -35,5 +36,6 @@ defineBackend({
   getPlantingScheduleData,
   createCheckoutSession,
   handleStripePurchase,
-  sendContactEmail
+  sendContactEmail,
+  sendPrivySignup
 });
