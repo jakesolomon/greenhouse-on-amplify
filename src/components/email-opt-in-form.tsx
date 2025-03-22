@@ -41,7 +41,7 @@ const EmailOptInForm = (props: EmailOptInFormProps) => {
 
 
   return (
-    <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+    <form id="email-opt-in" onSubmit={form.onSubmit((values) => handleSubmit(values))}>
       <TextInput
         disabled={sendingUserData}
         label="Name"

@@ -68,7 +68,7 @@ function Quiz(props: QuizProps) {
   return (
     <Container size="xl" pb="200" pt="xl" px="0" h="30vh">
       <Center>
-        <form onSubmit={form.onSubmit((values) => getAllCropData(values.crops, climateData!))}>
+        <form id="quiz" onSubmit={form.onSubmit((values) => getAllCropData(values.crops, climateData!))}>
           {
             (formPage === 1) &&
             <TextInput
