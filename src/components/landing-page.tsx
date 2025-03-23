@@ -263,9 +263,9 @@ const LandingPage = () => {
                   />
                 </AspectRatio>
               </Card.Section>
-              <Title order={4} mt="md">Tailored Garden Guide</Title>
+              <Title order={4} mt="md">Tailored Monthly Guide</Title>
               <Text mt="sm" c="dimmed">
-                Get a month-by-month planting schedule, made to order for your unique garden plan.
+                Get a month-by-month planting and maintainence guide, made to order for your unique garden plan.
               </Text>
             </Card>
           </Grid.Col>

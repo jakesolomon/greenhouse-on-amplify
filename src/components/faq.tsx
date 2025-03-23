@@ -19,7 +19,7 @@ const Faq = () => {
       value: "cost",
       question: "Is it free to generate a guide?",
       answer:
-        "You can generate a plan overview for free, where you'll find an planting schedule that optimizes the use of your gardening space, as well as growing tips, companion planting pairings, and more. Once you've generated a plan you're happy with, you can purchase a full plan and access detailed month-to-month guidance tailored uniquely to your plan."
+        "You can generate a plan overview for free, where you'll find an planting schedule that optimizes the use of your gardening space, as well as growing tips, companion planting pairings, and more. Once you've generated a plan you're happy with, you can purchase a Monthly Guide and access detailed month-to-month guidance tailored uniquely to your plan."
     },
     {
       value: "difference",

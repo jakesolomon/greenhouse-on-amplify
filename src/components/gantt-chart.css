@@ -2,6 +2,10 @@ g.calendar text {
   font-weight: bold;
 }
 
+g.today {
+  display: none;
+}
+
 /* For some reason these break the width on iphone*/
 @media (min-width: $mantine-breakpoint-md) {
   ._2B2zv {

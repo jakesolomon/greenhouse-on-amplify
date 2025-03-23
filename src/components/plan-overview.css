@@ -1,3 +1,7 @@
-.mantine-Alert-title {
+.alert-warning {
   color: var(--mantine-color-yellow-8)
+}
+
+.mantine-List-itemWrapper {
+  --li-align: "start" !important;
 }
