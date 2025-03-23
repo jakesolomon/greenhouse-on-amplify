@@ -31,6 +31,7 @@ import SuccessionPlantingBlog from "./components/blog-posts/succession-planting-
 import CompanionPlantingBlog from "./components/blog-posts/companion-planting-blog.tsx";
 import PrivacyPolicyPage from "./components/privacy-policy-page.tsx";
 import CookiesPage from "./components/cookies-page.tsx";
+import CropRotationBlog from "./components/blog-posts/crop-rotation-blog.tsx";
 
 function App() {
 
@@ -73,6 +74,7 @@ function App() {
                 <Route path="succesion-planting" element={<SuccessionPlantingBlog />} />
                 <Route path="/learn/succession-planting" element={<SuccessionPlantingBlog />} />
                 <Route path="/learn/companion-planting" element={<CompanionPlantingBlog />} />
+                <Route path="/learn/crop-rotation" element={<CropRotationBlog />} />
 
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/cookies" element={<CookiesPage />} />
