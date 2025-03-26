@@ -11,6 +11,17 @@ const CropList = (props: CropListProps) => {
 
   const theme = useMantineTheme();
 
+  const generateAffiliateLink = (storeHandle: string) => {
+    // example input: beet-detroit-dark-red-vegetable-seeds
+    // example output: https://www.pjtra.com/t/8-11415-363806-153185?url=https%3A%2F%2Ftrueleafmarket.com%2Fproducts%2Fbeet-detroit-dark-red-vegetable-seeds
+    // links to: https://trueleafmarket.com/products/beet-detroit-dark-red-vegetable-seeds
+
+    const productsUrl = "https://trueleafmarket.com/products/"
+    const baseAffiliateUrl = "https://www.pjtra.com/t/8-11415-363806-153185?url=";
+    const encodedUrl = encodeURIComponent(productsUrl + storeHandle);
+    return `${baseAffiliateUrl}${encodedUrl}`;
+  }
+
   return (
     <Grid>
       {(crops ? crops : Array(5).fill(null)).map((crop, index) => (
@@ -35,7 +46,7 @@ const CropList = (props: CropListProps) => {
                   </Text>
                   {
                     crop.storeHandle &&
-                    <Anchor href={"https://trueleafmarket.com/products/" + crop.storeHandle} target="_blank">
+                    <Anchor href={generateAffiliateLink(crop.storeHandle)} target="_blank">
                       <Button variant="light" color={theme.colors.green[7]} >
                         Buy Seeds
                       </Button>
