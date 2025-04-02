@@ -92,6 +92,7 @@ function Quiz(props: QuizProps) {
             {
               isFirstPage &&
               <Button
+                id="submit-zip-code-button"
                 onClick={proceedWithZipCode}
                 disabled={!enableProceedWithZipCode}
                 color={theme.colors.green[7]}
@@ -102,6 +103,7 @@ function Quiz(props: QuizProps) {
             {
               !isFirstPage &&
               <Button
+                id="submit-crops-button"
                 type="submit"
                 disabled={!enableContinue || !climateData}
                 loading={!climateData}
