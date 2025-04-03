@@ -1,7 +1,7 @@
 {
   "name": "greenhouse-on-amplify",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -34,6 +34,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.1",
     "react-toastify": "^11.0.2",
+    "string-pixel-width": "^1.11.0",
     "stripe": "^17.6.0",
     "zod": "^3.24.1"
   },
@@ -44,6 +45,7 @@
     "@types/pdfkit": "^0.13.9",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/string-pixel-width": "^1.10.3",
     "@vitejs/plugin-react": "^4.3.4",
     "constructs": "^10.4.2",
     "esbuild": "^0.24.0",

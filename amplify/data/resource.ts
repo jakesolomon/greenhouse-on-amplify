@@ -163,7 +163,13 @@ const schema = a.schema({
     .query()
     .arguments({
       sessionId: a.string().required(),
-      fileData: a.string().required()
+      introExtras: a.string().required(),
+      allTasks: a.string().required(),
+      summaries: a.string().required(),
+      scheduleSummary: a.string().required(),
+      crops: a.string().required(),
+      gantt: a.string().required()
+      // fileData: a.string().required()
     })
     .returns(a.string())
     .handler(a.handler.function(handleStripePurchase))

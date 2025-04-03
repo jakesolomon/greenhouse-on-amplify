@@ -114,6 +114,7 @@ const tasksSystemPrompt =
   "- Because the audience is a beginner gardener, feel free to use garden-specific terminology, but explain the meaning of terms that users may not be familiar with.\n" +
   "- The output parameter \"indoors\" is a boolean that represents whether or not that month's tasks take place before the crop has been transplanted outdoors. Mark as \"true\" if the tasks for that month pertain to growing seedlings indoors, mark as \"false\" in any other case.\n" +
   "- Append any tasks that take place before the crop has been transplanted outdoors with ***indoors*** at the beginning of the string to indicate that the plant is in seedling stage. For example: \"***indoors*** Start tomato seeds indoors approximately 6-8 weeks before the outdoor planting date ...\"\n" +
+  "- The month outputs represent months of the year 2025. So for overwintering plantings (i.e. harvestStartDate and/or harvestEndDate in 2026), do not include any tasks that would take place after December 2025. For example, if garlic is to be planted in September and harvested the following May, provide instructions through December 2025, and do not provide any tasks for January—May. If this means that you don't provide tasks that range from start to harvest, simply summarize the remainder of the tasks in your latest included month.\n" +
   "\n" +
   "***Example Output***\n" +
   "[\n" +

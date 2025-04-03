@@ -45,35 +45,45 @@ export const styles = StyleSheet.create({
     lineHeight: 1,
     fontFamily: 'Poppins',
     fontWeight: 700,
-    marginBottom: 88,
+    // marginBottom: 88,
+    marginBottom: 80 // had a one-line orphan in chapter 1
   },
   sectionHeader: {
-    fontSize: 14,
-    lineHeight: 2,
+    fontSize: 13,
+    // fontFamily: 'Merriweather-Bold',
     fontFamily: 'Poppins',
+    // marginBottom: 12,
+    padding: 0,
     fontWeight: 700,
+    textTransform: "uppercase"
   },
   subHeader: {
-    fontSize: 12,
+    fontSize: 11,
+    // fontFamily: 'Merriweather',
     fontFamily: 'Poppins',
+    // marginBottom: 12,
+    padding: 0,
     fontWeight: 700,
-    marginBottom: 12,
+    // marginTop: 6,
+    // marginBottom: 6,
   },
   body: {
-    color: '#333',
-    paddingTop: "1in",
-    paddingBottom: "1in",
-    paddingHorizontal: "1in",
-  },
-  page: {
-    flexDirection: 'row',
-    marginBottom: 20, // space between pages
-  },
-  text: {
-    marginBottom: 18,
-    fontSize: 12,
+    marginBottom: 12,
+    fontSize: 11,
     lineHeight: 1.5,
     fontFamily: 'Merriweather',
+  },
+
+  page: {
+    fontSize: 11,
+    color: '#333',
+    paddingTop: "0.5in",
+    // paddingBottom: "0.5in", // controlling this with column height. Don't set it here or we risk react-pdf auto page breaks or text overlay bug.
+    paddingHorizontal: "0.5in",
+    // flexDirection: 'row',
+  },
+  columnsContainer: {
+    flexDirection: 'row',
   },
   flexContainer: {
     flex: 1,
@@ -105,16 +115,25 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'grey',
   },
-  columnsContainer: {
-    flexDirection: 'row',
-    // Adjust the height as needed or let it be dynamic.
-  },
-  column1: {
+  // columnsContainer: {
+  //   flexDirection: 'row',
+  //   // Adjust the height as needed or let it be dynamic.
+  // },
+  // column1: {
+  //   flex: 1,
+  //   marginRight: 10
+  // },
+  // column2: {
+  //   flex: 1,
+  //   marginLeft: 10
+  // },
+
+  columnLeft: {
     flex: 1,
-    marginRight: 10
+    marginRight: "0.125in", // half of a 0.25-inch gap between columns
   },
-  column2: {
+  columnRight: {
     flex: 1,
-    marginLeft: 10
+    marginLeft: "0.125in", // half of a 0.25-inch gap between columns
   },
 });

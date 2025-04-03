@@ -6,14 +6,101 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Stripe from 'stripe';
 
 import {Schema} from "../../data/resource";
+import generateMonthlyPlan from "./monthly-plan";
 
 const logger = new Logger({ serviceName: "handleStripePurchase" });
 
+interface GrowingDateRange {
+  transplantingDate: Date
+  harvestStartDate: Date
+  harvestEndDate: Date
+}
+
+interface Crop {
+  name: string;
+  variety: string;
+  shortDescription: string;
+  storeHandle?: string;
+  imageUrl?: string;
+
+  optimalGrowingDateRanges: GrowingDateRange[]
+  frostHardy: boolean;
+  directSow: boolean;
+  guidance: string;
+
+  lowerTempBound: number;
+  upperTempBound: number;
+}
+
+interface IntroExtras {
+  pruning: string,
+  supportStructures: string
+}
+
+interface FullPlanSummaries {
+  January: string,
+  February: string,
+  March: string,
+  April: string,
+  May: string,
+  June: string,
+  July: string,
+  August: string,
+  September: string,
+  October: string,
+  November: string,
+  December: string,
+}
+
+interface FullPlanTasksPerCrop {
+  January: string[],
+  February: string[],
+  March: string[],
+  April: string[],
+  May: string[],
+  June: string[],
+  July: string[],
+  August: string[],
+  September: string[],
+  October: string[],
+  November: string[],
+  December: string[],
+}
+
+interface FullPlanTaskList {
+  plot: number,
+  crop: string,
+  tasks: FullPlanTasksPerCrop
+}
+
 export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async (event) => {
 
-  // const { sessionId, fileData, email } = event.arguments
-  const { sessionId, fileData } = event.arguments
-  const buffer = Buffer.from(fileData, 'base64');
+  const { sessionId, introExtras, allTasks, summaries, scheduleSummary, crops, gantt } = event.arguments
+
+  const introExtrasParsed: IntroExtras = JSON.parse(introExtras)
+  const allTasksParsed: FullPlanTaskList[] = JSON.parse(allTasks)
+  const summariesParsed: FullPlanSummaries = JSON.parse(summaries)
+  const cropsParsed: Crop[] = JSON.parse(crops)
+
+  // const blob = await generateMonthlyPlan()
+  //
+  // // Convert Blob to Base64
+  // const reader = new FileReader();
+  // // TODO !
+  // reader.readAsDataURL(blob!);
+  // reader.onloadend = async () => {
+  //   if (typeof reader.result === "string") {
+  //     const base64Pdf = reader.result.split(',')[1]; // Remove the "data:application/pdf;base64," prefix
+  //   }
+  // }
+  //
+  //
+  //
+  // const buffer = Buffer.from(base64Pdf, 'base64');
+
+  const buffer = await generateMonthlyPlan(
+    introExtrasParsed, allTasksParsed, summariesParsed, scheduleSummary, cropsParsed, gantt
+  )
 
   const stripe = new Stripe(env.STRIPE_API_KEY);
 
