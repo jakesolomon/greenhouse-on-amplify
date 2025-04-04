@@ -120,65 +120,15 @@ const Checkout = () => {
 
     const cropsStringified = JSON.stringify(crops)
 
-    // TODO no failsafe if full plan content API requests fail
-    const [fullPlanIntroExtras, fullPlanTasks] = await Promise.all([
-      amplifyClient.queries.getFullPlanIntroExtras({
-        crops: JSON.stringify(cropsEssential)
-      }),
-      amplifyClient.queries.getFullPlanTasks({
-        crops: JSON.stringify(cropsEssential),
-        plantingSchedule: plantingSchedule!,
-        climateData: climateData!
-      })
-    ]);
-
-    // const fullPlanIntroExtrasParsed = JSON.parse(fullPlanIntroExtras.data!);
-    // const fullPlanTasksParsed = JSON.parse(fullPlanTasks.data!);
-
-    const fullPlanSummaries = await amplifyClient.queries.getFullPlanSummaries({
-      tasks: fullPlanTasks.data!,
-      climateData: climateData!,
-      companionPlantingAdvice: companionPlantingAdvice!
-    })
-    // const fullPlanSummariesParsed = JSON.parse(fullPlanSummaries.data!)
-    //
-    // const blob = await pdf(
-    //   <FullPlan
-    //     introExtras={fullPlanIntroExtrasParsed}
-    //     allTasks={fullPlanTasksParsed}
-    //     summaries={fullPlanSummariesParsed}
-    //     scheduleSummary={scheduleSummary}
-    //     crops={crops}
-    //     gantt={gantt!}
-    //   />
-    // ).toBlob();
-    //
-    // // Convert Blob to Base64
-    // const reader = new FileReader();
-    // // TODO !
-    // reader.readAsDataURL(blob!);
-    // reader.onloadend = async () => {
-    //   if (typeof reader.result === "string") {
-    //     const base64Pdf = reader.result.split(',')[1]; // Remove the "data:application/pdf;base64," prefix
-    //
-    //     amplifyClient.queries.handleStripePurchase({sessionId: sessionIdRef.current!, fileData: base64Pdf})
-    //       .then((result) => JSON.parse(result.data!))
-    //       .then((data) => {
-    //         console.log(data)
-    //       })
-    //   } else {
-    //     console.error("Failed to read PDF as Base64");
-    //   }
-    // }
-
     amplifyClient.queries.handleStripePurchase({
       sessionId: sessionIdRef.current!,
-      introExtras: fullPlanIntroExtras.data!,
-      allTasks: fullPlanTasks.data!,
-      summaries: fullPlanSummaries.data!,
       scheduleSummary: scheduleSummary,
       crops: cropsStringified,
-      gantt: gantt!
+      gantt: gantt!,
+
+      plantingSchedule: plantingSchedule!,
+      climateData: climateData!,
+      companionPlantingAdvice: companionPlantingAdvice!
     })
 
     setIsGeneratingPlan(false);

@@ -12,6 +12,13 @@ import {
   gardenLayoutP1, gardenLayoutP2,
   gardenLayoutExampleP1, gardenLayoutExampleP2,
 } from "./monthly-plan-content";
+import {
+  Crop,
+  IntroExtras,
+  FullPlanSummaries,
+  FullPlanTaskList,
+  TwoColumnTasksByMonth
+} from "./types"
 
 if (!React.useId) {
   let idCounter = 0;
@@ -19,84 +26,6 @@ if (!React.useId) {
     idCounter += 1;
     return `useId-${idCounter}`;
   };
-}
-
-interface GrowingDateRange {
-  transplantingDate: Date
-  harvestStartDate: Date
-  harvestEndDate: Date
-}
-
-interface Crop {
-  name: string;
-  variety: string;
-  shortDescription: string;
-  storeHandle?: string;
-  imageUrl?: string;
-
-  optimalGrowingDateRanges: GrowingDateRange[]
-  frostHardy: boolean;
-  directSow: boolean;
-  guidance: string;
-
-  lowerTempBound: number;
-  upperTempBound: number;
-}
-
-interface IntroExtras {
-  pruning: string,
-  supportStructures: string
-}
-
-interface FullPlanSummaries {
-  January: string,
-  February: string,
-  March: string,
-  April: string,
-  May: string,
-  June: string,
-  July: string,
-  August: string,
-  September: string,
-  October: string,
-  November: string,
-  December: string,
-}
-
-interface FullPlanTasksPerCrop {
-  January: string[],
-  February: string[],
-  March: string[],
-  April: string[],
-  May: string[],
-  June: string[],
-  July: string[],
-  August: string[],
-  September: string[],
-  October: string[],
-  November: string[],
-  December: string[],
-}
-
-interface FullPlanTaskList {
-  plot: number,
-  crop: string,
-  tasks: FullPlanTasksPerCrop
-}
-
-interface TwoColumnTasksByMonth {
-  "January": React.ReactElement[] | null,
-  "February": React.ReactElement[] | null,
-  "March": React.ReactElement[] | null,
-  "April": React.ReactElement[] | null,
-  "May": React.ReactElement[] | null,
-  "June": React.ReactElement[] | null,
-  "July": React.ReactElement[] | null,
-  "August": React.ReactElement[] | null,
-  "September": React.ReactElement[] | null,
-  "October": React.ReactElement[] | null,
-  "November": React.ReactElement[] | null,
-  "December": React.ReactElement[] | null,
 }
 
 function estimateTextHeight(text: string, fontSize: number, lineHeight: number, columnWidth: number): number {

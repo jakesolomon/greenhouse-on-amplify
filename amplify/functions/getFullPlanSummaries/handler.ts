@@ -5,6 +5,8 @@ import { env } from '$amplify/env/getFullPlanContent';
 import { Logger } from "@aws-lambda-powertools/logger";
 import { Schema } from "../../data/resource";
 
+// THIS ENDPOINT IS DEPRECATED. handleStripePurchase now includes all LLM calls for Monthly Plan content.
+
 // These types adhere to the response format in /src/types.ts
 
 interface AnnotatedTaskList {

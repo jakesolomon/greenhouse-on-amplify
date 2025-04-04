@@ -13,6 +13,7 @@ import BookletMockupRight from "../assets/booklet-mockup-right-extended.png";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 import {useEffect} from "react";
 import Footer from "./footer.tsx";
+import {Link} from "react-router-dom";
 
 const SalesPage = () => {
 
@@ -57,8 +58,8 @@ const SalesPage = () => {
           <ListItem>Instantly emailed as a PDF</ListItem>
           <ListItem>Print at home or use digitally</ListItem>
         </List>
-        {/*<Button component={Link} to="/checkout" color={theme.colors.green[7]}>Buy Now</Button>*/}
-        <Button disabled>Coming soon</Button>
+        <Button component={Link} to="/checkout" color={theme.colors.green[7]}>Buy Now</Button>
+        {/*<Button disabled>Coming soon</Button>*/}
       </Card>
     </>
   )

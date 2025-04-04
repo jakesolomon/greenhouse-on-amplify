@@ -163,16 +163,17 @@ const schema = a.schema({
     .query()
     .arguments({
       sessionId: a.string().required(),
-      introExtras: a.string().required(),
-      allTasks: a.string().required(),
-      summaries: a.string().required(),
+      // introExtras: a.string().required(),
+      // allTasks: a.string().required(),
+      // summaries: a.string().required(),
       scheduleSummary: a.string().required(),
       crops: a.string().required(),
-      gantt: a.string().required()
-      // fileData: a.string().required()
+      gantt: a.string().required(),
+      plantingSchedule: a.string().required(),
+      climateData: a.string().required(),
+      companionPlantingAdvice: a.string().required(),
     })
-    .returns(a.string())
-    .handler(a.handler.function(handleStripePurchase))
+    .handler(a.handler.function(handleStripePurchase).async())
     .authorization(allow => [
       allow.publicApiKey(),
     ]),
