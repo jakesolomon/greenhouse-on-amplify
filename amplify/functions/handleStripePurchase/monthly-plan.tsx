@@ -309,7 +309,8 @@ const generateMonthlyPlan = async (
 
   const generateTwoColumnPages = async (
     contentItems: { type: string; text: string; style: Style }[],
-    chapterHeader?: string
+    chapterHeader?: string,
+    notes?: boolean,
   ): Promise<React.ReactElement[]> => {
     const pages: React.ReactElement[] = [];
     let currentPageHeight = chapterHeader ? firstPageContentHeight : subsequentPageContentHeight;
@@ -452,6 +453,72 @@ const generateMonthlyPlan = async (
       }
     }
 
+    if (notes) {
+      // if this section gets notes
+      const notesHeader = { type: "subHeader", text: `${chapterHeader} Notes`, style: styles.subHeader }
+      const notesHeaderHeight = await measureElement(notesHeader.text, columnWidth, styles.subHeader)
+      const notesLine = { type: "body", text: "___________________________", style: styles.notes }
+      const notesLineHeight = await measureElement(notesLine.text, columnWidth, styles.notes);
+      if (rightHeight === 0) {
+        // and we're on the left side
+        const remainingSpace = currentPageHeight - leftHeight;
+        const availableNotesLines = Math.floor((remainingSpace - notesHeaderHeight) / notesLineHeight);
+        if (availableNotesLines > 4) {
+          // and we have space for at least 4 lines
+          currentPage.left.push(<PDFText style={notesHeader.style}>{notesHeader.text}</PDFText>)
+          leftHeight += notesHeaderHeight;
+          for (let i = 0; i < 4; i++) {
+            // add four lines
+            currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
+            leftHeight += notesLineHeight;
+          }
+          for (let i = 0; i < 4; i++) {
+            // plus up to four more lines, if there's room
+            if (rightHeight + notesLineHeight <= currentPageHeight) {
+              currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
+              leftHeight += notesLineHeight
+            }
+          }
+        } else {
+          // but we don't have room on the left side, add notes section to the right
+          currentPage.right.push(<PDFText style={notesHeader.style}>{notesHeader.text}</PDFText>)
+          for (let i = 0; i < 8; i++) {
+            // add eight lines
+            currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
+          }
+        }
+      } else {
+        // and we're on the right side
+        const remainingSpace = currentPageHeight - rightHeight;
+        const availableNotesLines = Math.floor((remainingSpace - notesHeaderHeight) / notesLineHeight);
+        if (availableNotesLines > 4) {
+          // and we have space for at least 4 lines
+          currentPage.right.push(<PDFText style={notesHeader.style}>{notesHeader.text}</PDFText>)
+          rightHeight += notesHeaderHeight;
+          for (let i = 0; i < 4; i++) {
+            // add four lines
+            currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
+            rightHeight += notesLineHeight;
+          }
+          for (let i = 0; i < 4; i++) {
+            // plus up to four more lines, if there's room
+            if (rightHeight + notesLineHeight <= currentPageHeight) {
+              currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
+              rightHeight += notesLineHeight
+            }
+          }
+        } else {
+          // but we don't have room on the right side, flush page and put notes room on left
+          flushPage()
+          currentPage.left.push(<PDFText style={notesHeader.style}>{notesHeader.text}</PDFText>)
+          for (let i = 0; i < 8; i++) {
+            // add eight lines
+            currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
+          }
+        }
+      }
+    }
+
     // Add the remaining page
     if (currentPage.left.length > 0 || currentPage.right.length > 0) {
       flushPage();
@@ -465,18 +532,18 @@ const generateMonthlyPlan = async (
     // bruh
     return(
       {
-        "January": monthItem("January") ? await generateTwoColumnPages([{type: "body", text: summaries["January"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("January")!) + 1, monthItem("February") ? items.indexOf(monthItem("February")!) : items.length)], "January") : null,
-        "February": monthItem("February") ? await generateTwoColumnPages([{type: "body", text: summaries["February"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("February")!) + 1, monthItem("March") ? items.indexOf(monthItem("March")!) : items.length)], "February") : null,
-        "March": monthItem("March") ? await generateTwoColumnPages([{type: "body", text: summaries["March"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("March")!) + 1, monthItem("April") ? items.indexOf(monthItem("April")!) : items.length)], "March") : null,
-        "April": monthItem("April") ? await generateTwoColumnPages([{type: "body", text: summaries["April"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("April")!) + 1, monthItem("May") ? items.indexOf(monthItem("May")!) : items.length)], "April") : null,
-        "May": monthItem("May") ? await generateTwoColumnPages([{type: "body", text: summaries["May"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("May")!) + 1, monthItem("June") ? items.indexOf(monthItem("June")!) : items.length)], "May") : null,
-        "June": monthItem("June") ? await generateTwoColumnPages([{type: "body", text: summaries["June"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("June")!) + 1, monthItem("July") ? items.indexOf(monthItem("July")!) : items.length)], "June") : null,
-        "July": monthItem("July") ? await generateTwoColumnPages([{type: "body", text: summaries["July"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("July")!) + 1, monthItem("August") ? items.indexOf(monthItem("August")!) : items.length)], "July") : null,
-        "August": monthItem("August") ? await generateTwoColumnPages([{type: "body", text: summaries["August"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("August")!) + 1, monthItem("September") ? items.indexOf(monthItem("September")!) : items.length)], "August") : null,
-        "September": monthItem("September") ? await generateTwoColumnPages([{type: "body", text: summaries["September"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("September")!) + 1, monthItem("October") ? items.indexOf(monthItem("October")!) : items.length)], "September") : null,
-        "October": monthItem("October") ? await generateTwoColumnPages([{type: "body", text: summaries["October"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("October")!) + 1, monthItem("November") ? items.indexOf(monthItem("November")!) : items.length)], "October") : null,
-        "November": monthItem("November") ? await generateTwoColumnPages([{type: "body", text: summaries["November"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("November")!) + 1, monthItem("December") ? items.indexOf(monthItem("December")!) : items.length)], "November") : null,
-        "December": monthItem("December") ? await generateTwoColumnPages([{type: "body", text: summaries["December"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("December")!) + 1)], "December") : null
+        "January": monthItem("January") ? await generateTwoColumnPages([{type: "body", text: summaries["January"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("January")!) + 1, monthItem("February") ? items.indexOf(monthItem("February")!) : items.length)], "January", true) : null,
+        "February": monthItem("February") ? await generateTwoColumnPages([{type: "body", text: summaries["February"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("February")!) + 1, monthItem("March") ? items.indexOf(monthItem("March")!) : items.length)], "February", true) : null,
+        "March": monthItem("March") ? await generateTwoColumnPages([{type: "body", text: summaries["March"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("March")!) + 1, monthItem("April") ? items.indexOf(monthItem("April")!) : items.length)], "March", true) : null,
+        "April": monthItem("April") ? await generateTwoColumnPages([{type: "body", text: summaries["April"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("April")!) + 1, monthItem("May") ? items.indexOf(monthItem("May")!) : items.length)], "April", true) : null,
+        "May": monthItem("May") ? await generateTwoColumnPages([{type: "body", text: summaries["May"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("May")!) + 1, monthItem("June") ? items.indexOf(monthItem("June")!) : items.length)], "May", true) : null,
+        "June": monthItem("June") ? await generateTwoColumnPages([{type: "body", text: summaries["June"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("June")!) + 1, monthItem("July") ? items.indexOf(monthItem("July")!) : items.length)], "June", true) : null,
+        "July": monthItem("July") ? await generateTwoColumnPages([{type: "body", text: summaries["July"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("July")!) + 1, monthItem("August") ? items.indexOf(monthItem("August")!) : items.length)], "July", true) : null,
+        "August": monthItem("August") ? await generateTwoColumnPages([{type: "body", text: summaries["August"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("August")!) + 1, monthItem("September") ? items.indexOf(monthItem("September")!) : items.length)], "August", true) : null,
+        "September": monthItem("September") ? await generateTwoColumnPages([{type: "body", text: summaries["September"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("September")!) + 1, monthItem("October") ? items.indexOf(monthItem("October")!) : items.length)], "September", true) : null,
+        "October": monthItem("October") ? await generateTwoColumnPages([{type: "body", text: summaries["October"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("October")!) + 1, monthItem("November") ? items.indexOf(monthItem("November")!) : items.length)], "October", true) : null,
+        "November": monthItem("November") ? await generateTwoColumnPages([{type: "body", text: summaries["November"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("November")!) + 1, monthItem("December") ? items.indexOf(monthItem("December")!) : items.length)], "November", true) : null,
+        "December": monthItem("December") ? await generateTwoColumnPages([{type: "body", text: summaries["December"] || "", style: styles.body}, ...items.slice(items.indexOf(monthItem("December")!) + 1)], "December", true) : null
       }
     )
   }

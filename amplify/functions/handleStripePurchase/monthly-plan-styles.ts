@@ -73,7 +73,12 @@ export const styles = StyleSheet.create({
     lineHeight: 1.5,
     fontFamily: 'Merriweather',
   },
-
+  notes: {
+    marginBottom: 12,
+    fontSize: 11,
+    lineHeight: 1,
+    fontFamily: 'Merriweather',
+  },
   page: {
     fontSize: 11,
     color: '#333',
