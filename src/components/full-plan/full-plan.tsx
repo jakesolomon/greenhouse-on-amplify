@@ -9,6 +9,7 @@ import {
   gettingStartedP2,
   gettingStartedP3,
   gettingStartedP4,
+  gettingStartedP5,
   gardenLayoutP1,
   gardenLayoutP2,
   gardenLayoutExampleP1,
@@ -399,8 +400,8 @@ const FullPlan = () => {
             currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
             leftHeight += notesLineHeight;
           }
-          for (let i = 0; i < 4; i++) {
-            // plus up to four more lines, if there's room
+          for (let i = 0; i < 8; i++) {
+            // plus up to eight more lines, if there's room
             if (rightHeight + notesLineHeight <= currentPageHeight) {
               currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
               leftHeight += notesLineHeight
@@ -409,8 +410,8 @@ const FullPlan = () => {
         } else {
           // but we don't have room on the left side, add notes section to the right
           currentPage.right.push(<PDFText style={notesHeader.style}>{notesHeader.text}</PDFText>)
-          for (let i = 0; i < 8; i++) {
-            // add eight lines
+          for (let i = 0; i < 12; i++) {
+            // add twelve lines
             currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
           }
         }
@@ -427,8 +428,8 @@ const FullPlan = () => {
             currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
             rightHeight += notesLineHeight;
           }
-          for (let i = 0; i < 4; i++) {
-            // plus up to four more lines, if there's room
+          for (let i = 0; i < 8; i++) {
+            // plus up to eight more lines, if there's room
             if (rightHeight + notesLineHeight <= currentPageHeight) {
               currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
               rightHeight += notesLineHeight
@@ -438,8 +439,8 @@ const FullPlan = () => {
           // but we don't have room on the right side, flush page and put notes room on left
           flushPage()
           currentPage.left.push(<PDFText style={notesHeader.style}>{notesHeader.text}</PDFText>)
-          for (let i = 0; i < 8; i++) {
-            // add eight lines
+          for (let i = 0; i < 12; i++) {
+            // add twelve lines
             currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
           }
         }
@@ -498,6 +499,7 @@ const FullPlan = () => {
       { type: "body", text: gettingStartedP2, style: styles.body},
       { type: "body", text: gettingStartedP3, style: styles.body},
       { type: "body", text: gettingStartedP4, style: styles.body},
+      { type: "body", text: gettingStartedP5, style: styles.body},
       { type: "sectionHeader", text: "Plan Overview", style: styles.sectionHeader },
       { type: "body", text: scheduleSummary, style: styles.body}
     ], "Getting Started")

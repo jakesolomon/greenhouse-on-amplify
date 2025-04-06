@@ -11,7 +11,6 @@ import {
   Button,
   Center,
   Container,
-  Image,
   Loader,
   Modal,
   Notification,
@@ -21,10 +20,9 @@ import {
 } from "@mantine/core";
 
 import { Schema } from "../../amplify/data/resource.ts";
-import { useViewportSize } from "@mantine/hooks";
-import Logo from "../assets/logo-no-text.svg";
 import PurchasePage from "./purchase-page.tsx";
 import { Crop, CropDataForFullPlanRequests} from "../types.ts";
+import Footer from "./footer.tsx";
 
 const stripePromise = loadStripe('pk_live_51QqzXAKXcuXgnQQoI7W92SOXf33wFGGvQOBQCsBGo2msG1XlYg7VFI8DVHfjvYYXkJhZnPncxtUnlsYeVcETeq3V00pW4AVNnV');
 
@@ -41,9 +39,6 @@ const Checkout = () => {
   const [ fatalError, setFatalError ] = useState<string>();
 
   const navigate = useNavigate(); // React Router navigation
-
-  const { width } = useViewportSize();
-  const embeddedCheckoutIsVertical = width < 1088
 
   // For data we want to parse, we have to check the "undefined" case
   const cropData = localStorage.getItem("cropData");
@@ -131,6 +126,8 @@ const Checkout = () => {
       companionPlantingAdvice: companionPlantingAdvice!
     })
 
+    localStorage.setItem("purchaseMade", "true")
+
     setIsGeneratingPlan(false);
   }
 
@@ -187,10 +184,8 @@ const Checkout = () => {
     return (
       <>
         <PurchasePage />
-        <AppShell.Footer h={125}>
-          <Center>
-            <Image src={Logo} style={{maxHeight: "125px"}} alt="logo" />
-          </Center>
+        <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+          <Footer />
         </AppShell.Footer>
       </>
     )
@@ -198,7 +193,7 @@ const Checkout = () => {
 
   return (
     <>
-      <Container size="xl" mb={embeddedCheckoutIsVertical ? 60 : undefined}>
+      <Container size="xl" mb='xl' >
         <EmbeddedCheckoutProvider
           stripe={stripePromise}
           options={{
@@ -209,10 +204,8 @@ const Checkout = () => {
           <EmbeddedCheckout />
         </EmbeddedCheckoutProvider>
       </Container>
-      <AppShell.Footer h={125} >
-        <Center>
-          <Image src={Logo} style={{maxHeight: "125px"}} alt="logo" />
-        </Center>
+      <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
+        <Footer />
       </AppShell.Footer>
     </>
   )

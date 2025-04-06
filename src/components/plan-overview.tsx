@@ -102,6 +102,8 @@ const PlanOverview = (props: DataDisplayProps) => {
     window.scrollTo(0, 0);
   }, []);
 
+  const paywallInfo = !localStorage.getItem("purchaseMade");
+
   const plantingScheduleLoading = plantingSchedule.length === 0;
   const noSuccessionPlanting =
     !plantingScheduleLoading && plantingSchedule?.every((p) => p.length === 1);
@@ -375,16 +377,18 @@ const PlanOverview = (props: DataDisplayProps) => {
           </Accordion.Item>
           <Accordion.Item value="additionalAdvice">
             <Accordion.Control icon="📝">Growing Tips</Accordion.Control>
-            <Accordion.Panel style={{position: "relative", overflow: "hidden"}} mah={isSmallScreen ? 550 : 350}>
+            <Accordion.Panel style={{position: "relative", overflow: "hidden"}} mah={paywallInfo ? isSmallScreen ? 550 : 350 : undefined}>
 
               {/*Limit view for non-paying users*/}
-              <Box
-                style={{
-                  position: 'absolute',
-                  inset: "60% 0 0 0",
-                  zIndex: 1,
-                  background:
-                    `linear-gradient(
+              {
+                paywallInfo &&
+                <Box
+                  style={{
+                    position: 'absolute',
+                    inset: "60% 0 0 0",
+                    zIndex: 1,
+                    background:
+                      `linear-gradient(
                       to top, 
                       #FFF 0%,
                       rgba(255, 255, 255, 1) 40%, 
@@ -393,10 +397,11 @@ const PlanOverview = (props: DataDisplayProps) => {
                       rgba(255, 255, 255, 0.15) 85%, 
                       transparent 100%
                     )`
-                }}
-              >
-                <Box style={{position: "absolute", bottom: 0}} w="100%"><Alert variant="light" color="green" icon={isSmallScreen ? undefined : infoIcon} title={<>Get all this and more in the <Anchor onClick={() => scrollIntoView({ alignment: 'center', }) }>Monthly Guide.</Anchor></>}></Alert></Box>
-              </Box>
+                  }}
+                >
+                  <Box style={{position: "absolute", bottom: 0}} w="100%"><Alert variant="light" color="green" icon={isSmallScreen ? undefined : infoIcon} title={<>Get all this and more in the <Anchor onClick={() => scrollIntoView({ alignment: 'center', }) }>Monthly Guide.</Anchor></>}></Alert></Box>
+                </Box>
+              }
 
               {
                 growingTips
@@ -414,16 +419,18 @@ const PlanOverview = (props: DataDisplayProps) => {
           </Accordion.Item>
           <Accordion.Item value="companionPlants">
             <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
-            <Accordion.Panel style={{position: "relative", overflow: "hidden"}} mah={isSmallScreen ? 550 : 350}>
+            <Accordion.Panel style={{position: "relative", overflow: "hidden"}} mah={paywallInfo ? isSmallScreen ? 550 : 350 : undefined}>
 
               {/*Limit view for non-paying users*/}
-              <Box
-                style={{
-                  position: 'absolute',
-                  inset: "60% 0 0 0",
-                  zIndex: 1,
-                  background:
-                    `linear-gradient(
+              {
+                paywallInfo &&
+                <Box
+                  style={{
+                    position: 'absolute',
+                    inset: "60% 0 0 0",
+                    zIndex: 1,
+                    background:
+                      `linear-gradient(
                       to top, 
                       #FFF 0%,
                       rgba(255, 255, 255, 1) 40%, 
@@ -432,10 +439,11 @@ const PlanOverview = (props: DataDisplayProps) => {
                       rgba(255, 255, 255, 0.15) 85%, 
                       transparent 100%
                     )`
-                }}
-              >
-                <Box style={{position: "absolute", bottom: 0}} w="100%"><Alert variant="light" color="green" icon={isSmallScreen ? undefined : infoIcon} title={<>Get all this and more in the <Anchor onClick={() => scrollIntoView({ alignment: 'center', }) }>Monthly Guide.</Anchor></>}></Alert></Box>
-              </Box>
+                  }}
+                >
+                  <Box style={{position: "absolute", bottom: 0}} w="100%"><Alert variant="light" color="green" icon={isSmallScreen ? undefined : infoIcon} title={<>Get all this and more in the <Anchor onClick={() => scrollIntoView({ alignment: 'center', }) }>Monthly Guide.</Anchor></>}></Alert></Box>
+                </Box>
+              }
 
               <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
               {
