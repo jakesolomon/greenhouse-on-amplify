@@ -459,6 +459,8 @@ const generateMonthlyPlan = async (
       const notesHeaderHeight = await measureElement(notesHeader.text, columnWidth, styles.subHeader)
       const notesLine = { type: "body", text: "___________________________", style: styles.notes }
       const notesLineHeight = await measureElement(notesLine.text, columnWidth, styles.notes);
+      const notesBuffer = 20
+
       if (rightHeight === 0) {
         // and we're on the left side
         const remainingSpace = currentPageHeight - leftHeight;
@@ -473,8 +475,8 @@ const generateMonthlyPlan = async (
             leftHeight += notesLineHeight;
           }
           for (let i = 0; i < 8; i++) {
-            // plus up to eight more lines, if there's room
-            if (rightHeight + notesLineHeight <= currentPageHeight) {
+            // plus up to eight more lines, if there's room (with buffer, since this underestimates line height for some reason)
+            if (rightHeight + notesLineHeight + notesBuffer <= currentPageHeight) {
               currentPage.left.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
               leftHeight += notesLineHeight
             }
@@ -500,9 +502,9 @@ const generateMonthlyPlan = async (
             currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
             rightHeight += notesLineHeight;
           }
-          for (let i = 0; i < 4; i++) {
-            // plus up to four more lines, if there's room
-            if (rightHeight + notesLineHeight <= currentPageHeight) {
+          for (let i = 0; i < 8; i++) {
+            // plus up to eight more lines, if there's room (with buffer, since this underestimates line height for some reason)
+            if (rightHeight + notesLineHeight + notesBuffer <= currentPageHeight) {
               currentPage.right.push(<PDFText style={notesLine.style} key={`${i}-notes-line`}>{notesLine.text}</PDFText>)
               rightHeight += notesLineHeight
             }
