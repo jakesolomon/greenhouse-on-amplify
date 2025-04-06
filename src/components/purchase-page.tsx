@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 const Purchase = () => {
 
   return (
-    <Container size="md" mt="xl">
+    <Container size="md" mt="xl" id="purchase-page">
       <Title>Thank You for Your Purchase!</Title>
       <Text>Check your email for a download link in a few moments. (If you don't see it within a few minutes, check your spam folder!)</Text>
       <Title order={4} mt="md">Ordered a printed copy?</Title>
