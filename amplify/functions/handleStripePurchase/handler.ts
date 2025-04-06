@@ -160,6 +160,115 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
 
   const customerIdentifier = customerEmail.split(".")[0];
   const fileName = `GrowingGuidePlan-${customerIdentifier}-${sessionId}.pdf`
+  const productImage = 'https://aws-growing-guide-email-assets.s3.us-east-1.amazonaws.com/booklet-mockup-left.png'
+  const logoTextOnly = 'https://aws-growing-guide-email-assets.s3.us-east-1.amazonaws.com/logo-text-only.png'
+  const clientUrl =
+    `https://aws-growing-guide-plan-v1.s3.us-east-1.amazonaws.com/${fileName}`
+
+  const htmlBody = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <title>Your Growing Guide Planner is Ready!</title>
+      <style type="text/css">
+        /* Import Poppins and Merriweather Sans from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Merriweather+Sans:wght@400;700&display=swap');
+  
+        body {
+          margin: 0;
+          padding: 0;
+          background-color: #f6f6f6;
+          font-family: 'Merriweather Sans', Arial, sans-serif;
+          color: #333;
+        }
+        .container {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+        }
+        .header {
+          background-color: #4caf50;
+          padding: 20px;
+          text-align: center;
+        }
+        .header img {
+          max-width: 150px;
+        }
+        h1, h2, h3 {
+          font-family: 'Poppins', Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+        .content {
+          padding: 20px;
+          line-height: 1.5;
+        }
+        .cta-button {
+          display: inline-block;
+          background-color: #4caf50;
+          color: #ffffff;
+          padding: 15px 25px;
+          text-decoration: none;
+          border-radius: 4px;
+        }
+        .footer {
+          background-color: #f0f0f0;
+          text-align: center;
+          font-size: 12px;
+          padding: 15px;
+          color: #777777;
+        }
+        .image {
+          width: 100%;
+          max-width: 600px;
+          display: block;
+          margin: 0 auto;
+          pointer-events: none;
+          user-select: none; 
+        }
+      </style>
+    </head>
+    <body>
+      <table class="container" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="header">
+            <!-- Replace with your logo URL -->
+            <img aria-hidden="true" src=${logoTextOnly} alt="The Growing Guide" />
+          </td>
+        </tr>
+        <tr>
+          <td class="content">
+            <h1>Your Monthly Guide is Ready!</h1>
+            <p>Hello,</p>
+            <p>
+              Thank you for your purchase! We’re excited to help you transform your garden planning experience. Your personalized Monthly Guide is now available for download.
+            </p>
+            <!-- Featured image placeholder (optional) -->
+            <img class="image" aria-hidden="true" src=${productImage} alt="Monthly Guide Preview" />
+            <p>
+              To download your guide, simply click the button below:
+            </p>
+            <p>
+              <a class="cta-button" href=${clientUrl} target="_blank">Download Your Guide</a>
+            </p>
+            <p>
+              If you have any questions, feel free to reply to this email.
+            </p>
+            <p>Jake from The Growing Guide</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="footer">
+            &copy; 2025 The Growing Guide. All rights reserved. &nbsp;|&nbsp;
+            <a href="https://thegrowingguide.com" style="color: #777777; text-decoration: none;">Visit our website</a>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+  `
 
   try {
     const putObjectInput: PutObjectCommandInput = {
@@ -185,8 +294,6 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
     // }
     // const getObjectCommand = new GetObjectCommand(geObjectInput);
     // const clientUrl = await getSignedUrl(s3Client, getObjectCommand, {expiresIn: 3600});
-    const clientUrl =
-      `https://aws-growing-guide-plan-v1.s3.us-east-1.amazonaws.com/${fileName}`
 
     const sesInput = {
       "Destination": {
@@ -202,16 +309,16 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
         "Body": {
           "Html": {
             "Charset": "UTF-8",
-            "Data": `Here's the link to your plan: <a class="ulink" href=${clientUrl} target="_blank">Growing Guide Plan</a>.`
+            "Data": htmlBody
           },
           "Text": {
             "Charset": "UTF-8",
-            "Data": `Here's the link to your plan: ${clientUrl}`
+            "Data": `Thank you for your purchase! We’re excited to help you transform your garden planning experience. Your personalized <a class="ulink" href=${clientUrl} target="_blank">Monthly Guide</a> is now available for download.`
           }
         },
         "Subject": {
           "Charset": "UTF-8",
-          "Data": "Your Garden Plan"
+          "Data": "Your Garden Guide"
         }
       },
       "Source": "jake@thegrowingguide.com",
