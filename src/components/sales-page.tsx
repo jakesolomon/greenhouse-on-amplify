@@ -39,7 +39,7 @@ const SalesPage = () => {
             />
           </AspectRatio>
         </Card.Section>
-        <Title order={4} mb="sm">Printed Plan ($24.99)</Title>
+        <Title order={4} mb="sm">Printed Plan ($39.99)</Title>
         <List mb="sm">
           <ListItem>Custom printed and shipped</ListItem>
           <ListItem>Perfect for hands-on reference</ListItem>
@@ -53,7 +53,7 @@ const SalesPage = () => {
   const digitalPlanCard = (
     <>
       <Card shadow="md" padding="lg" radius="md" withBorder>
-        <Title order={4} mb="sm">Digital Plan ($14.99)</Title>
+        <Title order={4} mb="sm">Digital Plan ($24.99)</Title>
         <List mb="sm">
           <ListItem>Instantly emailed as a PDF</ListItem>
           <ListItem>Print at home or use digitally</ListItem>
