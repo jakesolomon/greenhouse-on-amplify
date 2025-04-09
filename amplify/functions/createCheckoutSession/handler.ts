@@ -12,7 +12,7 @@ export const handler: Schema["createCheckoutSession"]["functionHandler"]  = asyn
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: 'price_1Qr0CvKXcuXgnQQoiJbMMb7V',
+        price: 'price_1RBnjYKXcuXgnQQoa2eimOk7',
         quantity: 1,
       },
     ],
