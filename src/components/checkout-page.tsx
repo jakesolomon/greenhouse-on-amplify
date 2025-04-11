@@ -1,5 +1,5 @@
 import {useCallback, useState, useRef, useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { loadStripe } from '@stripe/stripe-js';
 import {
   EmbeddedCheckoutProvider,
@@ -26,7 +26,19 @@ import Footer from "./footer.tsx";
 
 const stripePromise = loadStripe('pk_live_51QqzXAKXcuXgnQQoI7W92SOXf33wFGGvQOBQCsBGo2msG1XlYg7VFI8DVHfjvYYXkJhZnPncxtUnlsYeVcETeq3V00pW4AVNnV');
 
+declare global {
+  interface Window {
+    dataLayer: Record<string, string>[];
+  }
+}
+
 const Checkout = () => {
+
+  const [searchParams] = useSearchParams();
+  const product =
+    searchParams.get("product") === "print"
+      ? "print"
+      : "digital"
 
   const amplifyClient = generateClient<Schema>()
 
@@ -115,8 +127,15 @@ const Checkout = () => {
 
     const cropsStringified = JSON.stringify(crops)
 
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: product === 'digital' ? 'digitalPurchaseCompleted' : 'printPurchaseCompleted'
+    });
+
     amplifyClient.queries.handleStripePurchase({
       sessionId: sessionIdRef.current!,
+      product: product,
+
       scheduleSummary: scheduleSummary,
       crops: cropsStringified,
       gantt: gantt!,
@@ -133,7 +152,8 @@ const Checkout = () => {
 
   const fetchClientSecret = useCallback(() => {
     const origin = window.location.origin
-    return amplifyClient.queries.createCheckoutSession({origin: origin})
+
+    return amplifyClient.queries.createCheckoutSession({origin: origin, product: product})
       .then((result) => JSON.parse(result.data!))
       .then((data) => {
         if (!data.sessionId) setFatalError("Could not initialize checkout.")

@@ -152,7 +152,8 @@ const schema = a.schema({
     .query()
     .returns(a.string())
     .arguments({
-      origin: a.string()
+      origin: a.string(),
+      product: a.string()
     })
     .handler(a.handler.function(createCheckoutSession))
     .authorization(allow => [
@@ -163,6 +164,7 @@ const schema = a.schema({
     .query()
     .arguments({
       sessionId: a.string().required(),
+      product: a.string().required(),
       // introExtras: a.string().required(),
       // allTasks: a.string().required(),
       // summaries: a.string().required(),

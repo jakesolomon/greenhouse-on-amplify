@@ -11,6 +11,7 @@ import {
 import useWindowSize from "../helpers/useWindowSize.ts";
 import BookletMockupRight from "../assets/booklet-mockup-right-extended.png";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
+import DigitalMockup from "../assets/digital-plan-mockup.png"
 import {useEffect} from "react";
 import Footer from "./footer.tsx";
 import {Link} from "react-router-dom";
@@ -45,7 +46,8 @@ const SalesPage = () => {
           <ListItem>Perfect for hands-on reference</ListItem>
           <ListItem>Free digital copy</ListItem>
         </List>
-        <Button disabled>Coming soon</Button>
+        <Button component={Link} to="/checkout?product=print" color={theme.colors.green[7]}>Buy Now</Button>
+        {/*<Button disabled>Coming soon</Button>*/}
       </Card>
     </>
   )
@@ -53,12 +55,20 @@ const SalesPage = () => {
   const digitalPlanCard = (
     <>
       <Card shadow="md" padding="lg" radius="md" withBorder>
+        <Card.Section mb="sm">
+          <AspectRatio ratio={1.7}>
+            <Image
+              src={DigitalMockup}
+              alt="Digital Booklet"
+            />
+          </AspectRatio>
+        </Card.Section>
         <Title order={4} mb="sm">Digital Plan ($24.99)</Title>
         <List mb="sm">
           <ListItem>Instantly emailed as a PDF</ListItem>
           <ListItem>Print at home or use digitally</ListItem>
         </List>
-        <Button component={Link} to="/checkout" color={theme.colors.green[7]}>Buy Now</Button>
+        <Button component={Link} to="/checkout?product=digital" color={theme.colors.green[7]}>Buy Now</Button>
         {/*<Button disabled>Coming soon</Button>*/}
       </Card>
     </>
@@ -91,19 +101,19 @@ const SalesPage = () => {
             }}
             w={isSmallScreen ? "100%" : "60%"}
           >
-            <Grid.Col>
+            <Grid.Col px={0}>
               <Title order={2} >Get Your Personalized Monthly Guide</Title>
             </Grid.Col>
-            <Grid.Col span={{ base: 12, sm: 6}}>
+            <Grid.Col span={{ base: 12, sm: 6}} px={0}>
               {printPlanCard}
             </Grid.Col>
-            <Grid.Col span={{ base: 12, sm: 6}}>
+            <Grid.Col span={{ base: 12, sm: 6}} px={0}>
               {digitalPlanCard}
             </Grid.Col>
           </Grid>
         </Container>
 
-        <Container size="sm" py="lg">
+        <Container size="sm" py="lg" px={0}>
           <Text size="lg">
             Everything you need, organized month-by-month, to grow a thriving garden in your climate.
             {/*Know exactly what to plant, when to plant it, and how to care for it—with a plan tailored to your garden.*/}

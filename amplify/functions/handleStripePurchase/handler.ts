@@ -86,7 +86,7 @@ const logger = new Logger({ serviceName: "handleStripePurchase" });
 
 export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async (event) => {
 
-  const { sessionId, scheduleSummary, crops, gantt, plantingSchedule, climateData, companionPlantingAdvice } = event.arguments
+  const { sessionId, product, scheduleSummary, crops, gantt, plantingSchedule, climateData, companionPlantingAdvice } = event.arguments
 
   const cropsParsed: Crop[] = JSON.parse(crops)
   const plantingScheduleParsed: Planting[][] = JSON.parse(plantingSchedule)
@@ -158,12 +158,56 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
     return;
   }
 
+  const printCopyOrdered = product === "print"
+
   const customerIdentifier = customerEmail.split(".")[0];
   const fileName = `GrowingGuidePlan-${customerIdentifier}-${sessionId}.pdf`
   const productImage = 'https://aws-growing-guide-email-assets.s3.us-east-1.amazonaws.com/booklet-mockup-left.png'
-  const logoTextOnly = 'https://aws-growing-guide-email-assets.s3.us-east-1.amazonaws.com/logo-text-only.png'
+  const emailHeader = 'https://aws-growing-guide-email-assets.s3.us-east-1.amazonaws.com/email-header.jpg'
   const clientUrl =
     `https://aws-growing-guide-plan-v1.s3.us-east-1.amazonaws.com/${fileName}`
+
+  const digitalBody = `
+    <h1>Your Monthly Guide is Ready!</h1>
+    <p>Hello,</p>
+    <p>
+      Thank you for your purchase! We’re excited be a part of your garden experience. Your personalized Monthly Guide is now available for download.
+    </p>
+    <!-- Featured image placeholder (optional) -->
+    <img class="image" aria-hidden="true" src=${productImage} alt="Monthly Guide Preview" />
+    <p>
+      To download your guide, simply click the button below:
+    </p>
+    <p>
+      <a class="cta-button" href=${clientUrl} target="_blank">Download Your Guide</a>
+    </p>
+    <p>
+      Let us know if you have any questions—just reply to this email.
+    </p>
+    <p>Jake from The Growing Guide</p>
+  `
+
+  const printBody = `
+    <h1>Your Monthly Guide Is On Its Way!</h1>
+    <p>Hello,</p>
+    <p>
+      Thank you for your purchase! We’re excited be a part of your garden experience. Your personalized Monthly Guide is being prepared for print, and we’ve also included a digital copy for you to download right away.
+    </p>
+    <img class="image" aria-hidden="true" src=${productImage} alt="Monthly Guide Preview" />
+    <p>
+      To get started now, click the button below to download your digital copy:
+    </p>
+    <p>
+      <a class="cta-button" href=${clientUrl} target="_blank">Download Your Guide</a>
+    </p>
+    <p>
+      Your printed guide is now in our queue. We’ll send you another email within 3–5 business days to let you know once it has been printed and shipped.
+    </p>
+    <p>
+      Let us know if you have any questions—just reply to this email.
+    </p>
+    <p>Jake from The Growing Guide</p>
+  `
 
   const htmlBody = `
   <!DOCTYPE html>
@@ -180,7 +224,7 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
           padding: 0;
           background-color: #f6f6f6;
           font-family: 'Merriweather Sans', Arial, sans-serif;
-          color: #333;
+          color: #333333;
         }
         .container {
           width: 100%;
@@ -189,12 +233,13 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
           background-color: #ffffff;
         }
         .header {
-          background-color: #4caf50;
-          padding: 20px;
-          text-align: center;
+          /*background-color: #4caf50;*/
+          /*padding: 20px;*/
+          /*text-align: center;*/
         }
         .header img {
-          max-width: 150px;
+          /*max-width: 150px;*/
+          width: 100%;
         }
         h1, h2, h3 {
           font-family: 'Poppins', Arial, sans-serif;
@@ -235,28 +280,12 @@ export const handler: Schema["handleStripePurchase"]["functionHandler"]  = async
         <tr>
           <td class="header">
             <!-- Replace with your logo URL -->
-            <img aria-hidden="true" src=${logoTextOnly} alt="The Growing Guide" />
+            <img aria-hidden="true" src=${emailHeader} alt="The Growing Guide" />
           </td>
         </tr>
         <tr>
           <td class="content">
-            <h1>Your Monthly Guide is Ready!</h1>
-            <p>Hello,</p>
-            <p>
-              Thank you for your purchase! We’re excited to help you transform your garden planning experience. Your personalized Monthly Guide is now available for download.
-            </p>
-            <!-- Featured image placeholder (optional) -->
-            <img class="image" aria-hidden="true" src=${productImage} alt="Monthly Guide Preview" />
-            <p>
-              To download your guide, simply click the button below:
-            </p>
-            <p>
-              <a class="cta-button" href=${clientUrl} target="_blank">Download Your Guide</a>
-            </p>
-            <p>
-              If you have any questions, feel free to reply to this email.
-            </p>
-            <p>Jake from The Growing Guide</p>
+            ${printCopyOrdered ? printBody : digitalBody}
           </td>
         </tr>
         <tr>

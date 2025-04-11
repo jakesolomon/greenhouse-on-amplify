@@ -5,14 +5,19 @@ import { Schema } from "../../data/resource";
 
 export const handler: Schema["createCheckoutSession"]["functionHandler"]  = async (event) => {
 
-  const { origin } = event.arguments
+  const { origin, product } = event.arguments
+
+  const price =
+    product === "print"
+    ? 'price_1RCIzmKXcuXgnQQohShuxB7I'
+    : 'price_1RBnjYKXcuXgnQQoa2eimOk7'
 
   const stripe = new Stripe(env.STRIPE_API_KEY);
 
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: 'price_1RBnjYKXcuXgnQQoa2eimOk7',
+        price: price,
         quantity: 1,
       },
     ],
