@@ -13,8 +13,6 @@ import {
   Modal,
   Image,
   Box,
-  Center,
-  Divider,
   BackgroundImage,
   Grid,
   Card,
@@ -107,6 +105,8 @@ const PlanOverview = (props: DataDisplayProps) => {
   const plantingScheduleLoading = plantingSchedule.length === 0;
   const noSuccessionPlanting =
     !plantingScheduleLoading && plantingSchedule?.every((p) => p.length === 1);
+
+  const [ showRunningBehindAlert, setShowRunningBehindAlert ] = useState<boolean>(true)
 
   const [ showNoSuccessionPlantingAlert, setShowNoSuccessionPlantingAlert ] = useState<boolean>(false)
 
@@ -350,24 +350,36 @@ const PlanOverview = (props: DataDisplayProps) => {
             <Text size="sm">This may be because there aren’t enough crops with different growing seasons in your selection. If you notice lots of plantings of the same cool-weather crop (like lettuce, kale, cabbage, or radishes), try adding other cool-weather crops for more variety. <Anchor onClick={startPlanOver} style={{ whiteSpace: "nowrap" }}>Start a new plan here.</Anchor></Text>
           </Alert>
         }
-        <Alert
-          className="alert-warning"
-          variant="light"
-          color="yellow"
-          withCloseButton
-          closeButtonLabel="Close alert."
-          onClose={() => setShowNoSuccessionPlantingAlert(false)}
-          title="Running a bit behind? No problem."
-          icon={isSmallScreen ? undefined : infoIcon}
-          my="md"
-        >
-          <Text size="sm">Don't worry if it looks like you should already have started planting in your garden. Your Monthly Planner will give instructions on growing from seed, but you can save time by buying mature seedlings from a local supplier and jumping straight to the transplanting stage.</Text>
-        </Alert>
+        {
+          showRunningBehindAlert &&
+          <Alert
+            className="alert-warning"
+            variant="light"
+            color="yellow"
+            withCloseButton
+            closeButtonLabel="Close alert."
+            onClose={() => setShowRunningBehindAlert(false)}
+            title="Running a bit behind? No problem."
+            icon={isSmallScreen ? undefined : infoIcon}
+            my="md"
+          >
+            <Text size="sm">Don't worry if it looks like you should already have started planting in your garden. Your Monthly Planner will give instructions on growing from seed, but you can save time by buying mature seedlings from a local supplier and jumping straight to the transplanting stage.</Text>
+          </Alert>
+        }
         {
           summary
             ? <Text size="md" my="lg">{summary}</Text>
             : <>{skeletonParagraph}<br/></>
         }
+
+        {/*Sales Cards*/}
+        {/*<Container size='md' mt='xl' px={0}>*/}
+        {/*  <Grid>*/}
+        {/*    <Grid.Col span={{ base: 12, sm: 6}}><SalesCardPrintPlan/></Grid.Col>*/}
+        {/*    <Grid.Col span={{ base: 12, sm: 6}}><SalesCardDigitalPlan /></Grid.Col>*/}
+        {/*  </Grid>*/}
+        {/*</Container>*/}
+
         <Accordion mt="md" transitionDuration={350} variant="contained">
           <Accordion.Item value="crops">
             <Accordion.Control icon="🥦">Crops</Accordion.Control>
@@ -471,6 +483,10 @@ const PlanOverview = (props: DataDisplayProps) => {
           }
         </Accordion>
 
+        <Container my="md" display="flex" px={0}>
+          <Text c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
+        </Container>
+
         {
           isSmallScreen
             ?
@@ -497,15 +513,9 @@ const PlanOverview = (props: DataDisplayProps) => {
             </Container>
         }
 
-
-
-        <Center>
-          <Divider w="100%"/>
-        </Center>
-
-        <Container my="md" display="flex">
-          <Text size="sm" c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
-        </Container>
+        {/*<Center>*/}
+        {/*  <Divider w="100%"/>*/}
+        {/*</Center>*/}
 
         {/*<Affix w="100vw">*/}
         {/*  <Container px={isSmallScreen ? "30" : "0"}>*/}

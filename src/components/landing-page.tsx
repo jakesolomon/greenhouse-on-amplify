@@ -9,18 +9,20 @@ import {
   Card,
   Timeline, AppShell, Image, Modal, Group, BackgroundImage, Box, AspectRatio
 } from "@mantine/core";
-import { useDisclosure } from '@mantine/hooks';
+import {useDisclosure, useScrollIntoView} from '@mantine/hooks';
 import useWindowSize from "../helpers/useWindowSize.ts";
 import {useEffect, useState} from "react";
 import KaleFrost from "../assets/kale-frost-lowres.png"
 import LandingPageVideo from "../assets/landing-page-video.mov";
 import LandingPageVideoTiny from "../assets/landing-page-video-tiny.mov";
 import LandingPageStill from '../assets/landing-page-video-still.png'
-import Garden3 from "../assets/garden-3-big.png";
 import Harvest from "../assets/harvest_lowres.png";
 import Faq from "./faq.tsx";
 import Footer from "./footer.tsx";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
+import SeedingEdit from "../assets/seeding-edit-1.mp4";
+import SeedingEditStill from "../assets/seeding-edit-still.png";
+import Testimonials from "./testimonials.tsx";
 
 const LandingPage = () => {
 
@@ -84,6 +86,42 @@ const LandingPage = () => {
     close();
     navigate("/planner"); // Navigate to existing plan
   };
+
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+    offset: 60,
+    duration: 600,
+  });
+
+  const salesCard = (
+    <Card my='lg' py='md' px={isSmallScreen ? undefined : 'lg'} withBorder>
+      {
+        isSmallScreen &&
+        <Card.Section mb='sm'>
+          <AspectRatio ratio={1080 / 540}>
+            <Image
+              src={BookletMockupLeft}
+              alt="Booklet mockup"
+            />
+          </AspectRatio>
+        </Card.Section>
+      }
+      <Title order={2} mb='xs'>Ready to Get Started?</Title>
+      <Text mb='md'>The Monthly Guide shows you exactly how to make your garden plan happen.</Text>
+      <Text mb='md'>Start with your free Plan Overview to learn when to plant, how to maximize the use of your available space, and more.</Text>
+      <Text mb='md'>It's free to get started, no account required.</Text>
+      {/*<List spacing="sm" size='md' style={{alignItems: "start"}} mb='lg'>*/}
+      {/*  <List.Item icon={<Box>🗓</Box>}>We take the same custom planning process — tailored to your climate and crops — and break it down into monthly, easy-to-follow instructions.</List.Item>*/}
+      {/*  <List.Item icon="📦">Printed and shipped to your door (or delivered as a digital PDF) with your name on the cover, so you know it's made just for you.</List.Item>*/}
+      {/*</List>*/}
+
+      <Button component={Link} to="/planner" size="md" mb='xs'
+              style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
+              color={theme.colors.green[7]}
+      >
+        Plan My Garden
+      </Button>
+    </Card>
+  )
 
   return(
     <>
@@ -220,17 +258,30 @@ const LandingPage = () => {
                   >
                     Personalized plans for a thriving vegetable garden—made effortless with AI.
                   </Text>
-                  <Button
-                    component={Link}
-                    to="/planner"
-                    onClick={handleGetStartedClick}
-                    mt="lg"
-                    size="lg"
-                    color={theme.colors.green[7]}
-                    radius="md"
-                  >
-                    Get Started Now
-                  </Button>
+                  <Group mt="lg">
+                    <Button
+                      component={Link}
+                      to="/planner"
+                      onClick={handleGetStartedClick}
+                      size={isSmallScreen ? "md" :"lg"}
+                      color={theme.colors.green[7]}
+                      radius="md"
+                    >
+                      Get Started Now
+                    </Button>
+                    {
+                      !isSmallScreen &&
+                      <Button
+                        onClick={() => scrollIntoView({ alignment: 'center' }) }
+                        size={isSmallScreen ? "md" :"lg"}
+                        color={isSmallScreen ? "white" : theme.colors.green[7]}
+                        radius="md"
+                        variant="outline"
+                      >
+                        Find Out More
+                      </Button>
+                    }
+                  </Group>
                 </Grid.Col>
               </Grid>
             </Container>
@@ -242,9 +293,9 @@ const LandingPage = () => {
       <Container h={isSmallScreen ? "70vh" : "90vh"} m={0} p={0}/>
 
       {/* Features */}
-      <Container size="lg" py="xl" px={0}>
-        <Title order={2} mb="sm">
-        Why use The Growing Guide?
+      <Container size="lg" py="xl" px={0} ref={targetRef}>
+        <Title order={1}>
+          Why use The Growing Guide?
         </Title>
         <Text size="lg" mb="md" c="dimmed">
           Designed to make gardening simple and productive, our planner provides personalized insights tailored to you.
@@ -324,13 +375,55 @@ const LandingPage = () => {
       {/*  </BackgroundImage>*/}
       {/*</Container>*/}
 
-      <Container size="sm" my="md" px={0}>
+      <Container size="lg" px={0} my='xl' style={{zIndex: 1}}>
+        <Grid m={0} p={0} gutter="xl">
+          <Grid.Col span={{ base: 12, md: 6}}>
+            <Title order={2} mb="sm">Everything you need, organized month-by-month, to grow a thriving garden.</Title>
+            {/*<Text size="xl">Everything you need, organized month-by-month, to grow a thriving garden in your climate.</Text>*/}
+            {/*<Text mt="sm" c="dimmed">*/}
+            {/*  Get a month-by-month planting and maintainence guide, made to order for your unique garden plan.*/}
+            {/*</Text>*/}
+            {/*{featureList}*/}
+            {/*<Text fw={700} mb='xs'>This is a custom garden guide, created just for you.</Text>*/}
+            <Text mb='md'>For each order, we generate a unique guide using the same custom scheduling process we use to create your free plan overview, based on your crops and local climate.</Text>
+            <Text mb='md'>You get a downloadable PDF or print booklet that includes month-by-month tasks and tried-and-true gardening guidance.</Text>
+            {/*<Text fw={700}>Not satisfied? No worries.</Text>*/}
+            <Text><strong>Not satisfied? No worries.</strong> Just send us a message—we’ll give you a full refund, no questions asked.</Text>
+            {/*<Text mb='xs' style={{layout: "inline-block"}}>Just send us a message—we’ll give you a full refund, no questions asked.</Text>*/}
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6}} style={{position: "relative"}}>
+            {/*<Title order={1} mt="md" style={{zIndex: 10}}>Everything you need, organized month-by-month, to grow a thriving garden in your climate.</Title>*/}
+            <Card h={isSmallScreen ? "300px" : "300px"}>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                src={SeedingEdit}
+                poster={SeedingEditStill}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  zIndex: 0,
+                }}
+              />
+            </Card>
+          </Grid.Col>
+        </Grid>
+      </Container>
+
+      <Container size="md" my="xl" px={0}>
         {/*<Title order={2} ta="center" mb="md">*/}
         {/*  Planting Made Simple*/}
         {/*</Title>*/}
-        <Text size="lg" mb="xl" c="dimmed">
+        <Title order={2}>
           Transform your gardening experience with our step-by-step process. It's simple, quick, and tailored to you.
-        </Text>
+        </Title>
 
         <Timeline
           active={hoveredTimelineElement}
@@ -338,6 +431,7 @@ const LandingPage = () => {
           lineWidth={3}
           color="green"
           mt="xl"
+          w={isSmallScreen ? "100%" : "60%"}
         >
           {/* Step 1 */}
           <Timeline.Item
@@ -391,20 +485,55 @@ const LandingPage = () => {
         </Timeline>
       </Container>
 
-      <Container size="md" pt="md" px={0}>
-        <BackgroundImage
-          src={Garden3}
-          style={{backgroundPosition: "bottom", position: "relative", top: 0}}
-        >
-          <Box h="100px"></Box>
-          <Title order={1} ta="center" mb="md" c="white">
-            Frequently Asked Questions
-          </Title>
-          <Box h="100px"></Box>
-        </BackgroundImage>
+      <Container size='lg' my='xl' px={0}>
+        <Title order={2}>Don’t Just Take Our Word For It</Title>
+        <Text fs='italic' mb='sm'>See what others are saying</Text>
+        <Testimonials />
       </Container>
 
+      {
+        isSmallScreen
+          ?
+          <>{salesCard}</>
+          :
+          <Container size='lg' my="md" px={0} display="flex">
+            <BackgroundImage
+              src={BookletMockupLeft}
+              style={{backgroundPosition: "center", position: "relative"}}
+            >
+              <Box h={30} />
+              <Grid
+                justify="right"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'left',
+                }}
+              >
+                <Grid.Col span={5} m='xl'>
+                  {salesCard}
+                </Grid.Col>
+              </Grid>
+              <Box h={30} />
+            </BackgroundImage>
+          </Container>
+      }
+
+      {/*<Container size="lg" pt="md" px={0}>*/}
+      {/*  <BackgroundImage*/}
+      {/*    src={Garden3}*/}
+      {/*    style={{backgroundPosition: "bottom", position: "relative", top: 0}}*/}
+      {/*  >*/}
+      {/*    <Box h="100px"></Box>*/}
+      {/*    <Title order={1} ta="center" mb="md" c="white">*/}
+      {/*      Frequently Asked Questions*/}
+      {/*    </Title>*/}
+      {/*    <Box h="100px"></Box>*/}
+      {/*  </BackgroundImage>*/}
+      {/*</Container>*/}
+
       <Container size="md" py="xl" px={0}>
+        <Title order={2} mb='xs'>Frequently Asked Questions</Title>
         <Faq />
       </Container>
 

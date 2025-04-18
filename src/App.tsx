@@ -15,6 +15,8 @@ import { ToastContainer } from 'react-toastify';
 import './fonts.css'
 
 import './App.css'
+import '@mantine/carousel/styles.css';
+
 import Planner from "./components/planner.tsx";
 import LandingPage from "./components/landing-page.tsx";
 import SalesPage from "./components/sales-page.tsx";
