@@ -18,8 +18,8 @@ import SeedingEdit from "../assets/seeding-edit-1.mp4"
 import SeedingEditStill from "../assets/seeding-edit-still.png";
 import Faq from "./faq.tsx";
 import Testimonials from "./testimonials.tsx";
-import SalesCardPrintPlan from "./sales-card-print-plan.tsx";
-import SalesCardDigitalPlan from "./sales-card-digital-plan.tsx";
+import SalesCardPrintPlan from "./sales-card-print-guide.tsx";
+import SalesCardDigitalGuide from "./sales-card-digital-guide.tsx";
 
 const SalesPage = () => {
 
@@ -146,7 +146,7 @@ const SalesPage = () => {
               <SalesCardPrintPlan />
             </Grid.Col>
             <Grid.Col span={{ base: 12, sm: 6}} px={0}>
-              <SalesCardDigitalPlan />
+              <SalesCardDigitalGuide />
             </Grid.Col>
             <Grid.Col span={{base: 12}} px={0}>
               {canAutoplay
@@ -250,7 +250,7 @@ const SalesPage = () => {
                 <Title order={1} style={{fontSize: "2rem"}} mb='lg'>Get Your Personalized Monthly Guide</Title>
               </Grid.Col>
               <Grid.Col span={{ base: 12, xs: 6}}>
-                <SalesCardDigitalPlan />
+                <SalesCardDigitalGuide />
               </Grid.Col>
               <Grid.Col span={{ base: 12, xs: 6}}>
                 <SalesCardPrintPlan />

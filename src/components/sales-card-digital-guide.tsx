@@ -5,7 +5,7 @@ import {
 import {Link} from "react-router-dom";
 import DigitalMockup from "../assets/digital-plan-mockup.png";
 
-const SalesCardDigitalPlan = () => {
+const SalesCardDigitalGuide = () => {
 
   const theme = useMantineTheme();
 
@@ -20,7 +20,7 @@ const SalesCardDigitalPlan = () => {
             />
           </AspectRatio>
         </Card.Section>
-        <Title order={4} mb="sm">Digital Plan ($24.99)</Title>
+        <Title order={4} mb="sm">Digital Guide ($24.99)</Title>
         <List mb="sm">
           <ListItem>Instantly emailed as a PDF</ListItem>
           <ListItem>Print at home or use digitally</ListItem>
@@ -32,4 +32,4 @@ const SalesCardDigitalPlan = () => {
   )
 }
 
-export default SalesCardDigitalPlan
+export default SalesCardDigitalGuide

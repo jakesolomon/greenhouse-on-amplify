@@ -7,7 +7,7 @@ import {
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 import {Link} from "react-router-dom";
 
-const SalesCardPrintPlan = () => {
+const SalesCardPrintGuide = () => {
 
   const theme = useMantineTheme();
 
@@ -30,7 +30,7 @@ const SalesCardPrintPlan = () => {
               />
             </AspectRatio>
           </Card.Section>
-          <Title order={4}>Print Plan ($39.99)</Title>
+          <Title order={4}>Print Booklet ($39.99)</Title>
           <Text fs="italic" mb='xs' size='sm'>Printed on thick, matte stock that resists water and tearing—perfect for muddy hands and sunny days.</Text>
           <List mb="sm">
             {/*<ListItem>Custom printed and shipped</ListItem>*/}
@@ -49,4 +49,4 @@ const SalesCardPrintPlan = () => {
   )
 }
 
-export default SalesCardPrintPlan
+export default SalesCardPrintGuide

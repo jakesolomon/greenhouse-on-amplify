@@ -496,7 +496,7 @@ const LandingPage = () => {
           ?
           <>{salesCard}</>
           :
-          <Container size='lg' my="md" px={0} display="flex">
+          <Container size='md' my="md" px={0} display="flex">
             <BackgroundImage
               src={BookletMockupLeft}
               style={{backgroundPosition: "center", position: "relative"}}

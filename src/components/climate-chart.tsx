@@ -78,7 +78,7 @@ const ClimateChart = (props: ClimateChartProps) => {
   )
 
   return (
-    <Container m="lg" px={0} mx={0}>
+    <Container px={0} m={0}>
       <Text mb="sm">
         Based on the ZIP code you provided, the following estimates have been made about average temperatures in your area. These predictions were then used to inform planting times.
       </Text>
