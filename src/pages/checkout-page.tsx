@@ -22,7 +22,7 @@ import {
 import { Schema } from "../../amplify/data/resource.ts";
 import PurchasePage from "./purchase-page.tsx";
 import { Crop, CropDataForFullPlanRequests} from "../types.ts";
-import Footer from "./footer.tsx";
+import Footer from "../components/footer.tsx";
 
 const stripePromise = loadStripe('pk_live_51QqzXAKXcuXgnQQoI7W92SOXf33wFGGvQOBQCsBGo2msG1XlYg7VFI8DVHfjvYYXkJhZnPncxtUnlsYeVcETeq3V00pW4AVNnV');
 

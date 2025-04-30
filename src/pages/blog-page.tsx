@@ -17,7 +17,7 @@ import CompanionPlanting from "../assets/companion-planting-sketch.png";
 import CropRotation from "../assets/crop-rotation-sketch.png";
 import {useViewportSize} from "@mantine/hooks";
 import Garden2 from "../assets/garden-2-big.png";
-import Footer from "./footer.tsx";
+import Footer from "../components/footer.tsx";
 
 const BlogPage = () => {
 

@@ -2,7 +2,7 @@ import {Container, Title, Text, Grid, Stack, Image, AppShell, Center, Background
 import Jake from "../assets/jake-edit3.jpg"
 import Me from "../assets/me.jpg"
 import Anime from "../assets/anime-product-edit-extended-lowres.png";
-import Footer from "./footer.tsx";
+import Footer from "../components/footer.tsx";
 
 const AboutPage = () => {
 

@@ -8,10 +8,10 @@ import {
   BackgroundImage,
   Grid
 } from "@mantine/core";
-import ContactForm from "./contact-form.tsx";
+import ContactForm from "../components/contact-form.tsx";
 import {NavLink} from "react-router-dom";
 import Garden4 from "../assets/garden-4-big.png";
-import Footer from "./footer.tsx";
+import Footer from "../components/footer.tsx";
 
 const ContactPage = () => {
 

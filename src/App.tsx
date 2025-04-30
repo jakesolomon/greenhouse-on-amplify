@@ -17,22 +17,22 @@ import './fonts.css'
 import './App.css'
 import '@mantine/carousel/styles.css';
 
-import Planner from "./components/planner.tsx";
-import LandingPage from "./components/landing-page.tsx";
-import SalesPage from "./components/sales-page.tsx";
-import Checkout from "./components/checkout-page.tsx";
-import Purchase from "./components/purchase-page.tsx";
-import ContactPage from "./components/contact-page.tsx";
+import Planner from "./pages/planner.tsx";
+import LandingPage from "./pages/landing-page.tsx";
+import SalesPage from "./pages/sales-page.tsx";
+import Checkout from "./pages/checkout-page.tsx";
+import Purchase from "./pages/purchase-page.tsx";
+import ContactPage from "./pages/contact-page.tsx";
 import Header from "./components/header.tsx";
 import NotFound from "./components/404-page.tsx";
 import NavBar from "./components/navbar.tsx";
 import FaqPage from "./components/faq-page.tsx";
-import AboutPage from "./components/about-page.tsx";
-import BlogPage from "./components/blog-page.tsx";
+import AboutPage from "./pages/about-page.tsx";
+import BlogPage from "./pages/blog-page.tsx";
 import SuccessionPlantingBlog from "./components/blog-posts/succession-planting-blog.tsx";
 import CompanionPlantingBlog from "./components/blog-posts/companion-planting-blog.tsx";
-import PrivacyPolicyPage from "./components/privacy-policy-page.tsx";
-import CookiesPage from "./components/cookies-page.tsx";
+import PrivacyPolicyPage from "./pages/privacy-policy-page.tsx";
+import CookiesPage from "./pages/cookies-page.tsx";
 import CropRotationBlog from "./components/blog-posts/crop-rotation-blog.tsx";
 
 function App() {
@@ -73,7 +73,6 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/learn" element={<BlogPage />} />
 
-                <Route path="succesion-planting" element={<SuccessionPlantingBlog />} />
                 <Route path="/learn/succession-planting" element={<SuccessionPlantingBlog />} />
                 <Route path="/learn/companion-planting" element={<CompanionPlantingBlog />} />
                 <Route path="/learn/crop-rotation" element={<CropRotationBlog />} />

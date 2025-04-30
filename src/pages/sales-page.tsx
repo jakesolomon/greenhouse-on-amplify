@@ -11,15 +11,15 @@ import {
 import useWindowSize from "../helpers/useWindowSize.ts";
 import BookletMockupRight from "../assets/booklet-mockup-right-extended.png";
 import {useEffect, useState} from "react";
-import Footer from "./footer.tsx";
+import Footer from "../components/footer.tsx";
 import {NavLink} from "react-router-dom";
 import LandingPageVideoTiny from "../assets/landing-page-video-tiny.mov";
 import SeedingEdit from "../assets/seeding-edit-1.mp4"
 import SeedingEditStill from "../assets/seeding-edit-still.png";
 import Faq from "./faq.tsx";
-import Testimonials from "./testimonials.tsx";
-import SalesCardPrintPlan from "./sales-card-print-guide.tsx";
-import SalesCardDigitalGuide from "./sales-card-digital-guide.tsx";
+import Testimonials from "../components/testimonials.tsx";
+import SalesCardPrintPlan from "../components/sales-card-print-guide.tsx";
+import SalesCardDigitalGuide from "../components/sales-card-digital-guide.tsx";
 
 const SalesPage = () => {
 

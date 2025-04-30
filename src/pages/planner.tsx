@@ -5,11 +5,11 @@ import { toast } from 'react-toastify';
 
 import { Schema } from "../../amplify/data/resource.ts";
 
-import PlanOverview from "./plan-overview.tsx";
-import Quiz from "./quiz/quiz.tsx";
+import PlanOverview from "../components/plan-overview.tsx";
+import Quiz from "../components/quiz/quiz.tsx";
 import {ClimateDataOutput, Crop, GrowingDateRange, Planting, SeedVariety} from "../types.ts";
 import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
-import { availableCompanionPlants } from "./available-companion-plants.ts"
+import { availableCompanionPlants } from "../components/available-companion-plants.ts"
 
 const Planner = () => {
 
