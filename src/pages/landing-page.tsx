@@ -17,7 +17,7 @@ import LandingPageVideo from "../assets/landing-page-video.mov";
 import LandingPageVideoTiny from "../assets/landing-page-video-tiny.mov";
 import LandingPageStill from '../assets/landing-page-video-still.png'
 import Harvest from "../assets/harvest_lowres.png";
-import Faq from "./faq.tsx";
+import Faq from "../components/faq.tsx";
 import Footer from "../components/footer.tsx";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 import SeedingEdit from "../assets/seeding-edit-1.mp4";

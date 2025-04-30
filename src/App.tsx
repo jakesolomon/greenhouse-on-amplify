@@ -26,7 +26,7 @@ import ContactPage from "./pages/contact-page.tsx";
 import Header from "./components/header.tsx";
 import NotFound from "./components/404-page.tsx";
 import NavBar from "./components/navbar.tsx";
-import FaqPage from "./components/faq-page.tsx";
+import FaqPage from "./pages/faq-page.tsx";
 import AboutPage from "./pages/about-page.tsx";
 import BlogPage from "./pages/blog-page.tsx";
 import SuccessionPlantingBlog from "./components/blog-posts/succession-planting-blog.tsx";

@@ -8,9 +8,9 @@ import {
   BackgroundImage,
   Box, useMantineTheme
 } from "@mantine/core";
-import Faq from "../pages/faq.tsx";
+import Faq from "../components/faq.tsx";
 import Garden3 from "../assets/garden-3-big.png";
-import Footer from "./footer.tsx";
+import Footer from "../components/footer.tsx";
 import {useViewportSize} from "@mantine/hooks";
 
 const FaqPage = () => {
