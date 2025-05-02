@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import {NavLink, useLocation} from "react-router-dom";
 import {
   Button,
   AppShell,
@@ -13,8 +13,11 @@ const NavBar = (props: NavBarProps) => {
 
   const { toggleNavBar } = props;
 
+  const location = useLocation();
+  const isV2 = location.pathname.includes('v2');
+
   const renderNavItem = (label: string, to: string) => (
-    <NavLink to={to}>
+    <NavLink to={isV2 ? `${to}-v2` : to}>
       {({ isActive }) => (
         <Button
           variant={isActive ? 'outline' : 'subtle'}
@@ -30,7 +33,7 @@ const NavBar = (props: NavBarProps) => {
   return(
     <AppShell.Navbar p="lg">
       <Stack>
-        {renderNavItem("Home", "/")}
+        {renderNavItem("Home", "/home")}
         {renderNavItem("Contact", "/contact")}
         {renderNavItem("FAQ", "/faq")}
         {renderNavItem("About", "/about")}

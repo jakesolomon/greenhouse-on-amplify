@@ -45,7 +45,7 @@ const EmailOptInForm = (props: EmailOptInFormProps) => {
       <TextInput
         disabled={sendingUserData}
         label="Name"
-        placeholder="As you'd like it to show up on your guide"
+        placeholder="Your name"
         key={form.key('name')}
         {...form.getInputProps('name')}
       />

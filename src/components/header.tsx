@@ -1,4 +1,4 @@
-import { Link, useMatch, NavLink } from "react-router-dom";
+import { Link, useMatch, NavLink, useLocation } from "react-router-dom";
 import {
   Button,
   Container,
@@ -22,8 +22,11 @@ const Header = (props: HeaderProps) => {
   const theme = useMantineTheme();
   const plannerIsOpen = useMatch('/planner');
 
+  const location = useLocation();
+  const isV2 = location.pathname.includes('v2');
+
   const renderNavItem = (label: string, to: string) => (
-    <NavLink to={to}>
+    <NavLink to={isV2 ? `${to}-v2` : to}>
       {({ isActive }) => (
         <Button
           variant={isActive ? 'outline' : 'subtle'}
@@ -37,12 +40,12 @@ const Header = (props: HeaderProps) => {
   )
 
   const renderPlanButton = () => (
-    <NavLink to='/planner'>
+    <NavLink to={isV2 ? '/planner-v2' : '/planner'}>
       <Button
         color={theme.colors.green[7]}
         ml='xs'
       >
-        Plan
+        My Plan
       </Button>
     </NavLink>
   )
@@ -53,7 +56,7 @@ const Header = (props: HeaderProps) => {
         <Group h="100%">
           <Burger opened={navBarIsOpen} onClick={toggleNavBar} hiddenFrom="sm" size="sm" />
           <Group justify="space-between" style={{ flex: 1 }}>
-            <Link to={'/'} >
+            <Link to={isV2 ? `/home-v2` : '/'} >
               {/*<Image h={45} src={LogoTree} hiddenFrom="sm" className="header-logo" alt="logo" fit="contain" />*/}
               <Image h={45} src={LogoText} className="header-logo" alt="logo" fit="contain" />
             </Link>

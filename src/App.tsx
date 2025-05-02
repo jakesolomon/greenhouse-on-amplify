@@ -35,6 +35,25 @@ import PrivacyPolicyPage from "./pages/privacy-policy-page.tsx";
 import CookiesPage from "./pages/cookies-page.tsx";
 import CropRotationBlog from "./components/blog-posts/crop-rotation-blog.tsx";
 
+import PlannerV2 from "./pages-v2/planner-v2.tsx";
+import LandingPageV2 from "./pages-v2/landing-page-v2.tsx";
+import SalesPageV2 from "./pages-v2/sales-page-v2.tsx";
+import CheckoutV2 from "./pages-v2/checkout-page-v2.tsx";
+import PurchaseV2 from "./pages-v2/purchase-page-v2.tsx";
+import ContactPageV2 from "./pages-v2/contact-page-v2.tsx";
+import FaqPageV2 from "./pages-v2/faq-page-v2.tsx";
+import AboutPageV2 from "./pages-v2/about-page-v2.tsx";
+import BlogPageV2 from "./pages-v2/blog-page-v2.tsx";
+import PrivacyPolicyPageV2 from "./pages-v2/privacy-policy-page-v2.tsx";
+import CookiesPageV2 from "./pages-v2/cookies-page-v2.tsx";
+import SuccessionPlantingBlogV2 from "./components/blog-posts-v2/succession-planting-blog-v2.tsx";
+import CompanionPlantingBlogV2 from "./components/blog-posts-v2/companion-planting-blog-v2.tsx";
+import CropRotationBlogV2 from "./components/blog-posts-v2/crop-rotation-blog-v2.tsx";
+import FullPlan from "./components/full-plan/full-plan.tsx";
+import EmailDiscountModalV2 from "./components/email-discount-modal-v2.tsx";
+import SalesBannerV2 from "./components/sales-banner-v2.tsx";
+import {useEffect, useState} from "react";
+
 function App() {
 
   const theme = createTheme({
@@ -44,6 +63,16 @@ function App() {
   });
 
   const [navBarIsOpen, { toggle }] = useDisclosure();
+
+  const hasOptedIn = typeof window !== 'undefined' && localStorage.getItem('userEmail');
+  const [emailOptInOpened, setEmailOptInOpened] = useState(false);
+
+  useEffect(() => {
+    if (!hasOptedIn) {
+      const timer = setTimeout(() => setEmailOptInOpened(true), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [hasOptedIn]);
 
   return (
     <MantineProvider theme={theme}>
@@ -60,6 +89,9 @@ function App() {
 
           <NavBar toggleNavBar={toggle} />
 
+          <SalesBannerV2 onClickOpenModal={() => setEmailOptInOpened(true)} hasOptedIn={!!hasOptedIn} />
+          <EmailDiscountModalV2 opened={emailOptInOpened} setOpened={setEmailOptInOpened} />
+
           <AppShell.Main style={{minHeight: '75vh'}}>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
@@ -72,6 +104,7 @@ function App() {
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/learn" element={<BlogPage />} />
+                <Route path="/full-plan" element={<FullPlan />} />
 
                 <Route path="/learn/succession-planting" element={<SuccessionPlantingBlog />} />
                 <Route path="/learn/companion-planting" element={<CompanionPlantingBlog />} />
@@ -81,6 +114,24 @@ function App() {
                 <Route path="/cookies" element={<CookiesPage />} />
                 {/*Not Found*/}
                 <Route path="*" element={<NotFound />} />
+
+                {/* V2 */}
+                <Route path="/home-v2" element={<LandingPageV2 />} />
+                <Route path="/planner-v2" element={<PlannerV2 />} />
+                <Route path="/buy-v2" element={<SalesPageV2 />} />
+                <Route path="/checkout-v2" element={<CheckoutV2 />} />
+                <Route path="/purchase-v2" element={<PurchaseV2 />} />
+                <Route path="/contact-v2" element={<ContactPageV2 />} />
+                <Route path="/faq-v2" element={<FaqPageV2 />} />
+                <Route path="/about-v2" element={<AboutPageV2 />} />
+                <Route path="/learn-v2" element={<BlogPageV2 />} />
+
+                <Route path="/learn/succession-planting-v2" element={<SuccessionPlantingBlogV2 />} />
+                <Route path="/learn/companion-planting-v2" element={<CompanionPlantingBlogV2 />} />
+                <Route path="/learn/crop-rotation-v2" element={<CropRotationBlogV2 />} />
+
+                <Route path="/privacy-v2" element={<PrivacyPolicyPageV2 />} />
+                <Route path="/cookies-v2" element={<CookiesPageV2 />} />
               </Routes>
           </AppShell.Main>
         </AppShell>

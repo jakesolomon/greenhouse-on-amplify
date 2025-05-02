@@ -5,11 +5,20 @@ import {
   Box, Badge, Card, AspectRatio, Image, List, ListItem, Button, useMantineTheme
 } from "@mantine/core";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
-const SalesCardPrintGuide = () => {
+interface SalesCardPrintGuideProps {
+  applyEmailDiscount: boolean;
+}
+
+const SalesCardPrintGuide = (props: SalesCardPrintGuideProps) => {
+
+  const { applyEmailDiscount } = props;
 
   const theme = useMantineTheme();
+
+  const location = useLocation();
+  const isV2 = location.pathname.includes('v2');
 
   return (
     <>
@@ -30,7 +39,15 @@ const SalesCardPrintGuide = () => {
               />
             </AspectRatio>
           </Card.Section>
-          <Title order={4}>Print Booklet ($39.99)</Title>
+          {
+            applyEmailDiscount
+              ? <>
+                  <Title order={4} mb={0}>Digital Guide <Text span td="line-through" c="dimmed">$39.99</Text> $33.99</Title>
+                  {/*<Text mb='sm' size='sm' fs="italic" c="dimmed">Discount code automatically applied at checkout.</Text>*/}
+                </>
+              : <Title order={4} mb="sm">Digital Guide ($39.99)</Title>
+          }
+          {/*<Title order={4}>Print Booklet ($39.99)</Title>*/}
           <Text fs="italic" mb='xs' size='sm'>Printed on thick, matte stock that resists water and tearing—perfect for muddy hands and sunny days.</Text>
           <List mb="sm">
             {/*<ListItem>Custom printed and shipped</ListItem>*/}
@@ -41,7 +58,7 @@ const SalesCardPrintGuide = () => {
             {/*<ListItem>Perfect for hands-on reference</ListItem>*/}
             {/*<ListItem>Free digital copy</ListItem>*/}
           </List>
-          <Button component={Link} to="/checkout?product=print" color={theme.colors.green[7]}>Buy Now</Button>
+          <Button component={Link} to={isV2 ? '/checkout-v2?product=print' : '/checkout?product=print'} color={theme.colors.green[7]}>Buy Now</Button>
           {/*<Button disabled>Coming soon</Button>*/}
         </Card>
       </Box>
