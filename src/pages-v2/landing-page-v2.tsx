@@ -10,7 +10,6 @@ import {
   Timeline,
   AppShell,
   Image,
-  Modal,
   Group,
   BackgroundImage,
   Box,
@@ -21,7 +20,7 @@ import {
   Divider,
   Center,
 } from "@mantine/core";
-import {useDisclosure, useScrollIntoView} from '@mantine/hooks';
+import {useScrollIntoView} from '@mantine/hooks';
 import { IconPlant2, IconArrowForward } from '@tabler/icons-react';
 import useWindowSize from "../helpers/useWindowSize.ts";
 import {useEffect, useState} from "react";
@@ -42,6 +41,12 @@ import PlanOverviewDemo from "../assets/plan-overview-demo.mov"
 import Testimonials from "../components/testimonials.tsx";
 
 const LandingPageV2 = () => {
+
+  // Add local storage variable to make sure v2 customers get back to v2 user flow
+  useEffect(() => {
+    localStorage.setItem('isV2User', 'true');
+  }, []);
+
 
   // Check if mobile device is running on low battery mode. Will suspend landing page video.
   const [canAutoplay, setCanAutoplay] = useState<boolean | null>(null);
@@ -66,9 +71,6 @@ const LandingPageV2 = () => {
 
   const theme = useMantineTheme();
 
-  const [opened, { open, close }] = useDisclosure(false);
-  // const [openedGuidePreview, { open, close }] = useDisclosure(false);
-
   const navigate = useNavigate(); // React Router navigation
 
   const [ hoveredTimelineElement, setHoveredTimelineElement ] = useState<number>()
@@ -78,32 +80,12 @@ const LandingPageV2 = () => {
   const isSmallScreen = trueWidth.toString() < theme.breakpoints.xl
 
   const handleGetStartedClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const existingPlan = localStorage.getItem("scheduleSummary");
+    const isPayingCustomer = localStorage.getItem("digitalGuidesRemainingV2");
 
-    if (existingPlan !== "undefined" && existingPlan !== null) {
+    if (isPayingCustomer !== "undefined" && isPayingCustomer !== null) {
       event.preventDefault(); // Prevent default navigation
-      open(); // Show modal
+      navigate("/planner-v2"); // Navigate to plan overview
     }
-  };
-
-  const viewExistingPlan = () => {
-    close();
-    navigate("/planner"); // Navigate to existing plan
-  };
-
-  const startNewPlan = () => {
-    localStorage.removeItem("climateData");
-    localStorage.removeItem("cropData");
-    localStorage.removeItem("plantingSchedule");
-    localStorage.removeItem("scheduleSummary");
-    localStorage.removeItem("companionPlantingAdvice");
-    localStorage.removeItem("companionPlants");
-    localStorage.removeItem("capturedImage");
-    localStorage.removeItem("fullPlanIntroExtras");
-    localStorage.removeItem("fullPlanTasks");
-    localStorage.removeItem("fullPlanSummaries");
-    close();
-    navigate("/planner"); // Navigate to existing plan
   };
 
   const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
@@ -133,7 +115,7 @@ const LandingPageV2 = () => {
       {/*  <List.Item icon="📦">Printed and shipped to your door (or delivered as a digital PDF) with your name on the cover, so you know it's made just for you.</List.Item>*/}
       {/*</List>*/}
 
-      <Button component={Link} to="/planner-v2" size="md" mb='xs'
+      <Button component={Link} to="/buy-v2" size="md" mb='xs'
               style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
               color={theme.colors.green[7]}
       >
@@ -144,13 +126,6 @@ const LandingPageV2 = () => {
 
   return(
     <>
-      <Modal opened={opened} onClose={close} title={<b>Continue or Start Over?</b>} centered>
-        <Text>You already have a saved garden plan. Would you like to open it or start a new one?</Text>
-        <Group justify="right" mt="md">
-          <Button onClick={viewExistingPlan} variant="light" color={theme.colors.green[7]}>View My Plan</Button>
-          <Button onClick={startNewPlan} variant="filled" color={theme.colors.green[7]}>Create New Plan</Button>
-        </Group>
-      </Modal>
       <Container p={0} m={0} w="100vw" fluid style={{position: "absolute", top: 0, right: 0, background: "#F7F4ED"}}>
         {/* set small screen to 83vh to show booklet in mobile view*/}
         <BackgroundImage
@@ -280,7 +255,7 @@ const LandingPageV2 = () => {
                   <Group mt="lg">
                     <Button
                       component={Link}
-                      to="/planner-v2"
+                      to="/buy-v2"
                       onClick={handleGetStartedClick}
                       size={isSmallScreen ? "md" :"lg"}
                       color={theme.colors.green[7]}
@@ -382,7 +357,7 @@ const LandingPageV2 = () => {
         <Center mt='md'>
           <Button
             component={Link}
-            to="/planner-v2"
+            to="/buy-v2"
             onClick={handleGetStartedClick}
             size={isSmallScreen ? "md" :"lg"}
             color={theme.colors.green[7]}
@@ -502,7 +477,7 @@ const LandingPageV2 = () => {
                   <List.Item>Available digitally or as a booklet, printed using durable paper stock perfect for outdoor use</List.Item>
                   <Button
                     component={Link}
-                    to="/planner-v2"
+                    to="/buy-v2"
                     onClick={handleGetStartedClick}
                     size='md'
                     color={theme.colors.green[7]}
@@ -582,7 +557,7 @@ const LandingPageV2 = () => {
               <Text>
                 Succession planting solves this problem by staggering your plantings so you can enjoy a continuous harvest throughout the season. The Growing Guide spaces out your planting dates according to the best planting times for each of your crops, so you can reuse garden space as crops finish.
               </Text>
-              <Link to='/'><IconArrowForward size={14} />Keep harvesting fresh veggies all season long</Link>
+              <Link to='/buy-v2'><IconArrowForward size={14} />Keep harvesting fresh veggies all season long</Link>
               {/*<Text>*/}
               {/*  Keep harvesting fresh veggies all season long, without needing to figure out the timing yourself.*/}
               {/*</Text>*/}
@@ -611,7 +586,7 @@ const LandingPageV2 = () => {
                 <List.Item>Naturally reduce pests without chemicals</List.Item>
                 <List.Item>Increases the diversity and resilience of your garden</List.Item>
               </List>
-              <Link to='/'><IconArrowForward size={14} />See what companion plants will work for you</Link>
+              <Link to='/buy-v2'><IconArrowForward size={14} />See what companion plants will work for you</Link>
             </Stack>
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6}}>
@@ -704,7 +679,7 @@ const LandingPageV2 = () => {
 
           <Button
             component={Link}
-            to="/planner-v2"
+            to="/buy-v2"
             onClick={handleGetStartedClick}
             size="md"
             color={theme.colors.green[7]}

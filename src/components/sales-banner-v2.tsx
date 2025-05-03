@@ -12,10 +12,11 @@ const SalesBannerV2 = (props: SalesBannerV2Props) => {
 
   const location = useLocation();
   const isV2 = location.pathname.includes('v2');
+  const isPayingV2 = localStorage.getItem('digitalGuidesRemainingV2');
 
   const theme = useMantineTheme();
 
-  if (!isV2) {
+  if (!isV2 || !!isPayingV2) {
     return null;
   }
 
@@ -30,7 +31,7 @@ const SalesBannerV2 = (props: SalesBannerV2Props) => {
             style={{ ...styles, position: 'fixed', top: 60, left: 0, right: 0, zIndex: 10, background: theme.colors.yellow[5] }}
           >
             <Center>
-              <Text size='sm' py={0} my={0} fw={500}>
+              <Text size='sm' py={0} my={0} fw={500} style={{textAlign: "center"}} >
                 Get 15% off your Growing Guide when you join our email list!{' '}
                 <Text
                   span

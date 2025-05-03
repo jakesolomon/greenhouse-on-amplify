@@ -6,11 +6,12 @@ import {useState} from "react";
 
 interface EmailOptInFormProps {
   setUserData: ( userName: string, userEmail: string ) => void
+  isV2?: boolean;
 }
 
 const EmailOptInForm = (props: EmailOptInFormProps) => {
 
-  const { setUserData } = props
+  const { setUserData, isV2 } = props
 
   const [ sendingUserData, setSendingUserData ] = useState(false)
 
@@ -33,7 +34,8 @@ const EmailOptInForm = (props: EmailOptInFormProps) => {
   const handleSubmit = async (values: { name: string, email: string }) => {
     setSendingUserData(true)
     // TODO should I set user data based on return value of API request ?
-    const result = await amplifyClient.queries.sendPrivySignup({ emailAddress: form.getValues().email, url: window.location.href });
+    const shouldUseV2EmbedForm = isV2 ? "true" : "false"
+    const result = await amplifyClient.queries.sendPrivySignup({ emailAddress: form.getValues().email, url: window.location.href, shouldUseV2EmbedForm: shouldUseV2EmbedForm });
     setUserData(values.name, values.email)
     console.log(result)
     setSendingUserData(false)

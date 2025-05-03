@@ -24,6 +24,12 @@ const Header = (props: HeaderProps) => {
 
   const location = useLocation();
   const isV2 = location.pathname.includes('v2');
+  const isPayingV2 = localStorage.getItem('digitalGuidesRemainingV2');
+  const myPlanLink = !isV2
+    ? "/planner"
+    : isPayingV2
+      ? "/planner-v2"
+      : "/buy-v2"
 
   const renderNavItem = (label: string, to: string) => (
     <NavLink to={isV2 ? `${to}-v2` : to}>
@@ -40,7 +46,7 @@ const Header = (props: HeaderProps) => {
   )
 
   const renderPlanButton = () => (
-    <NavLink to={isV2 ? '/planner-v2' : '/planner'}>
+    <NavLink to={myPlanLink}>
       <Button
         color={theme.colors.green[7]}
         ml='xs'

@@ -1,7 +1,7 @@
 import {Modal, Button, Text, Box, Title, Group, useMantineTheme} from '@mantine/core';
 import EmailOptInForm from "./email-opt-in-form.tsx";
 import {useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 
 interface EmailDiscountModalV2Props {
   opened: boolean;
@@ -14,6 +14,7 @@ const EmailDiscountModalV2 = (props: EmailDiscountModalV2Props) => {
 
   const location = useLocation();
   const isV2 = location.pathname.includes('v2');
+  const isPayingV2 = localStorage.getItem('digitalGuidesRemainingV2');
 
   const theme = useMantineTheme();
 
@@ -25,7 +26,7 @@ const EmailDiscountModalV2 = (props: EmailDiscountModalV2Props) => {
     setDisplayCode(true)
   }
 
-  if (!isV2) {
+  if (!isV2 || !!isPayingV2) {
     return null
   }
 
@@ -42,18 +43,14 @@ const EmailDiscountModalV2 = (props: EmailDiscountModalV2Props) => {
           displayCode
           ? <>
               <Text mb="sm">
-                Welcome to the community! Use code <strong>WELCOME15</strong> at checkout for your discount.
+                Welcome to the community! Code <strong>WELCOME15</strong> will be automatically applied at checkout.
               </Text>
               <Group justify="flex-end" mt="md">
                 <Button
-                  component={Link}
-                  to="/buy-v2"
-                  // variant="default"
-                  // mt="md"
                   color={theme.colors.green[7]}
                   onClick={() => setOpened(false)}
                 >
-                  Get My Guide
+                  Done
                 </Button>
               </Group>
             </>
@@ -62,7 +59,7 @@ const EmailDiscountModalV2 = (props: EmailDiscountModalV2Props) => {
               <Text mb="sm">
                 Sign up for our email list to receive 15% off your Growing Guide—plus seasonal gardening tips!
               </Text>
-              <EmailOptInForm setUserData={setUserData} />
+              <EmailOptInForm setUserData={setUserData} isV2={true}/>
             </>
 
         }

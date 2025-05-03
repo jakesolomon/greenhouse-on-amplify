@@ -6,7 +6,7 @@ import {Link, useLocation} from "react-router-dom";
 import DigitalMockup from "../assets/digital-plan-mockup.png";
 
 interface SalesCardDigitalGuideProps {
-  applyEmailDiscount: boolean;
+  applyEmailDiscount?: boolean;
 }
 
 const SalesCardDigitalGuide = (props: SalesCardDigitalGuideProps) => {

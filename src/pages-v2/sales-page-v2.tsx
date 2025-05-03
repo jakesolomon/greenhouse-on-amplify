@@ -142,7 +142,7 @@ const SalesPageV2 = () => {
             w="100%"
           >
             <Grid.Col p={0}>
-              <Title order={2} mb='lg' >Get Your Personalized Monthly Guide</Title>
+              <Title order={2} my='lg' >Get Your Personalized Monthly Guide</Title>
             </Grid.Col>
             <Grid.Col span={{ base: 12, sm: 6}} px={0}>
               <SalesCardPrintPlan applyEmailDiscount={!!hasOptedIn} />
@@ -249,7 +249,7 @@ const SalesPageV2 = () => {
               w="60%"
             >
               <Grid.Col>
-                <Title order={1} style={{fontSize: "2rem"}} mb='lg'>Get Your Personalized Monthly Guide</Title>
+                <Title order={1} style={{fontSize: "2rem"}} my='lg'>Get Your Personalized Monthly Guide</Title>
               </Grid.Col>
               <Grid.Col span={{ base: 12, xs: 6}}>
                 <SalesCardDigitalGuide applyEmailDiscount={!!hasOptedIn} />

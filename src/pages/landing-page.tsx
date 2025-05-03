@@ -26,6 +26,16 @@ import Testimonials from "../components/testimonials.tsx";
 
 const LandingPage = () => {
 
+  const navigate = useNavigate(); // React Router navigation
+
+  // Redirect to v2 if v2 user is revisiting the site
+  useEffect(() => {
+    const isV2User = localStorage.getItem('isV2User');
+    if (isV2User === 'true') {
+      navigate('/home-v2', { replace: true });
+    }
+  }, [navigate]);
+
   // Check if mobile device is running on low battery mode. Will suspend landing page video.
   const [canAutoplay, setCanAutoplay] = useState<boolean | null>(null);
 
@@ -50,7 +60,6 @@ const LandingPage = () => {
   const theme = useMantineTheme();
 
   const [opened, { open, close }] = useDisclosure(false);
-  const navigate = useNavigate(); // React Router navigation
 
   const [ hoveredTimelineElement, setHoveredTimelineElement ] = useState<number>()
 

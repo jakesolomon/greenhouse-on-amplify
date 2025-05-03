@@ -8,7 +8,7 @@ import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 import {Link, useLocation} from "react-router-dom";
 
 interface SalesCardPrintGuideProps {
-  applyEmailDiscount: boolean;
+  applyEmailDiscount?: boolean;
 }
 
 const SalesCardPrintGuide = (props: SalesCardPrintGuideProps) => {
