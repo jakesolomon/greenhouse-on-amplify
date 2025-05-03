@@ -153,7 +153,7 @@ const Checkout = () => {
   const fetchClientSecret = useCallback(() => {
     const origin = window.location.origin
 
-    return amplifyClient.queries.createCheckoutSession({origin: origin, product: product})
+    return amplifyClient.queries.createCheckoutSession({origin: origin, product: product, automaticallyApplyWelcome15: "false"})
       .then((result) => JSON.parse(result.data!))
       .then((data) => {
         if (!data.sessionId) setFatalError("Could not initialize checkout.")

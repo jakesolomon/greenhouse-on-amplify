@@ -5,7 +5,9 @@ import { Schema } from "../../data/resource";
 
 export const handler: Schema["createCheckoutSession"]["functionHandler"]  = async (event) => {
 
-  const { origin, product } = event.arguments
+  const { origin, product, automaticallyApplyWelcome15 } = event.arguments
+
+  const automaticallyApplyWelcome15Parsed: boolean = JSON.parse(automaticallyApplyWelcome15)
 
   const price =
     product === "print"
@@ -14,7 +16,27 @@ export const handler: Schema["createCheckoutSession"]["functionHandler"]  = asyn
 
   const stripe = new Stripe(env.STRIPE_API_KEY);
 
-  const session = await stripe.checkout.sessions.create({
+  const preSetDiscountOptions: Stripe.Checkout.SessionCreateParams = {
+    line_items: [
+      {
+        price: price,
+        quantity: 1,
+      },
+    ],
+    discounts: [
+      {
+        promotion_code: 'promo_1RE7RHKXcuXgnQQoAeTA6eS4', // Use the promotion_code ID, not the code string
+      },
+    ],
+    payment_method_types: ['card'],
+    mode: 'payment',
+    ui_mode: 'embedded',
+    return_url: `${origin}/purchase?session_id={CHECKOUT_SESSION_ID}`,
+    redirect_on_completion: 'if_required',
+    automatic_tax: {enabled: true},
+  }
+
+  const allowPromoCodeOptions: Stripe.Checkout.SessionCreateParams = {
     line_items: [
       {
         price: price,
@@ -27,13 +49,12 @@ export const handler: Schema["createCheckoutSession"]["functionHandler"]  = asyn
     ui_mode: 'embedded',
     return_url: `${origin}/purchase?session_id={CHECKOUT_SESSION_ID}`,
     redirect_on_completion: 'if_required',
-    // return_url: 'https://example.com/checkout/return?session_id={CHECKOUT_SESSION_ID}',
-    // success_url: `https://thegrowingguide.com/purchased?success=true`,
-    // cancel_url: `https://thegrowingguide.com/purchased?canceled=true`,
-    // cancel_url: `${YOUR_DOMAIN}?canceled=true`,
     automatic_tax: {enabled: true},
-  });
+  }
 
+  const session = automaticallyApplyWelcome15Parsed
+    ? await stripe.checkout.sessions.create(preSetDiscountOptions)
+    : await stripe.checkout.sessions.create(allowPromoCodeOptions)
 
   return JSON.stringify({clientSecret: session.client_secret, sessionId: session.id, email: session.customer_email});
 };

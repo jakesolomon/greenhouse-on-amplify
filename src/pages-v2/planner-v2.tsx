@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 import { Schema } from "../../amplify/data/resource.ts";
 
-import PlanOverview from "../components/plan-overview.tsx";
+import PlanOverviewV2 from "../components/plan-overview-v2.tsx";
 import Quiz from "../components/quiz/quiz.tsx";
 import {ClimateDataOutput, Crop, GrowingDateRange, Planting, SeedVariety} from "../types.ts";
 import { cropTypes, SelectableCropType } from "../helpers/crop-types.ts";
@@ -485,7 +485,7 @@ const PlannerV2 = () => {
       {
         // Show planner if we have crop data or we're loading it
         (!!cropData || loadingCropData) &&
-        <PlanOverview
+        <PlanOverviewV2
           crops={cropData}
           plantingSchedule={plantingSchedule}
           climateData={climateData}

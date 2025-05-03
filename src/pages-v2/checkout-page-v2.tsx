@@ -1,5 +1,5 @@
-import {useCallback, useState, useRef, useEffect} from "react";
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {useCallback, useState, useRef} from "react";
+import {Link, useLocation, useSearchParams} from "react-router-dom";
 import { loadStripe } from '@stripe/stripe-js';
 import {
   EmbeddedCheckoutProvider,
@@ -7,21 +7,11 @@ import {
 } from '@stripe/react-stripe-js';
 import { generateClient } from "aws-amplify/api";
 import {
-  AppShell,
-  Button,
-  Center,
-  Container,
-  Loader,
-  Modal,
-  Notification,
-  Overlay,
-  Stack,
-  Text, useMantineTheme
+  AppShell, Button,
+  Container, Stack, Text, Title, useMantineTheme,
 } from "@mantine/core";
 
 import { Schema } from "../../amplify/data/resource.ts";
-import PurchasePage from "./purchase-page-v2.tsx";
-import { Crop, CropDataForFullPlanRequests} from "../types.ts";
 import Footer from "../components/footer.tsx";
 
 const stripePromise = loadStripe('pk_live_51QqzXAKXcuXgnQQoI7W92SOXf33wFGGvQOBQCsBGo2msG1XlYg7VFI8DVHfjvYYXkJhZnPncxtUnlsYeVcETeq3V00pW4AVNnV');
@@ -33,6 +23,8 @@ declare global {
 }
 
 const CheckoutV2 = () => {
+
+  const theme = useMantineTheme();
 
   const [searchParams] = useSearchParams();
   const product =
@@ -47,80 +39,8 @@ const CheckoutV2 = () => {
 
   const amplifyClient = generateClient<Schema>()
 
-  const theme = useMantineTheme();
-
   const sessionIdRef = useRef<string | null>(null);
   const [ isComplete, setIsComplete ] = useState(false);
-  const [ isGeneratingPlan, setIsGeneratingPlan ] = useState(false);
-
-  const [ fatalError, setFatalError ] = useState<string>();
-
-  const navigate = useNavigate(); // React Router navigation
-
-  // For data we want to parse, we have to check the "undefined" case
-  const cropData = localStorage.getItem("cropData");
-  const crops = cropData && cropData !== "undefined" ? JSON.parse(cropData) : null;
-  const cropsEssential: CropDataForFullPlanRequests[] = crops?.map((crop: Crop) => ({
-    name: crop.name,
-    variety: crop.variety,
-    directSow: crop.directSow,
-  }))
-
-  const scheduleSummaryData = localStorage.getItem("scheduleSummary");
-  const scheduleSummary = scheduleSummaryData && scheduleSummaryData !== "undefined" ? JSON.parse(scheduleSummaryData) : null;
-
-  // const crops = JSON.parse(localStorage.getItem("cropData")  || `[{"name":"Crops not found","variety":"","shortDescription":""}]`);
-  const plantingSchedule = localStorage.getItem("plantingSchedule");
-  const gantt = localStorage.getItem("capturedImage")
-  // const scheduleSummary: string = localStorage.getItem("scheduleSummary") ? JSON.parse(localStorage.getItem("scheduleSummary")!) : null;
-  const climateData = localStorage.getItem("climateData");
-  const companionPlantingAdvice = localStorage.getItem("companionPlantingAdvice");
-
-  useEffect(() => {
-    if (
-      !crops ||
-      !cropsEssential ||
-      !scheduleSummary ||
-      !plantingSchedule ||
-      !gantt ||
-      !climateData ||
-      !companionPlantingAdvice
-    ) {
-      console.error("Some data is missing.\n\n" +
-        `crops: ${crops ? "present" : "not present"} + \n\n` +
-        `cropsEssential: ${cropsEssential ? "present" : "not present"} + \n\n` +
-        `scheduleSummary: ${scheduleSummary ? "present" : "not present"} + \n\n` +
-        `plantingSchedule: ${plantingSchedule ? "present" : "not present"} + \n\n` +
-        `gantt: ${gantt ? "present" : "not present"} + \n\n` +
-        `climateData: ${climateData ? "present" : "not present"} + \n\n` +
-        `companionPlantingAdvice: ${companionPlantingAdvice ? "present" : "not present"}`
-      )
-
-      setFatalError("Your Plan Data is Missing")
-    }
-  }, [
-    cropsEssential,
-    scheduleSummary,
-    plantingSchedule,
-    gantt,
-    climateData,
-    companionPlantingAdvice
-  ]);
-
-  const startNewPlan = () => {
-    localStorage.removeItem("climateData");
-    localStorage.removeItem("cropData");
-    localStorage.removeItem("plantingSchedule");
-    localStorage.removeItem("scheduleSummary");
-    localStorage.removeItem("companionPlantingAdvice");
-    localStorage.removeItem("companionPlants");
-    localStorage.removeItem("capturedImage");
-    localStorage.removeItem("fullPlanIntroExtras");
-    localStorage.removeItem("fullPlanTasks");
-    localStorage.removeItem("fullPlanSummaries");
-    close();
-    navigate("/planner"); // Navigate to existing plan
-  };
 
   const handleComplete = async () => {
     if (!sessionIdRef.current) {
@@ -128,31 +48,17 @@ const CheckoutV2 = () => {
       return;
     }
     setIsComplete(true);
-    setIsGeneratingPlan(true);
-
-    const cropsStringified = JSON.stringify(crops)
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: product === 'digital' ? 'digitalPurchaseCompleted' : 'printPurchaseCompleted'
     });
 
-    amplifyClient.queries.handleStripePurchase({
-      sessionId: sessionIdRef.current!,
-      product: product,
-
-      scheduleSummary: scheduleSummary,
-      crops: cropsStringified,
-      gantt: gantt!,
-
-      plantingSchedule: plantingSchedule!,
-      climateData: climateData!,
-      companionPlantingAdvice: companionPlantingAdvice!
-    })
-
-    localStorage.setItem("purchaseMade", "true")
-
-    setIsGeneratingPlan(false);
+    localStorage.setItem("digitalGuidesRemainingV2", "3")
+    if (product === 'print') {
+      localStorage.setItem("printGuidesRemainingV2", "1")
+    }
+    localStorage.setItem("purchaseSessionId", sessionIdRef.current)
   }
 
   const fetchClientSecret = useCallback(() => {
@@ -161,7 +67,6 @@ const CheckoutV2 = () => {
     return amplifyClient.queries.createCheckoutSession({origin: origin, product: product, automaticallyApplyWelcome15: JSON.stringify(automaticallyApplyWelcome15)})
       .then((result) => JSON.parse(result.data!))
       .then((data) => {
-        if (!data.sessionId) setFatalError("Could not initialize checkout.")
         sessionIdRef.current = data.sessionId;
         return data.clientSecret
       });
@@ -169,46 +74,28 @@ const CheckoutV2 = () => {
 
   const options = {fetchClientSecret};
 
-  if (fatalError) {
-    return (
-      <Overlay blur={2}>
-        <Center>
-          <Stack justify="center" h="60vh" >
-            <Notification
-              title={fatalError}
-              w="22em"
-              color="red"
-              withCloseButton={false}
-            >
-              <Text my='sm' >We couldn’t find your plan details. This may happen if you cleared your storage, switched devices, or haven't created a plan yet. Please generate a new plan before checking out.</Text>
-              <Button onClick={startNewPlan} variant="filled">Create New Plan</Button>
-            </Notification>
-          </Stack>
-        </Center>
-      </Overlay>
-      // <Modal opened={true} title={<b>Your Plan Data is Missing</b>} centered>
-      //   <Text>We couldn’t find your plan details. This may happen if you cleared your storage, switched devices, or haven't created a plan yet. Please generate a new plan before checking out.</Text>
-      //   <Group justify="right" mt="md">
-      //     {/*<Button onClick={viewExistingPlan} variant="light">View My Plan</Button>*/}
-      //     <Button onClick={startNewPlan} variant="filled">Create New Plan</Button>
-      //   </Group>
-      // </Modal>
-    )
-  }
-
-  if (isGeneratingPlan) {
-    return (
-      <Modal opened={true} withCloseButton={false} onClose={() => {}} title={<b>Generating your plan<Loader color={theme.black} type="dots" size="sm" ml="0.3rem" style={{ display: 'inline-flex', verticalAlign: 'top'  }}/></b>} centered>
-        {/*<Center mb="lg"><Loader size="lg"></Loader></Center>*/}
-        <Text id="generating-full-guide-alert">Do not close this window.</Text>
-      </Modal>
-    )
-  }
-
   if (isComplete) {
     return (
       <>
-        <PurchasePage />
+        <Container size="md" my="xl" id="purchase-page">
+          <Stack gap='sm' align='right'>
+            <Title order={2}>Thank You for Your Purchase!</Title>
+            {/*<Text><Link to="/planner-v2">Get Started</Link></Text>*/}
+            <Text size='lg' fw={500}>Ordered a printed copy?</Text>
+            <Text>Once you create your plan you like, you can get it printed and shipped from your Plan Overview.</Text>
+            <Text size='lg' fw={500}>Need Help?</Text>
+            <Text>If you have any questions about your order, feel free to contact us <Link to="/contact">here</Link>.</Text>
+          </Stack>
+          <Button
+            component={Link}
+            to="/planner-v2"
+            size="md"
+            color={theme.colors.green[7]}
+            mt='sm'
+          >
+            Continue To My Plan
+          </Button>
+        </Container>
         <AppShell.Footer style={{position: "relative", bottom: "0px"}} >
           <Footer />
         </AppShell.Footer>
