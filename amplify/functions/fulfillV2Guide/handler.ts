@@ -1,4 +1,4 @@
-import { env } from '$amplify/env/handleStripePurchase';
+import { env } from '$amplify/env/fulfillV2Guide';
 import {Logger} from "@aws-lambda-powertools/logger";
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
 import {S3Client, PutObjectCommand, PutObjectCommandInput } from "@aws-sdk/client-s3";
