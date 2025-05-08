@@ -9,11 +9,17 @@ export const handler: Schema["createCheckoutSession"]["functionHandler"]  = asyn
 
   const automaticallyApplyWelcome15Parsed: boolean = JSON.parse(automaticallyApplyWelcome15)
 
+  // V2 price indicates a different "product" in stripe, whose description explains the redirect to planner upon transaction complete.
   const price =
     product === "print"
     ? 'price_1RCIzmKXcuXgnQQohShuxB7I'
-    : 'price_1RBnjYKXcuXgnQQoa2eimOk7'
-
+    : product === "digital"
+    ? 'price_1RBnjYKXcuXgnQQoa2eimOk7'
+    : product === "print-v2"
+    ? "price_1RMaEgKXcuXgnQQo9kEaMdkJ"
+    : product === 'digital-v2'
+    ? "price_1RMaCeKXcuXgnQQojsCAlqUh"
+    : "not found"
   const stripe = new Stripe(env.STRIPE_API_KEY);
 
   const preSetDiscountOptions: Stripe.Checkout.SessionCreateParams = {

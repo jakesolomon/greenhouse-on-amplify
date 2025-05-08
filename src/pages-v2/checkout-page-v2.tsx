@@ -64,7 +64,7 @@ const CheckoutV2 = () => {
   const fetchClientSecret = useCallback(() => {
     const origin = window.location.origin
 
-    return amplifyClient.queries.createCheckoutSession({origin: origin, product: product, automaticallyApplyWelcome15: JSON.stringify(automaticallyApplyWelcome15)})
+    return amplifyClient.queries.createCheckoutSession({origin: origin, product: `${product}-v2`, automaticallyApplyWelcome15: JSON.stringify(automaticallyApplyWelcome15)})
       .then((result) => JSON.parse(result.data!))
       .then((data) => {
         sessionIdRef.current = data.sessionId;
@@ -77,7 +77,7 @@ const CheckoutV2 = () => {
   if (isComplete) {
     return (
       <>
-        <Container size="md" my="xl" id="purchase-page">
+        <Container size="md" my="xl" mx={0} id="purchase-page">
           <Stack gap='sm' align='right'>
             <Title order={2}>Thank You for Your Purchase!</Title>
             {/*<Text><Link to="/planner-v2">Get Started</Link></Text>*/}
