@@ -1,6 +1,12 @@
 import {Text, Accordion} from "@mantine/core";
+import {NavLink, useLocation} from "react-router-dom";
+import { cropTypes } from "../helpers/crop-types.ts";
 
 const Faq = () => {
+
+  const location = useLocation();
+  const isV2 = location.pathname.includes('v2');
+  const crops = Object.keys(cropTypes)
 
   const faqData = [
     // {
@@ -13,7 +19,13 @@ const Faq = () => {
       value: "vegetable-types",
       question: "What types of vegetables does The Growing Guide support?",
       answer:
-        <Text>Your guide will focus on <em>annual</em> vegetables, herbs, and other common garden plants. (Annuals are ideal for one-season planning, as they grow, produce, and are harvested within a single year.) This allows us to create a one-year guide that takes your crops from planting to harvest.</Text>,
+        <Text>
+          Your guide will focus on <em>annual</em> vegetables, herbs, and other common garden plants. (Annuals are ideal for one-season planning, as they grow, produce, and are harvested within a single year.) This allows us to create a one-year guide that takes your crops from planting to harvest.
+          {
+            isV2 &&
+            <><br/><br/>To build your garden plan, you can select from our list of supported crops:<br/><br/>{crops.join(", ")}.<br/><br/>We're always adding to this list, so <NavLink to='/contact-v2'>let us know</NavLink> if you don't see something you want to grow in your garden this year.</>
+          }
+        </Text>,
     },
     {
       value: "cost",

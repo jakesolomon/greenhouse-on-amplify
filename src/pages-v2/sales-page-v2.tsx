@@ -20,6 +20,7 @@ import Faq from "../components/faq.tsx";
 import Testimonials from "../components/testimonials.tsx";
 import SalesCardPrintPlan from "../components/sales-card-print-guide.tsx";
 import SalesCardDigitalGuide from "../components/sales-card-digital-guide.tsx";
+import ProductTimeline from "../components/product-timeline.tsx";
 
 const SalesPageV2 = () => {
 
@@ -149,6 +150,10 @@ const SalesPageV2 = () => {
             </Grid.Col>
             <Grid.Col span={{ base: 12, sm: 6}} px={0}>
               <SalesCardDigitalGuide applyEmailDiscount={!!hasOptedIn} />
+            </Grid.Col>
+            <Grid.Col span={{base: 12}} px={0}>
+                <Title order={2}>What You Can Expect</Title>
+                <ProductTimeline />
             </Grid.Col>
             <Grid.Col span={{base: 12}} px={0}>
               {canAutoplay
@@ -295,6 +300,11 @@ const SalesPageV2 = () => {
       {/*    </>*/}
       {/*  }*/}
       {/*</Container>*/}
+
+      <Container size='sm' mb="xl">
+        <Title order={2}>What You Can Expect</Title>
+        <ProductTimeline />
+      </Container>
 
       <Container size="lg" h="370px" mb='lg' style={{zIndex: 1}}>
         <Grid m={0} p={0} gutter="xl">

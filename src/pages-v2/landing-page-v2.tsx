@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {
   Button,
   Container,
@@ -7,7 +7,6 @@ import {
   Text,
   useMantineTheme,
   Card,
-  Timeline,
   AppShell,
   Image,
   Group,
@@ -25,6 +24,7 @@ import { IconPlant2, IconArrowForward } from '@tabler/icons-react';
 import useWindowSize from "../helpers/useWindowSize.ts";
 import {useEffect, useState} from "react";
 
+import ProductTimeline from "../components/product-timeline.tsx"
 import SuccessionPlanting from "../assets/succession-planting-sketch.png";
 import CompanionPlanting from "../assets/companion-planting-sketch.png";
 import KaleFrost from "../assets/kale-frost-lowres.png"
@@ -39,6 +39,8 @@ import SeedingEdit from "../assets/seeding-edit-1.mp4";
 import SeedingEditStill from "../assets/seeding-edit-still.png";
 import PlanOverviewDemo from "../assets/plan-overview-demo.mov"
 import Testimonials from "../components/testimonials.tsx";
+import SalesCardDigitalGuide from "../components/sales-card-digital-guide.tsx";
+import SalesCardPrintGuide from "../components/sales-card-print-guide.tsx";
 
 const LandingPageV2 = () => {
 
@@ -72,8 +74,6 @@ const LandingPageV2 = () => {
   const theme = useMantineTheme();
 
   const navigate = useNavigate(); // React Router navigation
-
-  const [ hoveredTimelineElement, setHoveredTimelineElement ] = useState<number>()
 
   const { width } = useWindowSize();
   const trueWidth = width < 960 + 32 * 2 ? width - 32 * 2 : 960
@@ -368,6 +368,17 @@ const LandingPageV2 = () => {
         </Center>
       </Container>
 
+      <Container size='md' my='xl' px={0}>
+        <Center>
+          <Title order={2} mb="lg">Create a guidebook that's custom-tailored for your garden.</Title>
+        </Center>
+        <Box h="15px"/>
+        <Grid>
+          <Grid.Col span={{ base: 12, sm: 6}}><SalesCardDigitalGuide /></Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6}}><SalesCardPrintGuide/></Grid.Col>
+        </Grid>
+      </Container>
+
       {/*How it works*/}
       {/*<Container size="lg" my="md" >*/}
       {/*  <BackgroundImage*/}
@@ -614,69 +625,7 @@ const LandingPageV2 = () => {
           How It Works
         </Title>
         <Text size="lg" fw={500}>Transform your gardening experience with our step-by-step process.</Text>
-
-        <Timeline
-          active={hoveredTimelineElement}
-          bulletSize={20}
-          lineWidth={3}
-          color="green"
-          mt="xl"
-          w="100%"
-        >
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(0)}
-            title="Step 1: Tell Us About Your Garden"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Share a few quick details—where you live, and what you want to grow.
-            </Text>
-          </Timeline.Item>
-
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(1)}
-            title="Step 2: Instant Personalized Plan"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Using your info, we generate a complete growing plan tailored to your crops and climate.
-            </Text>
-          </Timeline.Item>
-
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(2)}
-            title="Step 3: Refine and Customize"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Adjust crop selections, explore companion planting, and add variety to revise your garden design until you love it.
-            </Text>
-          </Timeline.Item>
-
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(3)}
-            title="Step 4: Get Your Personalized Guide"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Choose between a downloadable PDF or a printed booklet. Inside, you’ll find month-by-month tasks and note-taking space to track your journey, with smart techniques like succession planting and companion planting all built in.
-            </Text>
-          </Timeline.Item>
-
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(4)}
-            title="Step 5: Your Monthly Guide"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Each chapter tells you what to do that month—what to plant, transplant, prune, or harvest. Keep your garden productive all season long without the need to reasearch every step of the way.
-            </Text>
-          </Timeline.Item>
-
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(5)}
-            title="Step 6: Grow with Confidence"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Follow your plan, watch your garden flourish, and enjoy the rewards of a productive and thriving vegetable garden!
-            </Text>
-          </Timeline.Item>
-
+          <ProductTimeline />
           <Button
             component={Link}
             to="/buy-v2"
@@ -685,11 +634,10 @@ const LandingPageV2 = () => {
             color={theme.colors.green[7]}
             radius="md"
             mt='md'
-            ml='md'
+            ml='xl'
           >
             Get Started Now
           </Button>
-        </Timeline>
       </Container>
 
       <Center>
