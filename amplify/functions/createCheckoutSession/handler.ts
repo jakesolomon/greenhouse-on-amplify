@@ -3,6 +3,8 @@ import Stripe from 'stripe';
 
 import { Schema } from "../../data/resource";
 
+// THIS ENDPOINT IS DEPRECATED.
+
 export const handler: Schema["createCheckoutSession"]["functionHandler"]  = async (event) => {
 
   const { origin, product, automaticallyApplyWelcome15 } = event.arguments

@@ -6,9 +6,7 @@ import { Logger } from "@aws-lambda-powertools/logger";
 
 import { Schema } from "../../data/resource";
 
-
 // THIS ENDPOINT IS DEPRECATED.
-
 
 // These types adhere to the response format in /src/types.ts
 
