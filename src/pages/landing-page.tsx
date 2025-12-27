@@ -101,37 +101,6 @@ const LandingPage = () => {
     duration: 600,
   });
 
-  const salesCard = (
-    <Card my='lg' py='md' px={isSmallScreen ? undefined : 'lg'} withBorder>
-      {
-        isSmallScreen &&
-        <Card.Section mb='sm'>
-          <AspectRatio ratio={1080 / 540}>
-            <Image
-              src={BookletMockupLeft}
-              alt="Booklet mockup"
-            />
-          </AspectRatio>
-        </Card.Section>
-      }
-      <Title order={2} mb='xs'>Ready to Get Started?</Title>
-      <Text mb='md'>The Monthly Guide shows you exactly how to make your garden plan happen.</Text>
-      <Text mb='md'>Start with your free Plan Overview to learn when to plant, how to maximize the use of your available space, and more.</Text>
-      <Text mb='md'>It's free to get started, no account required.</Text>
-      {/*<List spacing="sm" size='md' style={{alignItems: "start"}} mb='lg'>*/}
-      {/*  <List.Item icon={<Box>🗓</Box>}>We take the same custom planning process — tailored to your climate and crops — and break it down into monthly, easy-to-follow instructions.</List.Item>*/}
-      {/*  <List.Item icon="📦">Printed and shipped to your door (or delivered as a digital PDF) with your name on the cover, so you know it's made just for you.</List.Item>*/}
-      {/*</List>*/}
-
-      <Button component={Link} to="/planner" size="md" mb='xs'
-              style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
-              color={theme.colors.green[7]}
-      >
-        Plan My Garden
-      </Button>
-    </Card>
-  )
-
   return(
     <>
       <Modal opened={opened} onClose={close} title={<b>Continue or Start Over?</b>} centered>
@@ -499,34 +468,6 @@ const LandingPage = () => {
         <Text fs='italic' mb='sm'>See what others are saying</Text>
         <Testimonials />
       </Container>
-
-      {
-        isSmallScreen
-          ?
-          <>{salesCard}</>
-          :
-          <Container size='md' my="md" px={0} display="flex">
-            <BackgroundImage
-              src={BookletMockupLeft}
-              style={{backgroundPosition: "center", position: "relative"}}
-            >
-              <Box h={30} />
-              <Grid
-                justify="right"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'left',
-                }}
-              >
-                <Grid.Col span={5} m='xl'>
-                  {salesCard}
-                </Grid.Col>
-              </Grid>
-              <Box h={30} />
-            </BackgroundImage>
-          </Container>
-      }
 
       {/*<Container size="lg" pt="md" px={0}>*/}
       {/*  <BackgroundImage*/}

@@ -4,19 +4,16 @@ import {
   Accordion,
   Skeleton,
   Title,
-  List,
   AppShell,
   useMantineTheme,
   Anchor,
   Alert,
-  Button,
   Modal,
   Image,
   Box,
   BackgroundImage,
   Grid,
   Card,
-  AspectRatio
 } from '@mantine/core';
 import {useDisclosure, useViewportSize} from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
@@ -33,15 +30,10 @@ import CropList from "./crop-list.tsx";
 import {useEffect, useState} from "react";
 
 import "./plan-overview.css";
-import {Link} from "react-router-dom";
 import Footer from "./footer.tsx";
 import EmailOptInForm from "./email-opt-in-form.tsx";
 import LittleTomato from "../assets/little-tomato-plant-extended-shrunk.png"
-import BookletMockupLeft from "../assets/booklet-mockup-left.png";
 import Garden3 from "../assets/garden-3-big.png";
-import SalesBanner from "./sales-banner.tsx";
-import SalesCardPrintGuide from "./sales-card-print-guide.tsx";
-import SalesCardDigitalGuide from "./sales-card-digital-guide.tsx";
 
 interface DataDisplayProps {
   crops?: Crop[];
@@ -97,8 +89,6 @@ const PlanOverview = (props: DataDisplayProps) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const paywallInfo = !localStorage.getItem("purchaseMade");
 
   const plantingScheduleLoading = plantingSchedule.length === 0;
   const noSuccessionPlanting =
@@ -212,42 +202,6 @@ const PlanOverview = (props: DataDisplayProps) => {
     });
   }
 
-  const salesCard = (
-    <Card my='lg' px={isSmallScreen ? undefined : 'lg'} withBorder>
-      {
-        isSmallScreen &&
-        <Card.Section mb='sm'>
-          <AspectRatio ratio={1080 / 540}>
-            <Image
-              src={BookletMockupLeft}
-              alt="Booklet mockup"
-            />
-          </AspectRatio>
-        </Card.Section>
-      }
-      <Title order={2} mb='xs'>Ready for the next step?</Title>
-      <Text mb='md'>The Monthly Guide shows you exactly how to make your garden plan happen.</Text>
-
-      {/*/!*<Text mb='md'>🗓️ We take the same custom planning process as your Plan Overview — tailored to your location, climate, and crops — and break it down into monthly, easy-to-follow tasks. No generic advice, no confusion. Just clear, timely instructions written for your garden and your garden only.</Text>*!/*/}
-      {/*<Text mb='md' size='lg'>🗓️ We take the same custom planning process — tailored to your location, climate, and crops — and break it down into monthly, easy-to-follow instructions.</Text>*/}
-      {/*<Text mb='md' size='lg'>📦 Printed and shipped to your door (or delivered as a digital PDF) with your name on the cover, so you know it's made just for you.</Text>*/}
-      {/*/!*<Text mb='md'>📦 Printed and shipped to your door (or delivered as a digital PDF), so you’ll always know what to do next.</Text>*!/*/}
-      {/*/!*<Text mb='md'>The Monthly Guide breaks everything down into clear, manageable tasks. Each month, you’ll know exactly what to plant, harvest, and care for, all organized by plot. No confusion, no overwhelm. Just a simple, step-by-step guide that keeps you on track all season long.</Text>*!/*/}
-
-      <List spacing="sm" size='md' style={{alignItems: "start"}} mb='lg'>
-        <List.Item icon={<Box>🗓</Box>}>We take the same custom planning process — tailored to your climate and crops — and break it down into monthly, easy-to-follow instructions.</List.Item>
-        <List.Item icon="📦">Printed and shipped to your door (or delivered as a digital PDF) with your name on the cover, so you know it's made just for you.</List.Item>
-      </List>
-
-      <Button component={Link} to="/buy" loading={!summary} size="md" mb='xs'
-              style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
-              color={theme.colors.green[7]}
-      >
-        Get your Monthly Guide
-      </Button>
-    </Card>
-  )
-
   const moreInfoCards = (
     <>
       <Card my='lg' p='lg' shadow="sm" withBorder style={{borderWidth: "1px"}} radius="md">
@@ -322,31 +276,7 @@ const PlanOverview = (props: DataDisplayProps) => {
         </Accordion.Item>
         <Accordion.Item value="additionalAdvice">
           <Accordion.Control icon="📝">Growing Tips</Accordion.Control>
-          <Accordion.Panel style={{position: "relative", overflow: "hidden"}} mah={paywallInfo ? isSmallScreen ? 550 : 350 : undefined}>
-
-            {/*Limit view for non-paying users*/}
-            {
-              paywallInfo &&
-              <Box
-                style={{
-                  position: 'absolute',
-                  inset: "60% 0 0 0",
-                  zIndex: 1,
-                  background:
-                    `linear-gradient(
-                      to top, 
-                      #FFF 0%,
-                      rgba(255, 255, 255, 1) 40%, 
-                      rgba(255, 255, 255, 0.85) 55%, 
-                      rgba(255, 255, 255, 0.5) 70%, 
-                      rgba(255, 255, 255, 0.15) 85%, 
-                      transparent 100%
-                    )`
-                }}
-              >
-                <Box style={{position: "absolute", bottom: 0}} w="100%"><Alert variant="light" color="green" icon={isSmallScreen ? undefined : infoIcon} title={<>Get all this and more in the <Anchor href="/buy" >Monthly Guide.</Anchor></>}></Alert></Box>
-              </Box>
-            }
+          <Accordion.Panel style={{position: "relative", overflow: "hidden"}}>
 
             {
               growingTips
@@ -364,31 +294,7 @@ const PlanOverview = (props: DataDisplayProps) => {
         </Accordion.Item>
         <Accordion.Item value="companionPlants">
           <Accordion.Control icon="🤝">Companion Plants</Accordion.Control>
-          <Accordion.Panel style={{position: "relative", overflow: "hidden"}} mah={paywallInfo ? isSmallScreen ? 550 : 350 : undefined}>
-
-            {/*Limit view for non-paying users*/}
-            {
-              paywallInfo &&
-              <Box
-                style={{
-                  position: 'absolute',
-                  inset: "60% 0 0 0",
-                  zIndex: 1,
-                  background:
-                    `linear-gradient(
-                      to top, 
-                      #FFF 0%,
-                      rgba(255, 255, 255, 1) 40%, 
-                      rgba(255, 255, 255, 0.85) 55%, 
-                      rgba(255, 255, 255, 0.5) 70%, 
-                      rgba(255, 255, 255, 0.15) 85%, 
-                      transparent 100%
-                    )`
-                }}
-              >
-                <Box style={{position: "absolute", bottom: 0}} w="100%"><Alert variant="light" color="green" icon={isSmallScreen ? undefined : infoIcon} title={<>Get all this and more in the <Anchor href="/buy">Monthly Guide.</Anchor></>}></Alert></Box>
-              </Box>
-            }
+          <Accordion.Panel style={{position: "relative", overflow: "hidden"}}>
 
             <Text size="sm" c="dimmed" mb="sm">Companion planting involves pairing plants that benefit each other. By planting your crops together with certain flowers or herbs, you can boost your garden's health and productivity. It’s a natural way to improve growth and protect against pests.</Text>
             {
@@ -449,8 +355,6 @@ const PlanOverview = (props: DataDisplayProps) => {
           <EmailOptInForm setUserData={setUserData} />
         </Box>
       </Modal>
-
-      <SalesBanner />
 
       <BackgroundImage
         src={Garden3}
@@ -547,46 +451,10 @@ const PlanOverview = (props: DataDisplayProps) => {
           <Text c="dimmed">Want to create a different plan? {isSmallScreen && <br/>}<Anchor onClick={startPlanOver}>Start over here.</Anchor></Text>
         </Container>
 
-        {/*Sales Cards*/}
-        <Title order={3} mb="sm">Turn this plan into a step-by-step guide with the Monthly Guide!</Title>
-        <Container size='sm' my='xl' px={0}>
-          <Box h="15px"/>
-          <Grid>
-            <Grid.Col span={{ base: 12, sm: 6}}><SalesCardDigitalGuide /></Grid.Col>
-            <Grid.Col span={{ base: 12, sm: 6}}><SalesCardPrintGuide/></Grid.Col>
-          </Grid>
-        </Container>
-
         {
           isSmallScreen
             ? <>{moreInfoAccordion}</>
             : <>{moreInfoCards}</>
-        }
-
-        {
-          isSmallScreen
-            ?
-            <>{salesCard}</>
-            :
-            <Container my="md" px={0} display="flex">
-              <BackgroundImage
-                src={BookletMockupLeft}
-                style={{backgroundPosition: "center", position: "relative"}}
-              >
-                <Grid
-                  justify="right"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'left',
-                  }}
-                >
-                  <Grid.Col span={5.6} m='xl'>
-                    {salesCard}
-                  </Grid.Col>
-                </Grid>
-              </BackgroundImage>
-            </Container>
         }
 
         {/*<Center>*/}
