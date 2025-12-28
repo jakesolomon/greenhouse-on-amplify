@@ -94,7 +94,7 @@ const PlanOverview = (props: DataDisplayProps) => {
   const noSuccessionPlanting =
     !plantingScheduleLoading && plantingSchedule?.every((p) => p.length === 1);
 
-  const [ showRunningBehindAlert, setShowRunningBehindAlert ] = useState<boolean>(true)
+  const [ showRunningBehindAlert, setShowRunningBehindAlert ] = useState<boolean>(false)
 
   const [ showNoSuccessionPlantingAlert, setShowNoSuccessionPlantingAlert ] = useState<boolean>(false)
 
