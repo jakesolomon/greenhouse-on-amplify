@@ -12,6 +12,7 @@ import Faq from "../components/faq.tsx";
 import Garden3 from "../assets/garden-3-big.png";
 import Footer from "../components/footer.tsx";
 import {useViewportSize} from "@mantine/hooks";
+import {NavLink} from "react-router-dom";
 
 const FaqPage = () => {
 
@@ -55,8 +56,8 @@ const FaqPage = () => {
             {/*<Title order={2} mb="sm">*/}
             {/*  Frequently Asked Questions*/}
             {/*</Title>*/}
-            <Text size="lg" c="dimmed" mt="sm">
-              Have questions? We’ve got answers.
+            <Text mt="sm">
+              <NavLink to='/contact'>Contact us here</NavLink> for any questions you still have.
             </Text>
           </Grid.Col>
 
