@@ -1,12 +1,6 @@
 import {Text, Accordion} from "@mantine/core";
-import {NavLink, useLocation} from "react-router-dom";
-import { cropTypes } from "../helpers/crop-types.ts";
 
 const Faq = () => {
-
-  const location = useLocation();
-  const isV2 = location.pathname.includes('v2');
-  const crops = Object.keys(cropTypes)
 
   const faqData = [
     // {
@@ -19,7 +13,7 @@ const Faq = () => {
       value: "difference",
       question: "How is this different from other vegetable growing planners?",
       answer:
-        "Most planners are either prescriptive guides (telling you what to grow and when) or open-ended tools (requiring you to do lots of planning and research). The Growing Guide calculates an optimize planting schedule based on your region's climate and your preferred crops, so you get the best of both worlds."
+        "Most planners are either prescriptive guides (telling you what to grow and when) or open-ended tools (requiring you to do lots of planning and research). The Growing Guide calculates an optimized planting schedule based on your region's climate and your preferred crops, so you get the best of both worlds."
     },
     {
       value: "vegetable-types",
@@ -27,10 +21,6 @@ const Faq = () => {
       answer:
         <Text>
           Your guide will focus on <em>annual</em> vegetables and herbs. (Annuals are ideal for one-season planning, as they grow, produce, and are harvested within a single year.) This allows us to create a one-year guide that takes your crops from planting to harvest.
-          {
-            isV2 &&
-            <><br/><br/>To build your garden plan, you can select from our list of supported crops:<br/><br/>{crops.join(", ")}.<br/><br/>We're always adding to this list, so <NavLink to='/contact-v2'>let us know</NavLink> if you don't see something you want to grow in your garden this year.</>
-          }
         </Text>,
     },
     {
