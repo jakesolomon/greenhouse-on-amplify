@@ -26,6 +26,8 @@ import {
   summariesUserPrompt
 } from "./prompts";
 
+// THIS ENDPOINT IS DEPRECATED.
+
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY
 });

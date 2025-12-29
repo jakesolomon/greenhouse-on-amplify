@@ -7,7 +7,7 @@ import {
   Text,
   useMantineTheme,
   Card,
-  Timeline, AppShell, Image, Modal, Group, BackgroundImage, Box, AspectRatio
+  Timeline, AppShell, Image, Modal, Group, BackgroundImage, Box, AspectRatio, Center,
 } from "@mantine/core";
 import {useDisclosure, useScrollIntoView} from '@mantine/hooks';
 import useWindowSize from "../helpers/useWindowSize.ts";
@@ -20,8 +20,7 @@ import Harvest from "../assets/harvest_lowres.png";
 import Faq from "../components/faq.tsx";
 import Footer from "../components/footer.tsx";
 import BookletMockupLeft from "../assets/booklet-mockup-left.png";
-import SeedingEdit from "../assets/seeding-edit-1.mp4";
-import SeedingEditStill from "../assets/seeding-edit-still.png";
+import RaisedBed from "../assets/succession-planting-sketch.png"
 import Testimonials from "../components/testimonials.tsx";
 
 const LandingPage = () => {
@@ -100,37 +99,6 @@ const LandingPage = () => {
     offset: 60,
     duration: 600,
   });
-
-  const salesCard = (
-    <Card my='lg' py='md' px={isSmallScreen ? undefined : 'lg'} withBorder>
-      {
-        isSmallScreen &&
-        <Card.Section mb='sm'>
-          <AspectRatio ratio={1080 / 540}>
-            <Image
-              src={BookletMockupLeft}
-              alt="Booklet mockup"
-            />
-          </AspectRatio>
-        </Card.Section>
-      }
-      <Title order={2} mb='xs'>Ready to Get Started?</Title>
-      <Text mb='md'>The Monthly Guide shows you exactly how to make your garden plan happen.</Text>
-      <Text mb='md'>Start with your free Plan Overview to learn when to plant, how to maximize the use of your available space, and more.</Text>
-      <Text mb='md'>It's free to get started, no account required.</Text>
-      {/*<List spacing="sm" size='md' style={{alignItems: "start"}} mb='lg'>*/}
-      {/*  <List.Item icon={<Box>🗓</Box>}>We take the same custom planning process — tailored to your climate and crops — and break it down into monthly, easy-to-follow instructions.</List.Item>*/}
-      {/*  <List.Item icon="📦">Printed and shipped to your door (or delivered as a digital PDF) with your name on the cover, so you know it's made just for you.</List.Item>*/}
-      {/*</List>*/}
-
-      <Button component={Link} to="/planner" size="md" mb='xs'
-              style={{boxShadow: "0 4px 8px 0 rgba(0,0,0,0.4), 0 3px 5px 0 rgba(0,0,0,0.19)"}}
-              color={theme.colors.green[7]}
-      >
-        Plan My Garden
-      </Button>
-    </Card>
-  )
 
   return(
     <>
@@ -249,11 +217,11 @@ const LandingPage = () => {
                   <Title
                     order={1}
                     w={isSmallScreen ? undefined : "50%"}
-                    style={{fontSize: isSmallScreen ? "2.3rem" : "3.3rem"}}
+                    style={{fontSize: isSmallScreen ? "2rem" : "2.5rem"}}
                     c={isSmallScreen ? "white" : undefined}
+                    textWrap="balance"
                   >
-                    Your Vegetable Garden Plan, {isSmallScreen && <br/>}
-                    In Under A Minute
+                    Generic planting charts aren't made for succession planting.
                   </Title>
                   {/*<Text size="lg" mt="md" c={isSmallScreen ? "white" : undefined} >*/}
                   {/*  Personalized plans for a thriving vegetable garden—made effortless with AI.*/}
@@ -265,7 +233,7 @@ const LandingPage = () => {
                     c={isSmallScreen ? "white" : undefined}
                     style={{fontSize: "1.3rem"}}
                   >
-                    Personalized plans for a thriving vegetable garden—made effortless with AI.
+                    Get a planting schedule for your climate in minutes—designed for continuous harvests.
                   </Text>
                   <Group mt="lg">
                     <Button
@@ -301,35 +269,82 @@ const LandingPage = () => {
       {/*Spaces out the content below the Hero, which is absolute*/}
       <Container h={isSmallScreen ? "70vh" : "90vh"} m={0} p={0}/>
 
-      {/* Features */}
+      {/* Problem Section */}
       <Container size="lg" py="xl" px={0} ref={targetRef}>
-        <Title order={1}>
-          Why use The Growing Guide?
-        </Title>
-        <Text size="lg" mb="md" c="dimmed">
-          Designed to make gardening simple and productive, our planner provides personalized insights tailored to you.
-        </Text>
-        <Grid gutter="lg">
-          <Grid.Col span={{ base: 12, md: 4}}>
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              {/*<ThemeIcon size="xl" color="green">*/}
-              {/*  <IconLeaf size={28} />*/}
+        <Grid gutter="xl" pb="xl">
+          <Grid.Col span={{ base: 12, md: 6}}>
+            <Center h="100%"><Box>
+              <Text mb='xs' c="#333"><b><em>The challenge is timing.</em></b></Text>
+              <Text size="2rem" mb="md" mr="md" c="#333">
+                <b>Most planting charts assume one crop per bed.</b>
+              </Text>
+              <Text size="md" mb="md" mr="md">
+                Succession planting means using the same garden space for multiple crops throughout the season.
+                {/*Plant radishes in early spring, then tomatoes in the same bed after harvest. Follow summer beans with fall carrots.*/}
+              </Text>
+              <Text size="md" mb="md" mr="md">
+                Planting charts don't tell you how to sequence crops or which ones can follow each other in your climate. Without calculated timing, you either leave beds empty or miss planting windows.
+              </Text>
+              <Button
+                component={Link}
+                to="/planner"
+                onClick={handleGetStartedClick}
+                // size={isSmallScreen ? "md" :"lg"}
+                color={theme.colors.green[8]}
+                radius="md"
+                variant="transparent"
+              >
+                Get Your Optimal Crop Sequence →
+              </Button>
+            </Box></Center>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6}}>
+            <Card p="0">
+              {/*<ThemeIcon size="xl" color="yellow">*/}
+              {/*  <IconSun size={28} />*/}
               {/*</ThemeIcon>*/}
-              <Card.Section mb="sm">
-                <AspectRatio ratio={2}>
+                <AspectRatio ratio={1.3}>
                   <Image
-                    src={BookletMockupLeft}
-                    alt="Booklet in garden"
+                    src={RaisedBed}
+                    alt="Raised Bed"
                   />
                 </AspectRatio>
-              </Card.Section>
-              <Title order={4} mt="md">Tailored Monthly Guide</Title>
-              <Text mt="sm" c="dimmed">
-                Get a month-by-month planting and maintainence guide, made to order for your unique garden plan.
-              </Text>
             </Card>
+            {/*<Card h={isSmallScreen ? "300px" : "450px"} w="100%">*/}
+            {/*  <video*/}
+            {/*    autoPlay*/}
+            {/*    muted*/}
+            {/*    loop*/}
+            {/*    playsInline*/}
+            {/*    src={SeedingEdit}*/}
+            {/*    poster={SeedingEditStill}*/}
+            {/*    style={{*/}
+            {/*      position: 'absolute',*/}
+            {/*      top: 0,*/}
+            {/*      left: 0,*/}
+            {/*      inset: 0,*/}
+            {/*      width: '100%',*/}
+            {/*      height: '100%',*/}
+            {/*      objectFit: 'cover',*/}
+            {/*      zIndex: 0,*/}
+            {/*    }}*/}
+            {/*  />*/}
+            {/*</Card>*/}
           </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 4}}>
+        </Grid>
+      </Container>
+
+      <Container size="md" px={0}>
+        {/*<Container size="sm" px={0} my="xl">*/}
+          <Text size="2rem" mb="md" c="#333" style={!isSmallScreen ? {textAlign: "center"} : undefined}>
+            <b>A Planting Schedule That Maximizes Every Bed</b>
+          </Text>
+          <Text size="md" mb="xl" style={!isSmallScreen ? {textAlign: "center"} : undefined}>
+            The Growing Guide calculates how to sequence crops in the same space throughout your growing season. You get a planting schedule showing which crops to plant when—and which crops can follow each other in the same bed.
+          </Text>
+        {/*</Container>*/}
+        <Grid gutter="lg">
+          <Grid.Col span={{ base: 12, md: 6}}>
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               {/*<ThemeIcon size="xl" color="yellow">*/}
               {/*  <IconSun size={28} />*/}
@@ -348,7 +363,7 @@ const LandingPage = () => {
               </Text>
             </Card>
           </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 4}}>
+          <Grid.Col span={{ base: 12, md: 6}}>
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               {/*<ThemeIcon size="xl" color="blue">*/}
               {/*  <IconChartBar size={28} />*/}
@@ -384,165 +399,119 @@ const LandingPage = () => {
       {/*  </BackgroundImage>*/}
       {/*</Container>*/}
 
-      <Container size="lg" px={0} my='xl' style={{zIndex: 1}}>
-        <Grid m={0} p={0} gutter="xl">
-          <Grid.Col span={{ base: 12, md: 6}}>
-            <Title order={2} mb="sm">Everything you need, organized month-by-month, to grow a thriving garden.</Title>
-            {/*<Text size="xl">Everything you need, organized month-by-month, to grow a thriving garden in your climate.</Text>*/}
-            {/*<Text mt="sm" c="dimmed">*/}
-            {/*  Get a month-by-month planting and maintainence guide, made to order for your unique garden plan.*/}
-            {/*</Text>*/}
-            {/*{featureList}*/}
-            {/*<Text fw={700} mb='xs'>This is a custom garden guide, created just for you.</Text>*/}
-            <Text mb='md'>For each order, we generate a unique guide using the same custom scheduling process we use to create your free plan overview, based on your crops and local climate.</Text>
-            <Text mb='md'>You get a downloadable PDF or print booklet that includes month-by-month tasks and tried-and-true gardening guidance.</Text>
-            {/*<Text fw={700}>Not satisfied? No worries.</Text>*/}
-            <Text><strong>Not satisfied? No worries.</strong> Just send us a message—we’ll give you a full refund, no questions asked.</Text>
-            {/*<Text mb='xs' style={{layout: "inline-block"}}>Just send us a message—we’ll give you a full refund, no questions asked.</Text>*/}
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6}} style={{position: "relative"}}>
-            {/*<Title order={1} mt="md" style={{zIndex: 10}}>Everything you need, organized month-by-month, to grow a thriving garden in your climate.</Title>*/}
-            <Card h={isSmallScreen ? "300px" : "300px"}>
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                src={SeedingEdit}
-                poster={SeedingEditStill}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  zIndex: 0,
-                }}
-              />
-            </Card>
-          </Grid.Col>
-        </Grid>
-      </Container>
-
-      <Container size="md" my="xl" px={0}>
-        {/*<Title order={2} ta="center" mb="md">*/}
-        {/*  Planting Made Simple*/}
-        {/*</Title>*/}
-        <Title order={2}>
-          Transform your gardening experience with our step-by-step process. It's simple, quick, and tailored to you.
-        </Title>
+      <Container size="md" my="xl" px={0} py="xl">
+        <Text size="2rem" mb="md" c="#333"><b>Three Steps to Your Planting Schedule</b></Text>
+        <Text c="#333" mb="md"><b><em>It takes less than a minute.</em></b></Text>
 
         <Timeline
           active={hoveredTimelineElement}
           bulletSize={20}
           lineWidth={3}
           color="green"
-          mt="xl"
+          // mt="xl"
           w={isSmallScreen ? "100%" : "60%"}
         >
           {/* Step 1 */}
           <Timeline.Item
             onMouseEnter={() => setHoveredTimelineElement(0)}
-            title="Step 1: Share Your Garden Details"
+            title="Step 1: Enter your location"
           >
             <Text c="dimmed" size="sm" mt="sm">
-              Let us know about your garden’s size, location, goals, and resources. We’ll use this to tailor a personalized plan just for you.
+              We use your area's climate data to calculate planting windows specific to your growing season.
             </Text>
           </Timeline.Item>
 
           {/* Step 2 */}
           <Timeline.Item
             onMouseEnter={() => setHoveredTimelineElement(1)}
-            title="Step 2: Instant Personalized Plan"
+            title="Step 2: Choose your crops"
           >
             <Text c="dimmed" size="sm" mt="sm">
-              Get an overview of your planting and harvest schedule, including optimized succession planting, crop suggestions, and climate-specific advice.
+              Select what you want to grow from our database of crops. We're adding new ones all the time.
             </Text>
           </Timeline.Item>
 
           {/* Step 3 */}
           <Timeline.Item
             onMouseEnter={() => setHoveredTimelineElement(2)}
-            title="Step 3: Refine and Customize"
+            title="Step 3: Get your planting schedule"
           >
             <Text c="dimmed" size="sm" mt="sm">
-              Adjust crop selections, explore companion planting, and add variety to create a robust and personalized garden design.
+              Receive a full-season timeline showing when to plant each crop for continuous production.
             </Text>
           </Timeline.Item>
 
-          {/* Step 4 */}
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(3)}
-            title="Step 4: Your Monthly Guide"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Download a detailed monthly schedule with diagrams and tasks to keep your garden on track throughout the season.
-            </Text>
-          </Timeline.Item>
+          {/*/!* Step 4 *!/*/}
+          {/*<Timeline.Item*/}
+          {/*  onMouseEnter={() => setHoveredTimelineElement(3)}*/}
+          {/*  title="Step 4: Your Monthly Guide"*/}
+          {/*>*/}
+          {/*  <Text c="dimmed" size="sm" mt="sm">*/}
+          {/*    Download a detailed monthly schedule with diagrams and tasks to keep your garden on track throughout the season.*/}
+          {/*  </Text>*/}
+          {/*</Timeline.Item>*/}
 
-          {/* Step 5 */}
-          <Timeline.Item
-            onMouseEnter={() => setHoveredTimelineElement(4)}
-            title="Step 5: Grow with Confidence"
-          >
-            <Text c="dimmed" size="sm" mt="sm">
-              Follow your plan, watch your garden flourish, and enjoy the rewards of a productive and thriving vegetable patch.
-            </Text>
-          </Timeline.Item>
+          {/*/!* Step 5 *!/*/}
+          {/*<Timeline.Item*/}
+          {/*  onMouseEnter={() => setHoveredTimelineElement(4)}*/}
+          {/*  title="Step 5: Grow with Confidence"*/}
+          {/*>*/}
+          {/*  <Text c="dimmed" size="sm" mt="sm">*/}
+          {/*    Follow your plan, watch your garden flourish, and enjoy the rewards of a productive and thriving vegetable patch.*/}
+          {/*  </Text>*/}
+          {/*</Timeline.Item>*/}
         </Timeline>
       </Container>
 
       <Container size='lg' my='xl' px={0}>
-        <Title order={2}>Don’t Just Take Our Word For It</Title>
-        <Text fs='italic' mb='sm'>See what others are saying</Text>
+        {/*<Title order={2}>Don’t Just Take Our Word For It</Title>*/}
+        {/*<Text fs='italic' mb='sm'>See what others are saying</Text>*/}
+        <Text size="2rem" mb="md" c="#333" style={{textAlign: "center"}}><b>Don’t Just Take Our Word For It</b></Text>
+        {/*<Text c="#333" mb="md" style={{textAlign: "center"}}><b><em>See what others are saying</em></b></Text>*/}
         <Testimonials />
       </Container>
 
-      {
-        isSmallScreen
-          ?
-          <>{salesCard}</>
-          :
-          <Container size='md' my="md" px={0} display="flex">
-            <BackgroundImage
-              src={BookletMockupLeft}
-              style={{backgroundPosition: "center", position: "relative"}}
-            >
-              <Box h={30} />
-              <Grid
-                justify="right"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'left',
-                }}
+      {/* Final CTA */}
+      <Container size="lg" py="lg" px={0} ref={targetRef}>
+        <Grid gutter="xl" pb="xl">
+          <Grid.Col span={{ base: 12, md: 6}}>
+            <Center h="100%"><Box>
+              {/*<Text mb='xs' c="#333"><b><em>The challenge is timing.</em></b></Text>*/}
+              <Text size="2rem" mb="md" mr="md" c="#333">
+                <b>Get Your Free Planting Schedule</b>
+              </Text>
+              <Text size="md" mb="md" mr="md">
+                Personalized for your climate. No credit card required.
+              </Text>
+              <Button
+                component={Link}
+                to="/planner"
+                onClick={handleGetStartedClick}
+                // size={isSmallScreen ? "md" :"lg"}
+                color={theme.colors.green[8]}
+                radius="md"
+                variant="transparent"
               >
-                <Grid.Col span={5} m='xl'>
-                  {salesCard}
-                </Grid.Col>
-              </Grid>
-              <Box h={30} />
-            </BackgroundImage>
-          </Container>
-      }
+                Get Started →
+              </Button>
+            </Box></Center>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6}}>
+            <Card>
+              <AspectRatio ratio={2}>
+                <Image
+                  src={BookletMockupLeft}
+                  alt="Gardening booklet"
+                />
+              </AspectRatio>
+            </Card>
+          </Grid.Col>
+        </Grid>
+      </Container>
 
-      {/*<Container size="lg" pt="md" px={0}>*/}
-      {/*  <BackgroundImage*/}
-      {/*    src={Garden3}*/}
-      {/*    style={{backgroundPosition: "bottom", position: "relative", top: 0}}*/}
-      {/*  >*/}
-      {/*    <Box h="100px"></Box>*/}
-      {/*    <Title order={1} ta="center" mb="md" c="white">*/}
-      {/*      Frequently Asked Questions*/}
-      {/*    </Title>*/}
-      {/*    <Box h="100px"></Box>*/}
-      {/*  </BackgroundImage>*/}
-      {/*</Container>*/}
-
-      <Container size="md" py="xl" px={0}>
-        <Title order={2} mb='xs'>Frequently Asked Questions</Title>
+      <Container size="sm" py="lg" px={0}>
+        <Text size="large" c="#333" mb="md"><b>Frequently Asked Questions</b></Text>
+        {/*<Title order={2} mb='xs'>Frequently Asked Questions</Title>*/}
         <Faq />
       </Container>
 
