@@ -1,4 +1,5 @@
 import {Schema} from "../../data/resource";
+import * as Sentry from "@sentry/node";
 
 export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (event) => {
 
@@ -21,14 +22,31 @@ export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (eve
   formData.append('browsing_data[url]', url); // probably the iframe src
   formData.append('browsing_data[utm_medium]', 'internal');
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json, text/javascript, */*; q=0.01',
-    },
-    body: formData.toString(),
-  });
+  const submitRequest = async (formData: URLSearchParams) => {
+    try {
+      return fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json, text/javascript, */*; q=0.01',
+        },
+        body: formData.toString(),
+      })
+    } catch (error) {
+      Sentry.captureMessage(`Error in sendPrivySignup function. Error: ${error}.`, "error");
+    }
+  }
+
+  const response = await submitRequest(formData)
+
+  // const response = await fetch(endpoint, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/x-www-form-urlencoded',
+  //     Accept: 'application/json, text/javascript, */*; q=0.01',
+  //   },
+  //   body: formData.toString(),
+  // });
 
   // TODO handle privy failures
 

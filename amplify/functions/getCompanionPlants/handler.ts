@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCompanionPlants';
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 import { Logger } from "@aws-lambda-powertools/logger";
@@ -34,6 +35,7 @@ export const handler: Schema["getCompanionPlants"]["functionHandler"]  = async (
     plantingSchedule === null ||
     plantingSchedule === undefined
   ) {
+    Sentry.captureMessage(`Error in getCompanionPlants function. Climate data or crop data not provided.`, "error");
     return JSON.stringify({error: "Climate data or crop data not provided."})
   }
 

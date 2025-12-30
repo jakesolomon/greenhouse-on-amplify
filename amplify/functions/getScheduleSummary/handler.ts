@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { env } from '$amplify/env/getScheduleSummary';
 import { Logger } from "@aws-lambda-powertools/logger";
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 
@@ -26,6 +27,7 @@ export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (
     plantingSchedule === null ||
     plantingSchedule === undefined
   ) {
+    Sentry.captureMessage("Error in getScheduleSummary function. Climate data or crop data not provided.", "error");
     return JSON.stringify({error: "Climate data or crop data not provided."})
   }
 

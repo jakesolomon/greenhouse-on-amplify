@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getClimateData';
 import { Logger } from "@aws-lambda-powertools/logger";
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 
@@ -44,6 +45,9 @@ const logger = new Logger({ serviceName: "getClimateData" });
 
 export const handler: Schema["getClimateData"]["functionHandler"]  = async (event) => {
 
+  const thing = "thing"
+  Sentry.captureMessage(`Testing captureMessage from inside Lambda function, deployed to remote. Thing: ${thing}.`, "error");
+
   const openai = new OpenAI({
     apiKey: env.API_KEY
   });
@@ -63,6 +67,7 @@ export const handler: Schema["getClimateData"]["functionHandler"]  = async (even
   const overviewOutput = completion.choices[0].message;
   if (overviewOutput.refusal) {
     logger.error("Climate data request to LLM refused.", overviewOutput.refusal);
+    Sentry.captureMessage("Error in getClimateData function. Climate data request to LLM refused.", "error");
   }
 
   return overviewOutput.content;

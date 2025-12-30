@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCropDataFromTrueLeafDescription';
 import { Logger } from "@aws-lambda-powertools/logger";
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 
@@ -38,6 +39,7 @@ export const handler: Schema["getCropDataFromTrueLeafDescription"]["functionHand
     // If data extraction request returns a refusal, log and return error.
     const varietyDataExtractionOutput = varietyDataExtractionCompletion.choices[0].message;
     if (varietyDataExtractionOutput.refusal) {
+      Sentry.captureMessage(`Error in getCropDataFromTrueLeafDescription function. Data extraction refused.`, "error");
       logger.error("Data extraction refused with: ", varietyDataExtractionOutput.refusal);
     }
 
@@ -46,6 +48,7 @@ export const handler: Schema["getCropDataFromTrueLeafDescription"]["functionHand
     return JSON.stringify(appendedVarietyDataExtraction)
   } catch (error) {
     logger.error("Error in chat completion with LLM: ", error as Error);
+    Sentry.captureMessage(`Error in getCropDataFromTrueLeafDescription function. Error in chat completion with LLM: ${error}`, "error");
     return JSON.stringify({error: `Failed to extract crop data. Error in chat completion with LLM: ${error}`})
   }
 };

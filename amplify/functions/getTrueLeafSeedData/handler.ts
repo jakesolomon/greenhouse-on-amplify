@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'; // For Node.js < 18. Use global fetch for Node.js 18+.
 import { Logger } from "@aws-lambda-powertools/logger";
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 
@@ -22,6 +23,7 @@ export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async 
   const { cropTypes, mode } = event.arguments;
 
   if (!cropTypes) {
+    Sentry.captureMessage("Error in getTrueLeafSeedData function. No crop types provided.", "error");
     return JSON.stringify({ error: "No crop types provided" })
   }
 
@@ -56,6 +58,7 @@ export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async 
       const data = await response.json();
       return { cropType, data }; // Return crop type and data for tracking
     } catch (error) {
+      Sentry.captureMessage(`Error in getTrueLeafSeedData function. Error fetching data for crop ${cropType.displayName}.`, "error");
       logger.error(`Error fetching data for ${cropType.displayName}.`, error as Error);
       return { cropType, error: error }; // Return error info for tracking
     }

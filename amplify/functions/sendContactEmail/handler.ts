@@ -1,4 +1,5 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
+import * as Sentry from "@sentry/node";
 
 import {Schema} from "../../data/resource";
 
@@ -37,7 +38,11 @@ export const handler: Schema["sendContactEmail"]["functionHandler"]  = async (ev
   };
 
   const sesCommand = new SendEmailCommand(sesInput);
-  await sesClient.send(sesCommand)
+  try {
+    await sesClient.send(sesCommand)
+  } catch (error) {
+    Sentry.captureMessage(`Error in sendContactEmail function. Error: ${error}.`, "error");
+  }
 
   return JSON.stringify('success')
 };
