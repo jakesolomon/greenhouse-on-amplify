@@ -8,14 +8,15 @@ import {
   useMantineTheme,
   Anchor,
   Alert,
-  Modal,
-  Image,
+  // Modal,
+  // Image,
   Box,
   BackgroundImage,
   Grid,
   Card,
 } from '@mantine/core';
-import {useDisclosure, useViewportSize} from '@mantine/hooks';
+import { useViewportSize } from '@mantine/hooks';
+// import { useDisclosure } from '@mantine/hooks';
 import { IconInfoCircle } from '@tabler/icons-react';
 
 import {
@@ -31,8 +32,8 @@ import {useEffect, useState} from "react";
 
 import "./plan-overview.css";
 import Footer from "./footer.tsx";
-import EmailOptInForm from "./email-opt-in-form.tsx";
-import LittleTomato from "../assets/little-tomato-plant-extended-shrunk.png"
+// import EmailOptInForm from "./email-opt-in-form.tsx";
+// import LittleTomato from "../assets/little-tomato-plant-extended-shrunk.png"
 import Garden3 from "../assets/garden-3-big.png";
 
 interface DataDisplayProps {
@@ -48,42 +49,44 @@ interface DataDisplayProps {
 const PlanOverview = (props: DataDisplayProps) => {
   const { crops, plantingSchedule, climateData, summary, companionPlantingAdvice, companionPlants, startPlanOver } = props;
 
-  const [opened, { open, close }] = useDisclosure(false);
-
-  const [ userName, setUserName ] = useState<string | undefined>((): string | undefined => {
-    const saved = localStorage.getItem("userName");
-    const initialValue = undefined;
-    if (!!saved && saved !== "undefined") {
-      return saved
-    } else {
-      return initialValue;
-    }
-  });
-
-  const [ userEmail, setUserEmail ] = useState<string | undefined>((): string | undefined => {
-    const saved = localStorage.getItem("userEmail");
-    const initialValue = undefined;
-    if (!!saved && saved !== "undefined") {
-      return saved
-    } else {
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    if (!userName || !userEmail) {
-      open()
-    } else {
-      close()
-    }
-  }, [userName, userEmail]);
-
-  const setUserData = ( _userName: string, _userEmail: string ) => {
-    setUserName(_userName)
-    localStorage.setItem("userName", _userName);
-    setUserEmail(_userEmail)
-    localStorage.setItem("userEmail", _userEmail);
-  }
+  // EMAIL OPT-IN DISABLED. Uncomment logic and modal when Privy is turned back on.
+  //
+  // const [opened, { open, close }] = useDisclosure(false);
+  //
+  // const [ userName, setUserName ] = useState<string | undefined>((): string | undefined => {
+  //   const saved = localStorage.getItem("userName");
+  //   const initialValue = undefined;
+  //   if (!!saved && saved !== "undefined") {
+  //     return saved
+  //   } else {
+  //     return initialValue;
+  //   }
+  // });
+  //
+  // const [ userEmail, setUserEmail ] = useState<string | undefined>((): string | undefined => {
+  //   const saved = localStorage.getItem("userEmail");
+  //   const initialValue = undefined;
+  //   if (!!saved && saved !== "undefined") {
+  //     return saved
+  //   } else {
+  //     return initialValue;
+  //   }
+  // });
+  //
+  // useEffect(() => {
+  //   if (!userName || !userEmail) {
+  //     open()
+  //   } else {
+  //     close()
+  //   }
+  // }, [userName, userEmail]);
+  //
+  // const setUserData = ( _userName: string, _userEmail: string ) => {
+  //   setUserName(_userName)
+  //   localStorage.setItem("userName", _userName);
+  //   setUserEmail(_userEmail)
+  //   localStorage.setItem("userEmail", _userEmail);
+  // }
 
   // Scroll to top on first render
   useEffect(() => {
@@ -326,35 +329,35 @@ const PlanOverview = (props: DataDisplayProps) => {
 
   return (
     <>
-      <Modal
-        centered
-        closeOnEscape={false}
-        closeOnClickOutside={false}
-        zIndex={300}
-        opened={opened}
-        onClose={() => {}}
-        withCloseButton={false}
-        transitionProps={{enterDelay: 1000}}
-        overlayProps={{
-          backgroundOpacity: 0.55,
-          blur: 3,
-        }}
-        styles={{
-          body: {
-            padding: 0, // remove default body padding so the image sits flush
-          },
-        }}
-      >
+      {/*<Modal*/}
+      {/*  centered*/}
+      {/*  closeOnEscape={false}*/}
+      {/*  closeOnClickOutside={false}*/}
+      {/*  zIndex={300}*/}
+      {/*  opened={opened}*/}
+      {/*  onClose={() => {}}*/}
+      {/*  withCloseButton={false}*/}
+      {/*  transitionProps={{enterDelay: 1000}}*/}
+      {/*  overlayProps={{*/}
+      {/*    backgroundOpacity: 0.55,*/}
+      {/*    blur: 3,*/}
+      {/*  }}*/}
+      {/*  styles={{*/}
+      {/*    body: {*/}
+      {/*      padding: 0, // remove default body padding so the image sits flush*/}
+      {/*    },*/}
+      {/*  }}*/}
+      {/*>*/}
 
-        <Image
-          src={LittleTomato}
-        ></Image>
-        <Box p='lg'>
-          <Title order={2}>Almost there!</Title>
-          <Text mb='sm'>Just enter your name and email to view your free Plan Overview.</Text>
-          <EmailOptInForm setUserData={setUserData} />
-        </Box>
-      </Modal>
+      {/*  <Image*/}
+      {/*    src={LittleTomato}*/}
+      {/*  ></Image>*/}
+      {/*  <Box p='lg'>*/}
+      {/*    <Title order={2}>Almost there!</Title>*/}
+      {/*    <Text mb='sm'>Just enter your name and email to view your free Plan Overview.</Text>*/}
+      {/*    <EmailOptInForm setUserData={setUserData} />*/}
+      {/*  </Box>*/}
+      {/*</Modal>*/}
 
       <BackgroundImage
         src={Garden3}
