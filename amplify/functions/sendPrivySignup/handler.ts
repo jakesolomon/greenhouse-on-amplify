@@ -3,11 +3,9 @@ import * as Sentry from "@sentry/node";
 
 export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (event) => {
 
-  const { emailAddress, url, shouldUseV2EmbedForm } = event.arguments
+  const { emailAddress, url } = event.arguments
 
-  const endpoint = shouldUseV2EmbedForm === "true"
-    ? 'https://api.privy.com/businesses/9998217E6FE1FB43AC42EADC/campaigns/4457778/transactions'
-    : 'https://api.privy.com/businesses/9998217E6FE1FB43AC42EADC/campaigns/4437469/transactions'
+  const endpoint = 'https://api.privy.com/businesses/9998217E6FE1FB43AC42EADC/campaigns/4437469/transactions'
 
   const formData = new URLSearchParams();
   formData.append('_method', 'post');

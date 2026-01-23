@@ -6,12 +6,11 @@ import {useState} from "react";
 
 interface EmailOptInFormProps {
   setUserData: ( userName: string, userEmail: string ) => void
-  isV2?: boolean;
 }
 
 const EmailOptInForm = (props: EmailOptInFormProps) => {
 
-  const { setUserData, isV2 } = props
+  const { setUserData } = props
 
   const [ sendingUserData, setSendingUserData ] = useState(false)
 
@@ -34,8 +33,7 @@ const EmailOptInForm = (props: EmailOptInFormProps) => {
   const handleSubmit = async (values: { name: string, email: string }) => {
     setSendingUserData(true)
     // TODO should I set user data based on return value of API request ?
-    const shouldUseV2EmbedForm = isV2 ? "true" : "false"
-    const result = await amplifyClient.queries.sendPrivySignup({ emailAddress: form.getValues().email, url: window.location.href, shouldUseV2EmbedForm: shouldUseV2EmbedForm });
+    const result = await amplifyClient.queries.sendPrivySignup({ emailAddress: form.getValues().email, url: window.location.href });
     setUserData(values.name, values.email)
     console.log(result)
     setSendingUserData(false)
@@ -47,7 +45,7 @@ const EmailOptInForm = (props: EmailOptInFormProps) => {
       <TextInput
         disabled={sendingUserData}
         label="Name"
-        placeholder="Your name"
+        placeholder="As you'd like it to show up on your guide"
         key={form.key('name')}
         {...form.getInputProps('name')}
       />

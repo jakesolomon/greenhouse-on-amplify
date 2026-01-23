@@ -217,7 +217,6 @@ const schema = a.schema({
     .arguments({
       emailAddress: a.string().required(),
       url: a.string().required(),
-      shouldUseV2EmbedForm: a.string().required()
     })
     .returns(a.string())
     .handler(a.handler.function(sendPrivySignup))
