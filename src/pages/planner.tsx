@@ -178,13 +178,18 @@ const Planner = () => {
 
   const submitZipCode = async (zipCode: string) => {
     setClimateData(undefined);
-    try {
-      const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
-      setClimateData(JSON.parse(result.data!));
-    } catch (error) {
-      console.error('Error fetching regional climate data: ', error);
+    const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
+    const networkErrors = result.errors
+    if (networkErrors) {
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
+      throw new Error(`Network error fetching regional climate data from client: ${JSON.stringify(result.errors)}`)
     }
+    const lambdaError = JSON.parse(result.data!).error
+    if (!result.data || lambdaError) {
+      setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
+      throw new Error(`Error returned to client fetching regional climate data: ${lambdaError}`)
+    }
+    setClimateData(JSON.parse(result.data));
   }
 
   const getAllCropData = async (cropNames: string[]) => {
