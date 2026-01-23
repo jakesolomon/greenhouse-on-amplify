@@ -27,12 +27,6 @@ const Footer = () => {
     )
   }
 
-  const errorButton = () => (
-    <Anchor component="button" onClick={() => {
-      throw new Error('This is your first error!')
-    }} c="#333" size="0.9rem" lh="sm" style={{textAlign: "left"}}>Throw Error</Anchor>
-  )
-
   return(
     <Container py='md'>
       <Grid align='center'>
@@ -63,7 +57,6 @@ const Footer = () => {
               <Anchor component={Link} to="/privacy" size="sm" c="#333">Privacy Policy</Anchor>
               <Anchor component={Link} to="/cookies" size="sm" c="#333">Cookie Policy</Anchor>
               {reportFeedbackButton()}
-              {errorButton()}
             </Stack>
           </Flex>
         </Grid.Col>
