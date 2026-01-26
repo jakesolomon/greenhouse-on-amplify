@@ -18,6 +18,10 @@ interface SearchParameter {
   category: string
 }
 
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
+
 export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async (event) => {
 
   const { cropTypes, mode } = event.arguments;
@@ -27,7 +31,11 @@ export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async 
     return JSON.stringify({ error: "No crop types provided" })
   }
 
-  const parsedCropTypes = JSON.parse(cropTypes);
+  if (mode === 'companionPlant') {
+    return JSON.stringify({ error: "test handled error in getTrueLeafSeedData for companion plants" })
+  }
+
+  const parsedCropTypes = JSON.parse(cropTypes!);
   const url = "https://trueleafmarket.com/api/collectionSearch?_data=routes%2F%28%24locale%29.api.collectionSearch";
 
   // Create an array of promises for each crop type
