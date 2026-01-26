@@ -1,6 +1,10 @@
 import {Schema} from "../../data/resource";
 import * as Sentry from "@sentry/node";
 
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
+
 export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (event) => {
 
   const { emailAddress, url } = event.arguments
@@ -22,7 +26,7 @@ export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (eve
 
   const submitRequest = async (formData: URLSearchParams) => {
     try {
-      return fetch(endpoint, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -30,8 +34,20 @@ export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (eve
         },
         body: formData.toString(),
       })
+
+      if (!response.ok) {
+        const body = await response.text();
+        Sentry.captureMessage(
+          `Privy signup failed: ${response.status}. Body: ${body}`,
+          "error"
+        );
+        return JSON.stringify({ success: false, error: "Email signup failed" });
+      }
+
+      return JSON.stringify({ success: true });
     } catch (error) {
-      Sentry.captureMessage(`Error in sendPrivySignup function. Error: ${error}.`, "error");
+      Sentry.captureException(error);
+      return JSON.stringify({ success: false, error: "Network error" });
     }
   }
 
@@ -45,8 +61,6 @@ export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (eve
   //   },
   //   body: formData.toString(),
   // });
-
-  // TODO handle privy failures
 
   return JSON.stringify(response)
 };
