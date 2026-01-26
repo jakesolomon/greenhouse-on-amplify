@@ -243,23 +243,29 @@ const Planner = () => {
     console.log("topVarieties: ", topVarieties)
 
     const fetchPromises = topVarieties.map(async (cropVariety) => {
-      try {
-        const response = await amplifyClient.queries.getCropDataFromTrueLeafDescription({
-          varietyDescription: cropVariety?.descriptionHtml
-        });
+      const response = await amplifyClient.queries.getCropDataFromTrueLeafDescription({
+        varietyDescription: cropVariety?.descriptionHtml
+      });
 
-        const data = JSON.parse(response.data!)
-
-        // Fail result if returned with an error in response.
-        if (data.error) {
-          return { cropVariety, error: data.error };
-        }
-
-        return { cropVariety, data };
-      } catch (error) {
-        console.error(`Error fetching data for ${cropVariety.displayName}:`, error);
-        return { cropVariety, error: error };
+      const networkErrors = varietyResponse.errors
+      if (networkErrors) {
+        console.error(`Error fetching data for ${cropVariety.displayName}:`, networkErrors);
+        return { cropVariety, error: networkErrors };
       }
+      const lambdaError = JSON.parse(response.data!).error
+      if (!varietyResponse.data || lambdaError) {
+        console.error(`Error fetching data for ${cropVariety.displayName}:`, lambdaError);
+        return { cropVariety, error: lambdaError };
+      }
+
+      const data = JSON.parse(response.data!)
+
+      // Fail result if returned with an error in response.
+      if (data.error) {
+        return { cropVariety, error: data.error };
+      }
+
+      return { cropVariety, data };
     });
 
     const allCropData = await Promise.all(fetchPromises);
@@ -409,12 +415,12 @@ const Planner = () => {
       const networkErrors = varietyResponse.errors
       if (networkErrors) {
         toast.error("We couldn't get seed varieties for companion plants.")
-        throw new Error(`Network error fetching companion plant varieties: ${varietyResponse.errors}`)
+        throw new Error(`Network error fetching fetching companion plant varieties: ${varietyResponse.errors}`)
       }
       const lambdaError = JSON.parse(varietyResponse.data!).error
       if (!varietyResponse.data || lambdaError) {
         toast.error("We couldn't get seed varieties for companion plants.")
-        throw new Error(`Error returned to client companion plant varieties: ${lambdaError}`)
+        throw new Error(`Error returned to client fetching companion plant varieties: ${lambdaError}`)
       }
 
       const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
