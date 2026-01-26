@@ -46,10 +46,15 @@ Sentry.init({
 
 export const handler: Schema["getClimateData"]["functionHandler"]  = async (event) => {
 
+  const { zipCode } = event.arguments
+  if (!zipCode) {
+    Sentry.captureMessage("Error in getClimateData function. No zip code provided.", "error");
+    return JSON.stringify({ error: "No zip code provided." })
+  }
+
   const openai = new OpenAI({
     apiKey: env.API_KEY
   });
-  const { zipCode } = event.arguments
   const prompt =
     `For the zip code "${zipCode}": What are the average temperature highs and lows, in fahrenheit, for every month? Also provide the estimated last frost date of the spring, and first frost date of the autumn, formatted as "MonthName Day". And lastly, based on the location, provide the USDA Plant Hardiness Zone as a number.`
   const completion = await openai.chat.completions.create({
