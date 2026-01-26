@@ -31,10 +31,6 @@ export const handler: Schema["getTrueLeafSeedData"]["functionHandler"]  = async 
     return JSON.stringify({ error: "No crop types provided" })
   }
 
-  if (mode === 'companionPlant') {
-    return JSON.stringify({ error: "test handled error in getTrueLeafSeedData for companion plants" })
-  }
-
   const parsedCropTypes = JSON.parse(cropTypes!);
   const url = "https://trueleafmarket.com/api/collectionSearch?_data=routes%2F%28%24locale%29.api.collectionSearch";
 
