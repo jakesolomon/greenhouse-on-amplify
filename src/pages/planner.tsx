@@ -182,7 +182,7 @@ const Planner = () => {
     const networkErrors = result.errors
     if (networkErrors) {
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
-      throw new Error(`Network error fetching regional climate data from client: ${JSON.stringify(result.errors)}`)
+      throw new Error(`Network error fetching regional climate data from client: ${JSON.stringify(networkErrors)}`)
     }
     const parsedResponse = JSON.parse(result.data!)
     if (!result.data || parsedResponse.error) {
@@ -458,17 +458,24 @@ const Planner = () => {
       }
       const response =
         await amplifyClient.queries.getCompanionPlants(companionPlantsRequestArguments);
-      // Fail result if returned with an error in response.
-      if (response.errors) {
+
+      const networkErrors = response.errors
+      if (networkErrors) {
         setLoadingCompanionPlantingAdvice('failed')
         toast.error(`Unable to find companion plantings info.`)
-        throw new Error(`Error in client fetching companionPlants: ${JSON.stringify(response.errors)}`)
-      } else {
-        console.log("requestCompanionPlants: ", JSON.parse(response.data!))
-        setCompanionPlantingAdvice(JSON.parse(response.data!).companionPlantingAdvice);
-        setLoadingCompanionPlantingAdvice('false')
-        await getCompanionPlantLinksFromPlantingAdvice(JSON.parse(response.data!).companionPlantingAdvice)
+        throw new Error(`Network error fetching companionPlants from client: ${JSON.stringify(networkErrors)}`)
       }
+      const parsedResponse = JSON.parse(response.data!)
+      if (!response.data || parsedResponse.error) {
+        setLoadingCompanionPlantingAdvice('failed')
+        toast.error(`Unable to find companion plantings info.`)
+        throw new Error(`Error returned to client fetching companionPlants: ${parsedResponse.error}`)
+      }
+
+      console.log("requestCompanionPlants: ", parsedResponse)
+      setCompanionPlantingAdvice(parsedResponse.companionPlantingAdvice);
+      setLoadingCompanionPlantingAdvice('false')
+      await getCompanionPlantLinksFromPlantingAdvice(parsedResponse.companionPlantingAdvice)
     };
 
     if (
