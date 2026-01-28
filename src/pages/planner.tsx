@@ -184,12 +184,12 @@ const Planner = () => {
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
       throw new Error(`Network error fetching regional climate data from client: ${JSON.stringify(result.errors)}`)
     }
-    const lambdaError = JSON.parse(result.data!).error
-    if (!result.data || lambdaError) {
+    const parsedResponse = JSON.parse(result.data!)
+    if (!result.data || parsedResponse.error) {
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
-      throw new Error(`Error returned to client fetching regional climate data: ${lambdaError}`)
+      throw new Error(`Error returned to client fetching regional climate data: ${parsedResponse.error}`)
     }
-    setClimateData(JSON.parse(result.data));
+    setClimateData(parsedResponse);
   }
 
   const getAllCropData = async (cropNames: string[]) => {
@@ -205,10 +205,10 @@ const Planner = () => {
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
       throw new Error(`Network error fetching crop varieties: ${JSON.stringify(varietyResponse.errors)}`)
     }
-    const lambdaError = JSON.parse(varietyResponse.data!).error
-    if (!varietyResponse.data || lambdaError) {
+    const parsedResponse = JSON.parse(varietyResponse.data!)
+    if (!varietyResponse.data || parsedResponse.error) {
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
-      throw new Error(`Error returned to client fetching crop varieties: ${lambdaError}`)
+      throw new Error(`Error returned to client fetching crop varieties: ${parsedResponse.error}`)
     }
 
     const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
@@ -252,10 +252,10 @@ const Planner = () => {
         console.error(`Error fetching data for ${cropVariety.displayName}:`, networkErrors);
         return { cropVariety, error: networkErrors };
       }
-      const lambdaError = JSON.parse(response.data!).error
-      if (!varietyResponse.data || lambdaError) {
-        console.error(`Error fetching data for ${cropVariety.displayName}:`, lambdaError);
-        return { cropVariety, error: lambdaError };
+      const parsedResponse = JSON.parse(response.data!)
+      if (!response.data || parsedResponse.error) {
+        console.error(`Error fetching data for ${cropVariety.displayName}:`, parsedResponse.error);
+        return { cropVariety, error: parsedResponse.error };
       }
 
       const data = JSON.parse(response.data!)
@@ -365,17 +365,21 @@ const Planner = () => {
       }
       const response =
         await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
-      console.log("requestScheduleSummary: ", response)
-      // Fail result if returned with an error in response.
-      if (response.errors) {
+      const networkErrors = response.errors
+      if (networkErrors) {
         setLoadingScheduleSummary('failed')
         toast.error(`Unable to generate planting schedule summary.`)
-        console.error("Error fetching scheduleSummary: ", response.errors)
-        throw new Error (`Error in client while fetching scheduleSummary: ${JSON.stringify(response.errors)}`)
-      } else {
-        setScheduleSummary(response.data!);
-        setLoadingScheduleSummary('false')
+        throw new Error(`Network error fetching scheduleSummary: ${JSON.stringify(networkErrors)}`)
       }
+      const parsedResponse = JSON.parse(response.data!)
+      if (!response.data || parsedResponse.error) {
+        setLoadingScheduleSummary('failed')
+        toast.error(`Unable to generate planting schedule summary.`)
+        throw new Error(`Error returned to client fetching schedule summary: ${parsedResponse.error}`)
+      }
+
+      setScheduleSummary(parsedResponse.summary);
+      setLoadingScheduleSummary('false')
     };
 
     if (
@@ -417,10 +421,10 @@ const Planner = () => {
         toast.error("We couldn't get seed varieties for companion plants.")
         throw new Error(`Network error fetching fetching companion plant varieties: ${varietyResponse.errors}`)
       }
-      const lambdaError = JSON.parse(varietyResponse.data!).error
-      if (!varietyResponse.data || lambdaError) {
+      const parsedResponse = JSON.parse(varietyResponse.data!)
+      if (!varietyResponse.data || parsedResponse.error) {
         toast.error("We couldn't get seed varieties for companion plants.")
-        throw new Error(`Error returned to client fetching companion plant varieties: ${lambdaError}`)
+        throw new Error(`Error returned to client fetching companion plant varieties: ${parsedResponse.error}`)
       }
 
       const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
