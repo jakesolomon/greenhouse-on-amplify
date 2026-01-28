@@ -38,12 +38,19 @@ const ContactForm = () => {
       subject: values.subject,
       senderMessage: values.message
     });
-    if (result.errors) {
+
+    const networkErrors = result.errors
+    if (networkErrors) {
       setSubmissionState('error')
-    } else {
-      setSubmissionState('sent')
-      form.reset()
+      return
     }
+    const parsedResponse = JSON.parse(result.data!)
+    if (!result.data || parsedResponse.error) {
+      setSubmissionState('error')
+      return
+    }
+    setSubmissionState('sent')
+    form.reset()
   };
 
   return (

@@ -3,9 +3,25 @@ import * as Sentry from "@sentry/node";
 
 import {Schema} from "../../data/resource";
 
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
+
 export const handler: Schema["sendContactEmail"]["functionHandler"]  = async (event) => {
 
   const { senderAddress, subject, senderMessage } = event.arguments
+
+  if (
+    senderAddress === null ||
+    senderAddress === undefined ||
+    subject === null ||
+    subject === undefined ||
+    senderMessage === null ||
+    senderMessage === undefined
+  ) {
+    Sentry.captureMessage("Error in sendContactEmail function. Sender address, subject, or message not provided.", "error");
+    return JSON.stringify({ error: "Sender address, subject, or message not provided." })
+  }
 
   const REGION = "us-east-1";
   const sesClient = new SESClient({ region: REGION });
@@ -42,6 +58,7 @@ export const handler: Schema["sendContactEmail"]["functionHandler"]  = async (ev
     await sesClient.send(sesCommand)
   } catch (error) {
     Sentry.captureMessage(`Error in sendContactEmail function. Error: ${error}.`, "error");
+    return JSON.stringify({ error: `sendContactEmail function failed. Error: ${error}` });
   }
 
   return JSON.stringify('success')
