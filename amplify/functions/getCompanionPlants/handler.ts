@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCompanionPlants';
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/aws-serverless";
 
 import { Schema } from "../../data/resource";
 

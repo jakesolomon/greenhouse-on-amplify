@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'; // For Node.js < 18. Use global fetch for Node.js 18+.
 import { Logger } from "@aws-lambda-powertools/logger";
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/aws-serverless";
 
 import { Schema } from "../../data/resource";
 

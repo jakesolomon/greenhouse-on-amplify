@@ -1,5 +1,5 @@
 import {Schema} from "../../data/resource";
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/aws-serverless";
 
 Sentry.init({
   dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",

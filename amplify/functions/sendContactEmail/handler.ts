@@ -1,5 +1,5 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/aws-serverless";
 
 import {Schema} from "../../data/resource";
 

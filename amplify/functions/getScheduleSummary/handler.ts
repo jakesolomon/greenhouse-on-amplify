@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { env } from '$amplify/env/getScheduleSummary';
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/aws-serverless";
 
 import { Schema } from "../../data/resource";
 
