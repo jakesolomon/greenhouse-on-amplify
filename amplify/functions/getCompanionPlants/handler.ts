@@ -2,9 +2,9 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCompanionPlants';
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
-import { Logger } from "@aws-lambda-powertools/logger";
 
 // These types adhere to the response format in /src/types.ts
 
@@ -15,17 +15,15 @@ interface Planting {
   harvestEndDate: string
 }
 
-const logger = new Logger({ serviceName: "getCompanionPlants" });
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
 
 const getCompanionPlantsOutput = z.object({
   companionPlantingAdvice: z.array(z.string()),
 });
 
 export const handler: Schema["getCompanionPlants"]["functionHandler"]  = async (event) => {
-
-  const openai = new OpenAI({
-    apiKey: env.API_KEY
-  });
 
   const { climateData, plantingSchedule } = event.arguments;
   if (
@@ -34,8 +32,13 @@ export const handler: Schema["getCompanionPlants"]["functionHandler"]  = async (
     plantingSchedule === null ||
     plantingSchedule === undefined
   ) {
-    return JSON.stringify({error: "Climate data or crop data not provided."})
+    Sentry.captureMessage(`Error in getCompanionPlants function. Climate data or planting schedule not provided.`, "error");
+    return JSON.stringify({error: "Climate data or planting schedule not provided."})
   }
+
+  const openai = new OpenAI({
+    apiKey: env.API_KEY
+  });
 
   const parsedPlantingSchedule: Planting[][] = JSON.parse(plantingSchedule)
   const formattedPlantingSchedule = parsedPlantingSchedule.map((plot, index) =>
@@ -45,7 +48,6 @@ export const handler: Schema["getCompanionPlants"]["functionHandler"]  = async (
   ).join("\n\n")
 
   const userPrompt = getUserPrompt(climateData, formattedPlantingSchedule)
-  logger.info(userPrompt)
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini-2024-07-18",
@@ -58,7 +60,8 @@ export const handler: Schema["getCompanionPlants"]["functionHandler"]  = async (
 
   const overviewOutput = completion.choices[0].message;
   if (overviewOutput.refusal) {
-    console.log(overviewOutput.refusal);
+    Sentry.captureMessage(`Companion plants chat to LLM refused: ${overviewOutput.refusal}`, "error");
+    JSON.stringify({ error: "Companion plants chat to LLM refused." });
   }
 
   return overviewOutput.content;

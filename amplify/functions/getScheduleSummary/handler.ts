@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { env } from '$amplify/env/getScheduleSummary';
-import { Logger } from "@aws-lambda-powertools/logger";
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 
@@ -11,13 +11,12 @@ interface Planting {
   harvestEndDate: string
 }
 
-const logger = new Logger({ serviceName: "getScheduleSummary" });
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
 
 export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (event) => {
 
-  const openai = new OpenAI({
-    apiKey: env.API_KEY
-  });
   const { climateData, plantingSchedule } = event.arguments;
 
   if (
@@ -26,8 +25,13 @@ export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (
     plantingSchedule === null ||
     plantingSchedule === undefined
   ) {
-    return JSON.stringify({error: "Climate data or crop data not provided."})
+    Sentry.captureMessage("Error in getScheduleSummary function. Climate data or planting schedule not provided.", "error");
+    return JSON.stringify({error: "Climate data or planting schedule not provided."})
   }
+
+  const openai = new OpenAI({
+    apiKey: env.API_KEY
+  });
 
   const parsedPlantingSchedule: Planting[][] = JSON.parse(plantingSchedule)
   const formattedPlantingSchedule = parsedPlantingSchedule.map((plot, index) =>
@@ -37,7 +41,6 @@ export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (
   ).join("\n\n")
 
   const userPrompt = getUserPrompt(climateData, formattedPlantingSchedule)
-  logger.info(userPrompt)
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -47,7 +50,13 @@ export const handler: Schema["getScheduleSummary"]["functionHandler"]  = async (
     ],
   });
 
-  return completion.choices[0].message.content;
+  const summaryOutput = completion.choices[0].message;
+  if (summaryOutput.refusal) {
+    Sentry.captureMessage(`Schedule summary request to LLM refused: ${summaryOutput.refusal}`, "error");
+    return JSON.stringify({ error: "Schedule summary request to LLM refused." });
+  }
+
+  return JSON.stringify({ summary: summaryOutput.content });
 };
 
 const systemPrompt =

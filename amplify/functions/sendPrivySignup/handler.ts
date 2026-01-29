@@ -1,12 +1,15 @@
 import {Schema} from "../../data/resource";
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
 
 export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (event) => {
 
-  const { emailAddress, url, shouldUseV2EmbedForm } = event.arguments
+  const { emailAddress, url } = event.arguments
 
-  const endpoint = shouldUseV2EmbedForm === "true"
-    ? 'https://api.privy.com/businesses/9998217E6FE1FB43AC42EADC/campaigns/4457778/transactions'
-    : 'https://api.privy.com/businesses/9998217E6FE1FB43AC42EADC/campaigns/4437469/transactions'
+  const endpoint = 'https://api.privy.com/businesses/9998217E6FE1FB43AC42EADC/campaigns/4437469/transactions'
 
   const formData = new URLSearchParams();
   formData.append('_method', 'post');
@@ -21,16 +24,43 @@ export const handler: Schema["sendPrivySignup"]["functionHandler"]  = async (eve
   formData.append('browsing_data[url]', url); // probably the iframe src
   formData.append('browsing_data[utm_medium]', 'internal');
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json, text/javascript, */*; q=0.01',
-    },
-    body: formData.toString(),
-  });
+  const submitRequest = async (formData: URLSearchParams) => {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json, text/javascript, */*; q=0.01',
+        },
+        body: formData.toString(),
+      })
 
-  // TODO handle privy failures
+      if (!response.ok) {
+        const body = await response.text();
+        Sentry.captureMessage(
+          `Privy signup failed: ${response.status}. Body: ${body}`,
+          "error"
+        );
+        return JSON.stringify({ success: false, error: "Email signup failed" });
+      }
+
+      return JSON.stringify({ success: true });
+    } catch (error) {
+      Sentry.captureException(error);
+      return JSON.stringify({ success: false, error: "Network error" });
+    }
+  }
+
+  const response = await submitRequest(formData)
+
+  // const response = await fetch(endpoint, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/x-www-form-urlencoded',
+  //     Accept: 'application/json, text/javascript, */*; q=0.01',
+  //   },
+  //   body: formData.toString(),
+  // });
 
   return JSON.stringify(response)
 };

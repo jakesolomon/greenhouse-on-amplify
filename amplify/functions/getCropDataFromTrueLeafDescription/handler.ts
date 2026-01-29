@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { env } from '$amplify/env/getCropDataFromTrueLeafDescription';
-import { Logger } from "@aws-lambda-powertools/logger";
+import * as Sentry from "@sentry/node";
 
 import { Schema } from "../../data/resource";
 
@@ -13,41 +13,43 @@ const Crop = z.object({
   guidance: z.string(),
 });
 
-const logger = new Logger({ serviceName: "getCropDataFromTrueLeafDescription" });
+Sentry.init({
+  dsn: "https://f07cd6da9a3fe49e5326614e1e037798@o470321.ingest.us.sentry.io/4510620412215296",
+});
 
 export const handler: Schema["getCropDataFromTrueLeafDescription"]["functionHandler"]  = async (event) => {
+
+  const { varietyDescription } = event.arguments
+  if (!varietyDescription) {
+    Sentry.captureMessage("Error in getCropDataFromTrueLeafDescription function. No varietyDescription provided.", "error");
+    return JSON.stringify({ error: "No varietyDescription provided." })
+  }
+  const delineateCropData = (varietyData: string) => "**Variety Description:**\n```" + varietyData + "\n```\n\n"
 
   const openai = new OpenAI({
     apiKey: env.API_KEY
   });
 
-  const { varietyDescription } = event.arguments
-  const delineateCropData = (varietyData: string) => "**Variety Description:**\n```" + varietyData + "\n```\n\n"
+  // Send variety description to LLM for data extraction.
+  const varietyDataExtractionCompletion = await openai.chat.completions.create({
+    model: "gpt-4o-mini-2024-07-18",
+    messages: [
+      { role: "system", content: dataExtractionSystemPrompt },
+      { role: "user", content: delineateCropData(varietyDescription!) },
+    ],
+    response_format: zodResponseFormat(Crop, "crop_data_output"),
+  });
 
-  try {
-    // Send variety description to LLM for data extraction.
-    const varietyDataExtractionCompletion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
-      messages: [
-        { role: "system", content: dataExtractionSystemPrompt },
-        { role: "user", content: delineateCropData(varietyDescription!) },
-      ],
-      response_format: zodResponseFormat(Crop, "crop_data_output"),
-    });
-
-    // If data extraction request returns a refusal, log and return error.
-    const varietyDataExtractionOutput = varietyDataExtractionCompletion.choices[0].message;
-    if (varietyDataExtractionOutput.refusal) {
-      logger.error("Data extraction refused with: ", varietyDataExtractionOutput.refusal);
-    }
-
-    const appendedVarietyDataExtraction = JSON.parse(varietyDataExtractionOutput.content!)
-    appendedVarietyDataExtraction.dataSource = "variety"
-    return JSON.stringify(appendedVarietyDataExtraction)
-  } catch (error) {
-    logger.error("Error in chat completion with LLM: ", error as Error);
-    return JSON.stringify({error: `Failed to extract crop data. Error in chat completion with LLM: ${error}`})
+  // If data extraction request returns a refusal, log and return error.
+  const varietyDataExtractionOutput = varietyDataExtractionCompletion.choices[0].message;
+  if (varietyDataExtractionOutput.refusal) {
+    Sentry.captureMessage(`getCropDataFromTrueLeafDescription request to LLM refused: ${varietyDataExtractionOutput.refusal}`, "error");
+    return JSON.stringify({ error: "getCropDataFromTrueLeafDescription request to LLM refused." });
   }
+
+  const appendedVarietyDataExtraction = JSON.parse(varietyDataExtractionOutput.content!)
+  appendedVarietyDataExtraction.dataSource = "variety"
+  return JSON.stringify(appendedVarietyDataExtraction)
 };
 
 const dataExtractionSystemPrompt =

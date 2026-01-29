@@ -178,13 +178,18 @@ const Planner = () => {
 
   const submitZipCode = async (zipCode: string) => {
     setClimateData(undefined);
-    try {
-      const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
-      setClimateData(JSON.parse(result.data!));
-    } catch (error) {
-      console.error('Error fetching regional climate data: ', error);
+    const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
+    const networkErrors = result.errors
+    if (networkErrors) {
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
+      throw new Error(`Network error fetching regional climate data from client: ${JSON.stringify(networkErrors)}`)
     }
+    const parsedResponse = JSON.parse(result.data!)
+    if (!result.data || parsedResponse.error) {
+      setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
+      throw new Error(`Error returned to client fetching regional climate data: ${parsedResponse.error}`)
+    }
+    setClimateData(parsedResponse);
   }
 
   const getAllCropData = async (cropNames: string[]) => {
@@ -195,10 +200,15 @@ const Planner = () => {
 
     // Get list of varieties for each crop type (TrueLeaf)
     const varietyResponse = await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(crops), mode: 'crop'})
-    if (varietyResponse.errors || !varietyResponse.data) {
-      console.error("Error fetching crop varieties: ", varietyResponse.errors)
+    const networkErrors = varietyResponse.errors
+    if (networkErrors) {
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
-      return
+      throw new Error(`Network error fetching crop varieties: ${JSON.stringify(varietyResponse.errors)}`)
+    }
+    const parsedResponse = JSON.parse(varietyResponse.data!)
+    if (!varietyResponse.data || parsedResponse.error) {
+      setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
+      throw new Error(`Error returned to client fetching crop varieties: ${parsedResponse.error}`)
     }
 
     const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
@@ -233,23 +243,29 @@ const Planner = () => {
     console.log("topVarieties: ", topVarieties)
 
     const fetchPromises = topVarieties.map(async (cropVariety) => {
-      try {
-        const response = await amplifyClient.queries.getCropDataFromTrueLeafDescription({
-          varietyDescription: cropVariety?.descriptionHtml
-        });
+      const response = await amplifyClient.queries.getCropDataFromTrueLeafDescription({
+        varietyDescription: cropVariety?.descriptionHtml
+      });
 
-        const data = JSON.parse(response.data!)
-
-        // Fail result if returned with an error in response.
-        if (data.error) {
-          return { cropVariety, error: data.error };
-        }
-
-        return { cropVariety, data };
-      } catch (error) {
-        console.error(`Error fetching data for ${cropVariety.displayName}:`, error);
-        return { cropVariety, error: error };
+      const networkErrors = varietyResponse.errors
+      if (networkErrors) {
+        console.error(`Error fetching data for ${cropVariety.displayName}:`, networkErrors);
+        return { cropVariety, error: networkErrors };
       }
+      const parsedResponse = JSON.parse(response.data!)
+      if (!response.data || parsedResponse.error) {
+        console.error(`Error fetching data for ${cropVariety.displayName}:`, parsedResponse.error);
+        return { cropVariety, error: parsedResponse.error };
+      }
+
+      const data = JSON.parse(response.data!)
+
+      // Fail result if returned with an error in response.
+      if (data.error) {
+        return { cropVariety, error: data.error };
+      }
+
+      return { cropVariety, data };
     });
 
     const allCropData = await Promise.all(fetchPromises);
@@ -258,7 +274,7 @@ const Planner = () => {
     const failedResults = allCropData.filter(result => result.error);
     if (successfulResults.length === 0) {
       setFatalError("We couldn't get seed varieties for the crops you picked. Please refresh the page and try again.")
-      return;
+      throw new Error(`Couldn't get seed varieties for any of the selected crops.`)
     }
     if (failedResults.length > 0) {
       const failedCropNames = failedResults.map(result => result.cropVariety.displayName)
@@ -335,35 +351,35 @@ const Planner = () => {
 
     const requestScheduleSummary = async () => {
       setLoadingScheduleSummary('true')
-      try {
-        const plantingScheduleFormattedForLLM = plantingSchedule.map(plot => plot.map(planting => ({
-          name: planting.name,
-          plantingDate: planting.transplantingDate,
-          harvestStartDate: planting.harvestStartDate,
-          harvestEndDate: planting.harvestEndDate,
-          frostHardy: cropData?.find(crop => crop.name === planting.name)?.frostHardy,
-          sowingStrategy: cropData?.find(crop => crop.name === planting.name)?.directSow ? "Direct Sow" : "Transplant seedlings",
-        })))
-        const scheduleSummaryRequestArguments = {
-          climateData: JSON.stringify(climateData!),
-          plantingSchedule: JSON.stringify(plantingScheduleFormattedForLLM)
-        }
-        const response =
-          await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
-        console.log("requestScheduleSummary: ", response)
-        // Fail result if returned with an error in response.
-        if (response.errors) {
-          setLoadingScheduleSummary('failed')
-          console.error("Error fetching scheduleSummary: ", response.errors)
-          toast.error(`Unable to generate planting schedule summary.`)
-        } else {
-          setScheduleSummary(response.data!);
-          setLoadingScheduleSummary('false')
-        }
-      } catch (error) {
-        console.error('Error thrown fetching schedule summary:', error);
-        setLoadingScheduleSummary('failed')
+      const plantingScheduleFormattedForLLM = plantingSchedule.map(plot => plot.map(planting => ({
+        name: planting.name,
+        plantingDate: planting.transplantingDate,
+        harvestStartDate: planting.harvestStartDate,
+        harvestEndDate: planting.harvestEndDate,
+        frostHardy: cropData?.find(crop => crop.name === planting.name)?.frostHardy,
+        sowingStrategy: cropData?.find(crop => crop.name === planting.name)?.directSow ? "Direct Sow" : "Transplant seedlings",
+      })))
+      const scheduleSummaryRequestArguments = {
+        climateData: JSON.stringify(climateData!),
+        plantingSchedule: JSON.stringify(plantingScheduleFormattedForLLM)
       }
+      const response =
+        await amplifyClient.queries.getScheduleSummary(scheduleSummaryRequestArguments);
+      const networkErrors = response.errors
+      if (networkErrors) {
+        setLoadingScheduleSummary('failed')
+        toast.error(`Unable to generate planting schedule summary.`)
+        throw new Error(`Network error fetching scheduleSummary: ${JSON.stringify(networkErrors)}`)
+      }
+      const parsedResponse = JSON.parse(response.data!)
+      if (!response.data || parsedResponse.error) {
+        setLoadingScheduleSummary('failed')
+        toast.error(`Unable to generate planting schedule summary.`)
+        throw new Error(`Error returned to client fetching schedule summary: ${parsedResponse.error}`)
+      }
+
+      setScheduleSummary(parsedResponse.summary);
+      setLoadingScheduleSummary('false')
     };
 
     if (
@@ -398,65 +414,68 @@ const Planner = () => {
       });
       console.log("foundCompanionPlants: ", foundPlants)
 
-      try {
-        const varietyResponse =
-          await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(foundPlants), mode: 'companionPlant'})
-        if (varietyResponse.errors || !varietyResponse.data) {
-          console.error("Error fetching companionPlant varieties: ", varietyResponse.errors)
-          toast.error("We couldn't get seed varieties for companion plants.")
-          return
-        }
-
-        const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
-        // const varietyResults = JSON.parse(varietyResponse.data)
-        console.log("companion plant varieties: ", varietyResults)
-
-        // Filter out "microgreen" or "sprout" // TODO prefer in stock
-        const topVarieties: {storeHandle: string, displayName: string}[] = varietyResults.map(variety => {
-          const selectedVariety = variety.data.results?.find(e =>
-            !e.title.toLowerCase().includes('sprout') &&
-            !e.title.toLowerCase().includes('microgreen')
-          )
-
-          if (!variety.data.results || !selectedVariety) {
-            console.error("Could not find True Seed variety for companion plant: ", variety.cropType.displayName)
-          }
-          return {
-            storeHandle: selectedVariety!.handle,
-            displayName: variety.cropType.displayName,
-          }
-        })
-        console.log("Top companion plant varieties: ", topVarieties)
-        setCompanionPlants(topVarieties)
-      } catch (error) {
-        console.error("Error getting companion plants: ", error)
+      const varietyResponse =
+        await amplifyClient.queries.getTrueLeafSeedData({cropTypes: JSON.stringify(foundPlants), mode: 'companionPlant'})
+      const networkErrors = varietyResponse.errors
+      if (networkErrors) {
+        toast.error("We couldn't get seed varieties for companion plants.")
+        throw new Error(`Network error fetching fetching companion plant varieties: ${varietyResponse.errors}`)
       }
+      const parsedResponse = JSON.parse(varietyResponse.data!)
+      if (!varietyResponse.data || parsedResponse.error) {
+        toast.error("We couldn't get seed varieties for companion plants.")
+        throw new Error(`Error returned to client fetching companion plant varieties: ${parsedResponse.error}`)
+      }
+
+      const varietyResults = JSON.parse(varietyResponse.data) as { cropType: SelectableCropType, data: { results: Array<{title: string, tags: string[], descriptionHtml: string, handle: string, images: { nodes: {url: string }[] } }>}, error?: string }[]
+      // const varietyResults = JSON.parse(varietyResponse.data)
+      console.log("companion plant varieties: ", varietyResults)
+
+      // Filter out "microgreen" or "sprout" // TODO prefer in stock
+      const topVarieties: {storeHandle: string, displayName: string}[] = varietyResults.map(variety => {
+        const selectedVariety = variety.data.results?.find(e =>
+          !e.title.toLowerCase().includes('sprout') &&
+          !e.title.toLowerCase().includes('microgreen')
+        )
+
+        if (!variety.data.results || !selectedVariety) {
+          console.error("Could not find True Seed variety for companion plant: ", variety.cropType.displayName)
+        }
+        return {
+          storeHandle: selectedVariety!.handle,
+          displayName: variety.cropType.displayName,
+        }
+      })
+      console.log("Top companion plant varieties: ", topVarieties)
+      setCompanionPlants(topVarieties)
     }
 
     const requestCompanionPlants = async () => {
       setLoadingCompanionPlantingAdvice('true')
-      try {
-        const companionPlantsRequestArguments = {
-          climateData: JSON.stringify(climateData!),
-          plantingSchedule: JSON.stringify(plantingSchedule)
-        }
-        const response =
-          await amplifyClient.queries.getCompanionPlants(companionPlantsRequestArguments);
-        // Fail result if returned with an error in response.
-        if (response.errors) {
-          setLoadingCompanionPlantingAdvice('failed')
-          console.error("Error fetching companionPlants: ", response.errors)
-          toast.error(`Unable to find companion plantings info.`)
-        } else {
-          console.log("requestCompanionPlants: ", JSON.parse(response.data!))
-          setCompanionPlantingAdvice(JSON.parse(response.data!).companionPlantingAdvice);
-          setLoadingCompanionPlantingAdvice('false')
-          await getCompanionPlantLinksFromPlantingAdvice(JSON.parse(response.data!).companionPlantingAdvice)
-        }
-      } catch (error) {
-        console.error('Error thrown fetching companionPlants:', error);
-        setLoadingCompanionPlantingAdvice('failed')
+      const companionPlantsRequestArguments = {
+        climateData: JSON.stringify(climateData!),
+        plantingSchedule: JSON.stringify(plantingSchedule)
       }
+      const response =
+        await amplifyClient.queries.getCompanionPlants(companionPlantsRequestArguments);
+
+      const networkErrors = response.errors
+      if (networkErrors) {
+        setLoadingCompanionPlantingAdvice('failed')
+        toast.error(`Unable to find companion plantings info.`)
+        throw new Error(`Network error fetching companionPlants from client: ${JSON.stringify(networkErrors)}`)
+      }
+      const parsedResponse = JSON.parse(response.data!)
+      if (!response.data || parsedResponse.error) {
+        setLoadingCompanionPlantingAdvice('failed')
+        toast.error(`Unable to find companion plantings info.`)
+        throw new Error(`Error returned to client fetching companionPlants: ${parsedResponse.error}`)
+      }
+
+      console.log("requestCompanionPlants: ", parsedResponse)
+      setCompanionPlantingAdvice(parsedResponse.companionPlantingAdvice);
+      setLoadingCompanionPlantingAdvice('false')
+      await getCompanionPlantLinksFromPlantingAdvice(parsedResponse.companionPlantingAdvice)
     };
 
     if (
