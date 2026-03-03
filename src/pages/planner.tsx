@@ -13,7 +13,7 @@ import { availableCompanionPlants } from "../components/available-companion-plan
 
 const Planner = () => {
 
-  const worker = new Worker(new URL('../helpers/schedule-helpers.ts', import.meta.url));
+  const worker = new Worker(new URL('../helpers/schedule-helpers.ts', import.meta.url), { type: 'module' });
 
   useEffect(() => {
     return () => worker.terminate();
