@@ -17,10 +17,6 @@ export const handler: Schema["createCheckoutSession"]["functionHandler"]  = asyn
     ? 'price_1RCIzmKXcuXgnQQohShuxB7I'
     : product === "digital"
     ? 'price_1RBnjYKXcuXgnQQoa2eimOk7'
-    : product === "print-v2"
-    ? "price_1RMaEgKXcuXgnQQo9kEaMdkJ"
-    : product === 'digital-v2'
-    ? "price_1RMaCeKXcuXgnQQojsCAlqUh"
     : "not found"
   const stripe = new Stripe(env.STRIPE_API_KEY);
 

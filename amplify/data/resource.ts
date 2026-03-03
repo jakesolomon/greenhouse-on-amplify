@@ -14,7 +14,6 @@ import {getFullPlanTasks} from "../functions/getFullPlanTasks/resource";
 import { getFullPlanSummaries } from "../functions/getFullPlanSummaries/resource";
 import { sendContactEmail } from "../functions/sendContactEmail/resource";
 import { sendPrivySignup } from "../functions/sendPrivySignup/resource";
-import {fulfillV2Guide} from "../functions/fulfillV2Guide/resource";
 
 const schema = a.schema({
   getCropData: a
@@ -158,23 +157,6 @@ const schema = a.schema({
       automaticallyApplyWelcome15: a.string().required()
     })
     .handler(a.handler.function(createCheckoutSession))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
-  fulfillV2Guide: a
-    .query()
-    .arguments({
-      sessionId: a.string().required(),
-      product: a.string().required(),
-      scheduleSummary: a.string().required(),
-      crops: a.string().required(),
-      gantt: a.string().required(),
-      plantingSchedule: a.string().required(),
-      climateData: a.string().required(),
-      companionPlantingAdvice: a.string().required(),
-    })
-    .handler(a.handler.function(fulfillV2Guide).async())
     .authorization(allow => [
       allow.publicApiKey(),
     ]),
