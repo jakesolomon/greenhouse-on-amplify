@@ -1,32 +1,15 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend"
-import { getCropData } from "../functions/getCropData/resource"
 import { getCompanionPlants } from "../functions/getCompanionPlants/resource"
 import { getTrueLeafSeedData } from "../functions/getTrueLeafSeedData/resource";
 import { getCropDataFromTrueLeafDescription } from "../functions/getCropDataFromTrueLeafDescription/resource";
 import { getClimateData } from "../functions/getClimateData/resource"
-import { getFullPlanContent } from "../functions/getFullPlanContent/resource"
 import { getScheduleSummary } from "../functions/getScheduleSummary/resource"
-import { getPlantingScheduleData } from "../functions/getPlantingScheduleData/resource"
 import { createCheckoutSession } from "../functions/createCheckoutSession/resource"
 import { handleStripePurchase } from "../functions/handleStripePurchase/resource";
-import {getFullPlanIntroExtras} from "../functions/getFullPlanIntroExtras/resource";
-import {getFullPlanTasks} from "../functions/getFullPlanTasks/resource";
-import { getFullPlanSummaries } from "../functions/getFullPlanSummaries/resource";
 import { sendContactEmail } from "../functions/sendContactEmail/resource";
 import { sendPrivySignup } from "../functions/sendPrivySignup/resource";
 
 const schema = a.schema({
-  getCropData: a
-    .query()
-    .arguments({
-      prompt: a.string(),
-    })
-    .returns(a.string())
-    .handler(a.handler.function(getCropData))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
   getClimateData: a
     .query()
     .arguments({
@@ -34,57 +17,6 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(getClimateData))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
-  getFullPlanContent: a
-    .query()
-    .arguments({
-      crops: a.string().required(),
-      plantingSchedule: a.string().required(),
-      climateData: a.string().required(),
-      companionPlantingAdvice: a.string().required(),
-    })
-    .returns(a.string())
-    .handler(a.handler.function(getFullPlanContent))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
-  getFullPlanIntroExtras: a
-    .query()
-    .arguments({
-      crops: a.string().required(),
-    })
-    .returns(a.string())
-    .handler(a.handler.function(getFullPlanIntroExtras))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
-  getFullPlanTasks: a
-    .query()
-    .arguments({
-      crops: a.string().required(),
-      plantingSchedule: a.string().required(),
-      climateData: a.string().required(),
-    })
-    .returns(a.string())
-    .handler(a.handler.function(getFullPlanTasks))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
-  getFullPlanSummaries: a
-    .query()
-    .arguments({
-      tasks: a.string().required(),
-      climateData: a.string().required(),
-      companionPlantingAdvice: a.string().required(),
-    })
-    .returns(a.string())
-    .handler(a.handler.function(getFullPlanSummaries))
     .authorization(allow => [
       allow.publicApiKey(),
     ]),
@@ -132,18 +64,6 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(getScheduleSummary))
-    .authorization(allow => [
-      allow.publicApiKey(),
-    ]),
-
-  getPlantingScheduleData: a
-    .query()
-    .arguments({
-      climateData: a.string(),
-      crops: a.string()
-    })
-    .returns(a.string())
-    .handler(a.handler.function(getPlantingScheduleData))
     .authorization(allow => [
       allow.publicApiKey(),
     ]),
