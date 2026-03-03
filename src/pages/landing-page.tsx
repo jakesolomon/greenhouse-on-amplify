@@ -217,11 +217,11 @@ const LandingPage = () => {
                   <Title
                     order={1}
                     w={isSmallScreen ? undefined : "50%"}
-                    style={{fontSize: isSmallScreen ? "2rem" : "2.5rem"}}
+                    style={{fontSize: isSmallScreen ? "2rem" : "2.8rem"}}
                     c={isSmallScreen ? "white" : undefined}
                     textWrap="balance"
                   >
-                    Generic planting charts aren't made for succession planting.
+                    A Planting Chart Made for Succession Planting
                   </Title>
                   {/*<Text size="lg" mt="md" c={isSmallScreen ? "white" : undefined} >*/}
                   {/*  Personalized plans for a thriving vegetable garden—made effortless with AI.*/}

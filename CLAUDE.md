@@ -20,6 +20,15 @@ npx ampx sandbox --stream-function-logs  # Terminal 1
 npm run dev -- --host                     # Terminal 2
 ```
 
+### Testing
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests once (CI)
+npm run test:run
+```
+
 ### Build & Lint
 ```bash
 # Build for production (TypeScript compilation + Vite build)

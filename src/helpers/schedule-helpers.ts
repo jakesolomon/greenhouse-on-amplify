@@ -1,11 +1,11 @@
 import {Crop, GrowingDateRange, Planting} from "../types.ts";
 
-const getDaysBetween = (start: Date, end: Date): number => {
+export const getDaysBetween = (start: Date, end: Date): number => {
   const timeBetween = end.getTime() - start.getTime();
   return Math.round(timeBetween / (1000 * 60 * 60 * 24));
 }
 
-const plantingsAreInConflict = (planting1: Planting, planting2: Planting): boolean =>
+export const plantingsAreInConflict = (planting1: Planting, planting2: Planting): boolean =>
   !(
     planting1.harvestEndDate <= planting2.transplantingDate ||
     planting2.harvestEndDate <= planting1.transplantingDate
