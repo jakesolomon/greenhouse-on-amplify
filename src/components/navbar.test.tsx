@@ -23,15 +23,4 @@ describe('NavBar', () => {
     expect(screen.getByText('About').closest('a')).toHaveAttribute('href', '/about')
     expect(screen.getByText('Learn').closest('a')).toHaveAttribute('href', '/learn')
   })
-
-  describe('v2 behavior (current, to be removed)', () => {
-    it('appends -v2 suffix to nav links when path contains v2', () => {
-      renderNavBar('/home-v2')
-      expect(screen.getByText('Home').closest('a')).toHaveAttribute('href', '/home-v2')
-      expect(screen.getByText('Contact').closest('a')).toHaveAttribute('href', '/contact-v2')
-      expect(screen.getByText('FAQ').closest('a')).toHaveAttribute('href', '/faq-v2')
-      expect(screen.getByText('About').closest('a')).toHaveAttribute('href', '/about-v2')
-      expect(screen.getByText('Learn').closest('a')).toHaveAttribute('href', '/learn-v2')
-    })
-  })
 })

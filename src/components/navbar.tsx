@@ -1,4 +1,4 @@
-import {NavLink, useLocation} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import {
   Button,
   AppShell,
@@ -13,11 +13,8 @@ const NavBar = (props: NavBarProps) => {
 
   const { toggleNavBar } = props;
 
-  const location = useLocation();
-  const isV2 = location.pathname.includes('v2');
-
   const renderNavItem = (label: string, to: string) => (
-    <NavLink to={isV2 ? `${to}-v2` : to}>
+    <NavLink to={to}>
       {({ isActive }) => (
         <Button
           variant={isActive ? 'outline' : 'subtle'}

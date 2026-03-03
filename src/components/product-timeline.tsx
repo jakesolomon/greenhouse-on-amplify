@@ -20,7 +20,7 @@ const ProductTimeline = () => {
         title="Step 1: Tell Us About Your Garden"
       >
         <Text c="dimmed" size="sm" mt="sm">
-          Share a few quick details—your zip code (so we can make accurate assumptions about your local climate), and what you want to grow from our list of supported crops (see <NavLink to='/faq-v2'>FAQs</NavLink> for the full list).
+          Share a few quick details—your zip code (so we can make accurate assumptions about your local climate), and what you want to grow from our list of supported crops (see <NavLink to='/faq'>FAQs</NavLink> for the full list).
         </Text>
       </Timeline.Item>
 
