@@ -20,7 +20,7 @@ const getPlantings = (crop: Crop): Planting[] => {
   })
 }
 
-const daysOfPlantingOverlap = (newPlanting: Planting, existingPlanting: Planting): number => {
+export const daysOfPlantingOverlap = (newPlanting: Planting, existingPlanting: Planting): number => {
   const newPlantingStart = newPlanting.transplantingDate
   const newPlantingEnd = newPlanting.harvestEndDate
   const existingPlantingStart = existingPlanting.transplantingDate
@@ -41,7 +41,7 @@ const daysOfPlantingOverlap = (newPlanting: Planting, existingPlanting: Planting
   return 0;
 }
 
-const fudgePlanting = (planting: Planting, plot: Planting[]): Planting | undefined => {
+export const fudgePlanting = (planting: Planting, plot: Planting[]): Planting | undefined => {
   let fudgeDays = 0;
   let fudgeRangeIsAcceptable = false;
   let fudgedPlanting: Planting;
@@ -190,7 +190,7 @@ const addPlantingToNewPlot = (
   }
 }
 
-const cropsSortedByDescendingPlantingDuration = (crops: Crop[]) => {
+export const cropsSortedByDescendingPlantingDuration = (crops: Crop[]) => {
   const allCropsSortedByPlantingLength = [...crops]
   allCropsSortedByPlantingLength.sort((a, b) => {
     const plantingDurationA = getDaysBetween(
@@ -377,7 +377,7 @@ const deepClonePlantingSchedule = (plantingSchedule: Planting[][])=> {
   )
 }
 
-const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] => {
+export const generateOptimalPlantingSchedule = (cropData: Crop[]): Planting[][] => {
   const optimalPlantingSchedule: Planting[][] = []
   const optimalPlantingSchedule2: Planting[][] = []
   const optimalPlantingSchedule3: Planting[][] = []

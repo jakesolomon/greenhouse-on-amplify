@@ -13,6 +13,7 @@ import { availableCompanionPlants } from "../components/available-companion-plan
 
 const Planner = () => {
 
+  // TODO this worker is being created on each render, so the worker.terminate() only ends the one thread it finds. This is a memory leak.
   const worker = new Worker(new URL('../helpers/schedule-helpers.ts', import.meta.url), { type: 'module' });
 
   useEffect(() => {

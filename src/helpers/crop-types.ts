@@ -23,7 +23,7 @@ export interface SelectableCropType {
   plantingDates: (climateData: ClimateDataOutput, daysToMaturity: number) => Date[]
 }
 
-const daysUntilConsistentlyBelowTemp = (
+export const daysUntilConsistentlyBelowTemp = (
   yearData: ClimateDataOutput,
   tempThreshold: number,
   startDate: Date,
@@ -76,7 +76,7 @@ const daysUntilConsistentlyBelowTemp = (
   return -1;
 }
 
-const daysUntilSuboptimalTemperature = (
+export const daysUntilSuboptimalTemperature = (
   yearData: ClimateDataOutput,
   optimalRange: {min?: number, max?: number},
   startDate: Date,

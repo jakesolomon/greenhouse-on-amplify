@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow Rules
+- After modifying any source file, run `npm run test:run` and `npm run build` before reporting the change as complete.
+- If no test covers the changed behavior, flag that to the user before making the change.
+- For changes that can only be verified in a browser (e.g., Web Workers, UI interactions), explicitly tell the user: "This has no test coverage — please verify in the browser before committing."
+- Integration tests (`*.integration.test.ts(x)`) exist but should NOT be run as part of standard verification. They hit real backends and are run on-demand via `npm run test:integration`.
+
 ## Common Commands
 
 ### Development
@@ -27,6 +33,9 @@ npm test
 
 # Run tests once (CI)
 npm run test:run
+
+# Run integration tests (real backend calls, on-demand only)
+npm run test:integration
 ```
 
 ### Build & Lint
