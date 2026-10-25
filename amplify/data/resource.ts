@@ -233,8 +233,10 @@ export const data = defineData({
   authorizationModes: {
     defaultAuthorizationMode: "apiKey",
 
+    // AppSync caps API keys at 365 days. When the key expires every public query
+    // returns 401 and the planner stalls, so redeploy before the year is up to rotate it.
     apiKeyAuthorizationMode: {
-      expiresInDays: 30,
+      expiresInDays: 365,
     },
   },
 });

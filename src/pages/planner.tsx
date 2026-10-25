@@ -180,7 +180,15 @@ const Planner = () => {
     setClimateData(undefined);
     try {
       const result = await amplifyClient.queries.getClimateData({ zipCode: zipCode });
-      setClimateData(JSON.parse(result.data!));
+      // Auth failures (e.g. an expired API key) come back as `errors` with null data rather than throwing
+      if (result.errors || !result.data) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+      }
+      const parsedResponse = JSON.parse(result.data);
+      if (parsedResponse.error) {
+        throw new Error(parsedResponse.error);
+      }
+      setClimateData(parsedResponse);
     } catch (error) {
       console.error('Error fetching regional climate data: ', error);
       setFatalError(`We couldn't get climate data for your region. Please refresh the page and try again.`);
