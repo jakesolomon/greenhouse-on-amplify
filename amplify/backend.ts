@@ -21,7 +21,7 @@ import {fulfillV2Guide} from "./functions/fulfillV2Guide/resource";
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
-defineBackend({
+const backend = defineBackend({
   auth,
   data,
   getCropData,
@@ -41,3 +41,8 @@ defineBackend({
   sendContactEmail,
   sendPrivySignup
 });
+
+// The original API key expired and AppSync deleted it, so CloudFormation can't update it
+// in place ("API key not found"). A new logical ID makes CloudFormation create a fresh key.
+// If a key is ever allowed to expire again, bump this suffix to replace it the same way.
+backend.data.resources.cfnResources.cfnApiKey?.overrideLogicalId('amplifyDataGraphQLAPIDefaultApiKeyV2');
